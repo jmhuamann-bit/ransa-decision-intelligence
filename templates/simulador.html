@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Simulador · RANSA{% endblock %}
+{% block page_title %}Simulador de Escenarios{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/simulador.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="gd-seg" id="simTabs">
+  <button class="gd-seg-btn active" data-tab="embarque"><i class="fa-solid fa-truck-fast"></i> Un embarque</button>
+  <button class="gd-seg-btn" data-tab="red"><i class="fa-solid fa-diagram-project"></i> Escenarios de red</button>
+</div>
+
+<!-- ============ SIMULADOR DE RED ============ -->
+<div id="simTabRed" style="display:none;">
+  <div class="gd-card mb-3">
+    <div class="gd-card-body" style="font-size:12.5px;color:var(--gd-text-muted);">
+      <i class="fa-solid fa-circle-info me-1"></i>
+      Activa un escenario y la plataforma recalcula el impacto sobre <b>toda la red</b>: OTIF, Lead Time, costos, CO₂, riesgo y clientes afectados, comparando contra la línea base de los 30,000 embarques simulados. Los factores de impacto de cada escenario son supuestos de negocio declarados y auditables, no salidas de un modelo entrenado.
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-xl-4">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div><div class="gd-card-title">Escenario</div><div class="gd-card-subtitle">Elige qué quieres simular</div></div>
+        </div>
+        <div class="gd-card-body">
+          <div class="gd-esc-grid" id="escGrid"></div>
+          <div class="mt-3" id="escObjetivoWrap" style="display:none;">
+            <label class="gd-label" id="escObjetivoLabel">Objetivo</label>
+            <select class="form-select gd-input" id="escObjetivo"></select>
+          </div>
+          <button class="gd-btn gd-btn-accent w-100 mt-3" id="btnSimularRed"><i class="fa-solid fa-play"></i> Simular escenario</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-8">
+      <div id="redEmptyState" class="gd-card h-100">
+        <div class="gd-card-body">
+          <div class="gd-empty-state"><i class="fa-solid fa-diagram-project"></i><div>Selecciona un escenario y pulsa <b>Simular</b> para ver el impacto en toda la red.</div></div>
+        </div>
+      </div>
+
+      <div id="redResult" style="display:none;">
+        <div class="gd-card mb-3">
+          <div class="gd-card-header">
+            <div><div class="gd-card-title" id="redTitulo">—</div><div class="gd-card-subtitle" id="redSub">—</div></div>
+            <span class="gd-badge rojo" id="redAfectados"></span>
+          </div>
+          <div class="gd-card-body">
+            <div class="gd-impact-grid" id="redImpacto"></div>
+          </div>
+        </div>
+
+        <div class="gd-card mb-3">
+          <div class="gd-card-header"><div><div class="gd-card-title">Antes vs. después</div><div class="gd-card-subtitle">Línea base histórica contra el escenario simulado</div></div></div>
+          <div class="gd-card-body"><canvas id="chartRedComparativo" height="120"></canvas></div>
+        </div>
+
+        <div class="gd-reco-box" id="redRecomendacion"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SIMULADOR DE UN EMBARQUE (existente) ============ -->
+<div id="simTabEmbarque">
+<div id="gdSimNoModel" class="gd-construction" style="display:none;">
+  <i class="fa-solid fa-sliders"></i>
+  <h3>El Simulador necesita un modelo entrenado</h3>
+  <p style="max-width:480px;">Ve a Predicciones IA y entrena el modelo antes de usar el simulador.</p>
+  <a href="{{ url_for('web.predicciones') }}" class="gd-btn gd-btn-accent mt-2"><i class="fa-solid fa-brain"></i> Ir a Predicciones IA</a>
+</div>
+
+<div id="gdSimContent" class="row g-3">
+  <div class="col-12 col-xl-5">
+    <div class="gd-card">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title">Escenario</div>
+          <div class="gd-card-subtitle">Modifica las variables y el resultado se recalcula automáticamente</div>
+        </div>
+      </div>
+      <div class="gd-card-body">
+        <div class="mb-3">
+          <label class="gd-label">Corredor logístico</label>
+          <select class="form-select gd-input" id="simCorredor"></select>
+        </div>
+        <div class="row g-2 mb-1">
+          <div class="col-6">
+            <label class="gd-label">Tipo de transporte</label>
+            <select class="form-select gd-input" id="simTransporte"></select>
+          </div>
+          <div class="col-6">
+            <label class="gd-label">Tipo de vehículo</label>
+            <select class="form-select gd-input" id="simVehiculo"></select>
+          </div>
+        </div>
+        <div class="row g-2 mb-1">
+          <div class="col-6">
+            <label class="gd-label">Tipo de carga</label>
+            <select class="form-select gd-input" id="simCarga"></select>
+          </div>
+          <div class="col-6">
+            <label class="gd-label">Prioridad del cliente</label>
+            <select class="form-select gd-input" id="simPrioridad"></select>
+          </div>
+        </div>
+        <div class="row g-2 mb-1">
+          <div class="col-6">
+            <label class="gd-label">Peso (toneladas)</label>
+            <input type="number" class="form-control gd-input" id="simPeso" min="0" step="0.1">
+          </div>
+          <div class="col-6">
+            <label class="gd-label">Volumen (m³)</label>
+            <input type="number" class="form-control gd-input" id="simVolumen" min="0" step="0.1">
+          </div>
+        </div>
+        <div class="mb-1">
+          <label class="gd-label">Disponibilidad de flota: <span id="simFlotaValor" class="gd-mono">—</span></label>
+          <input type="range" class="form-range" id="simFlota" min="0" max="100" step="1">
+        </div>
+        <div class="row g-2">
+          <div class="col-6">
+            <label class="gd-label">Aviso meteorológico SENAMHI</label>
+            <select class="form-select gd-input" id="simClima"></select>
+          </div>
+          <div class="col-6">
+            <label class="gd-label">Estado de la vía</label>
+            <select class="form-select gd-input" id="simVia"></select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-xl-7">
+    <div class="row g-3 mb-3" id="gdSimResultRow"></div>
+
+    <div class="gd-card">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title">Comparación con el histórico del corredor</div>
+          <div class="gd-card-subtitle" id="gdSimBaselineSubtitle">Selecciona un corredor con datos históricos</div>
+        </div>
+      </div>
+      <div class="gd-card-body">
+        <canvas id="chartComparativo" height="140"></canvas>
+      </div>
+    </div>
+
+    <div class="gd-card mt-3">
+      <div class="gd-card-body" style="font-size:12.5px;color:var(--gd-text-muted);">
+        <i class="fa-solid fa-circle-info me-1"></i>
+        El riesgo y el OTIF esperado provienen del modelo de Regresión Logística de Predicciones IA.
+        El Lead Time y el Costo provienen de dos regresores (Ridge) entrenados sobre el mismo dataset
+        real, únicamente con variables conocibles antes del despacho. Las variables no editables en
+        este formulario se completan con el perfil histórico del corredor elegido (o la mediana/moda
+        global si no hay corredor seleccionado).
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/simulador.js') }}"></script>
+<script src="{{ url_for('static', filename='js/simulador_red.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · RANSA{% endblock %}
+{% block page_title %}Dashboard Ejecutivo{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <div>
+    <div style="font-size:13px;color:var(--gd-text-muted);">Visión consolidada de la operación logística — datos simulados RANSA Perú</div>
+  </div>
+  <div class="d-flex gap-2">
+    <select class="gd-input gd-select" id="fAnio" style="min-width:110px;">
+      <option value="">Todos los años</option>
+      <option value="2023">2023</option>
+      <option value="2024">2024</option>
+      <option value="2025">2025</option>
+    </select>
+    <select class="gd-input gd-select" id="fTransporte" style="min-width:150px;">
+      <option value="">Todo transporte</option>
+      <option value="Carretero">Carretero</option>
+      <option value="Marítimo">Marítimo</option>
+      <option value="Aéreo">Aéreo</option>
+    </select>
+  </div>
+</div>
+
+<div class="row g-3 mb-3" id="gdKpiRow">
+  <!-- KPI tiles inyectados por JS -->
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-12 col-xl-8">
+    <div class="gd-card h-100">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title">Lead Time y OTIF — tendencia mensual</div>
+          <div class="gd-card-subtitle">Promedio de tiempo de entrega real vs. cumplimiento OTIF</div>
+        </div>
+      </div>
+      <div class="gd-card-body">
+        <canvas id="chartTendencia" height="110"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-xl-4">
+    <div class="gd-card h-100">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title">Nivel de Riesgo</div>
+          <div class="gd-card-subtitle">Distribución de embarques</div>
+        </div>
+      </div>
+      <div class="gd-card-body d-flex align-items-center justify-content-center">
+        <canvas id="chartRiesgo" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-xl-7">
+    <div class="gd-card h-100">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title">Corredores logísticos con mayor riesgo</div>
+          <div class="gd-card-subtitle">Top corredores por probabilidad de incumplimiento</div>
+        </div>
+      </div>
+      <div class="gd-table-wrap" style="border:none;">
+        <table class="gd-table" id="tblCorredores">
+          <thead><tr><th>Corredor</th><th>Embarques</th><th>OTIF</th><th>Riesgo</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-xl-5">
+    <div class="gd-card h-100">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title">Actividad reciente</div>
+          <div class="gd-card-subtitle">Últimas alertas y contingencias</div>
+        </div>
+        <a href="{{ url_for('web.contingencias') }}" class="gd-btn gd-btn-outline gd-btn-sm">Ver todas</a>
+      </div>
+      <div class="gd-card-body" id="gdActividad" style="max-height:340px;overflow-y:auto;">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

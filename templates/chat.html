@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}RANSA AI Copilot · RANSA{% endblock %}
+{% block page_title %}RANSA AI Copilot{% endblock %}
+
+{% block extra_css %}
+<style>
+  .gd-chat-shell { display: flex; flex-direction: column; height: calc(100vh - 132px); min-height: 480px; }
+  .gd-chat-messages { flex: 1; overflow-y: auto; padding: 8px 4px; }
+  .gd-chat-msg { display: flex; gap: 10px; margin-bottom: 16px; max-width: 720px; }
+  .gd-chat-msg.user { margin-left: auto; flex-direction: row-reverse; }
+  .gd-chat-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #fff; }
+  .gd-chat-avatar.bot { background: linear-gradient(135deg, var(--gd-accent), var(--gd-blue)); }
+  .gd-chat-avatar.user { background: var(--gd-primary); }
+  .gd-chat-bubble { padding: 11px 15px; border-radius: 14px; font-size: 13.5px; line-height: 1.55; white-space: pre-line; }
+  .gd-chat-msg.bot .gd-chat-bubble { background: var(--gd-surface-2); border: 1px solid var(--gd-border); border-top-left-radius: 4px; }
+  .gd-chat-msg.user .gd-chat-bubble { background: var(--gd-primary); color: #fff; border-top-right-radius: 4px; }
+  .gd-chat-chip { font-size: 12px; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--gd-border); background: var(--gd-surface); cursor: pointer; transition: all .15s; }
+  .gd-chat-chip:hover { background: var(--gd-surface-2); border-color: var(--gd-accent); }
+  .gd-chat-input-row { display: flex; gap: 10px; padding-top: 12px; border-top: 1px solid var(--gd-border); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="gd-card">
+  <div class="gd-card-body gd-chat-shell">
+    <div class="d-flex flex-wrap gap-2 mb-3" id="gdChatChips">
+      <span class="gd-chat-chip">¿Qué está pasando ahora en el gemelo?</span>
+      <span class="gd-chat-chip">¿Cuál es el OTIF actual?</span>
+      <span class="gd-chat-chip">Riesgo de huaicos y lluvias</span>
+      <span class="gd-chat-chip">Callao vs Chancay</span>
+      <span class="gd-chat-chip">¿Cómo va la cadena de frío?</span>
+      <span class="gd-chat-chip">¿Qué pasa si cierro Matarani?</span>
+      <span class="gd-chat-chip">¿Cómo va el modelo de predicciones?</span>
+      <span class="gd-chat-chip">Resumen de KPIs</span>
+    </div>
+
+    <div class="gd-chat-messages" id="gdChatMessages"></div>
+
+    <div class="gd-chat-input-row">
+      <input type="text" class="form-control gd-input" id="gdChatInput" placeholder="Escribe tu pregunta... (ej. ¿Cuál es el OTIF del corredor Lima-Huancayo?)" autocomplete="off">
+      <button class="gd-btn gd-btn-accent" id="gdChatSend"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}

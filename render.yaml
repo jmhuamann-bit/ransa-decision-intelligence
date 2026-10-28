@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: ransa-decision-intelligence
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # Un solo worker con hilos: el gemelo digital vive en memoria y todos los usuarios deben ver
+    # la MISMA operación (con varios workers, cada uno tendría su propia simulación).
+    startCommand: gunicorn run:app --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 300
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: DEMO_MODE
+        value: "true"

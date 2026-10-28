@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iniciar sesión · RANSA Decision Intelligence · Perú</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><linearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22><stop offset=%220%22 stop-color=%22%23ff7a1a%22/><stop offset=%221%22 stop-color=%22%233d63ff%22/></linearGradient></defs><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22url(%23g)%22/><path d=%22M14 74 L38 36 L52 56 L64 40 L86 74 Z%22 fill=%22white%22 opacity=%22.95%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet">
+</head>
+<body>
+<div class="gd-login-shell">
+  <div class="gd-login-visual">
+    <!-- La red vial real de RANSA Perú (OpenStreetMap) dibuja la silueta del país -->
+    <svg class="gd-login-route" viewBox="0 0 400 520" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      {% for p in login_network.paths %}
+      <path d="{{ p.d }}" fill="none" stroke="{{ p.color }}" stroke-width="{{ p.w }}" stroke-linecap="round" stroke-linejoin="round" opacity="{{ p.o }}"/>
+      {% endfor %}
+      {% for n in login_network.nodes %}
+      <circle cx="{{ n.x }}" cy="{{ n.y }}" r="{{ n.r }}" fill="#ff7a1a" opacity=".9"/>
+      {% endfor %}
+    </svg>
+    <div class="d-flex align-items-center gap-2" style="position:relative;">
+      <div class="gd-brand-mark" style="width:44px;height:44px;font-size:19px;"><i class="fa-solid fa-mountain-sun"></i></div>
+      <div style="line-height:1.15;">
+        <div style="font-weight:800;font-size:18px;letter-spacing:.05em;">RANSA</div>
+        <div style="font-size:11.5px;color:#ff9a4d;font-weight:600;">Decision Intelligence · Perú</div>
+      </div>
+    </div>
+    <div style="position:relative;">
+      <h1 style="font-weight:800;font-size:34px;line-height:1.18;max-width:470px;">El gemelo digital de la logística peruana</h1>
+      <p style="color:#c7d2e8;max-width:450px;font-size:15px;margin-top:14px;">
+        De la costa a los Andes y la Amazonía: anticipa huaicos, bloqueos, oleajes y vaciantes, y decide en minutos
+        con IA sobre una red multimodal trazada en las vías reales del Perú.
+      </p>
+      <div style="display:flex;gap:26px;margin-top:34px;flex-wrap:wrap;">
+        <div><div style="font-size:26px;font-weight:800;">30.000</div><div style="font-size:12px;color:#8ea3d1;">Embarques simulados</div></div>
+        <div><div style="font-size:26px;font-weight:800;">4.818 m</div><div style="font-size:12px;color:#8ea3d1;">Paso más alto (Ticlio)</div></div>
+        <div><div style="font-size:26px;font-weight:800;">4 modos</div><div style="font-size:12px;color:#8ea3d1;">Vial · cabotaje · fluvial · aéreo</div></div>
+        <div><div style="font-size:26px;font-weight:800;">&lt;72h</div><div style="font-size:12px;color:#8ea3d1;">Ventana de respuesta</div></div>
+      </div>
+    </div>
+    <div style="font-size:11.5px;color:#6f82b3;position:relative;">Prototipo de demostración con datos 100% simulados · Rutas © OpenStreetMap contributors</div>
+  </div>
+
+  <div class="gd-login-form-side">
+    <div class="gd-login-card">
+      <div class="d-flex align-items-center gap-2 mb-4 d-lg-none">
+        <div class="gd-brand-mark" style="width:40px;height:40px;"><i class="fa-solid fa-mountain-sun"></i></div>
+        <span style="font-weight:800;font-size:18px;">RANSA · Perú</span>
+      </div>
+
+      <h2 style="font-weight:800;font-size:24px;margin-bottom:4px;">Bienvenido</h2>
+      <p style="color:var(--gd-text-muted);font-size:13.5px;margin-bottom:18px;">Entra con un perfil de demostración o con tus credenciales.</p>
+
+      <div id="gdLoginError" class="alert alert-danger py-2 px-3" style="display:none;font-size:13px;"></div>
+
+      {% if demo_mode %}
+      <div class="mb-3">
+        <div class="gd-label mb-2">Acceso de demostración (un clic)</div>
+        <div class="gd-login-demo-grid" id="gdDemoGrid"></div>
+      </div>
+      <div class="d-flex align-items-center gap-2 my-3" style="color:var(--gd-text-subtle);font-size:11.5px;">
+        <hr class="flex-grow-1 m-0"><span>o con credenciales</span><hr class="flex-grow-1 m-0">
+      </div>
+      {% endif %}
+
+      <form id="gdLoginForm">
+        <div class="mb-3">
+          <label class="gd-label">Correo</label>
+          <input type="email" class="form-control gd-input" id="gdEmail" placeholder="nombre@empresa.pe" required>
+        </div>
+        <div class="mb-3">
+          <label class="gd-label">Contraseña</label>
+          <input type="password" class="form-control gd-input" id="gdPassword" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="gd-btn gd-btn-primary w-100" id="gdLoginBtn">
+          <i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión
+        </button>
+      </form>
+
+      <p class="gd-disclaimer mt-4 mb-0">
+        <i class="fa-solid fa-circle-info me-1"></i>Prototipo independiente con fines académicos y de demostración.
+        Toda la información operativa es simulada; no es un sistema oficial ni representa datos reales de RANSA.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script>
+const ROLE_ICON = { Administrador: "fa-user-shield", Supervisor: "fa-tower-observation", Operaciones: "fa-truck-fast",
+                    Cliente: "fa-building-user", Analista: "fa-brain" };
+const errBox = document.getElementById("gdLoginError");
+function showError(msg) { errBox.textContent = msg; errBox.style.display = "block"; }
+
+async function loadDemoUsers() {
+  const grid = document.getElementById("gdDemoGrid");
+  if (!grid) return;
+  try {
+    const { users } = await RansaAPI.get("/api/auth/demo-users");
+    grid.innerHTML = users.map((u) => `
+      <button type="button" class="gd-login-demo-btn" data-rol="${u.rol}">
+        <span class="ico"><i class="fa-solid ${ROLE_ICON[u.rol] || "fa-user"}"></i></span>
+        <span><b>${u.rol}</b><span>${u.cargo || u.nombre_completo}</span></span>
+      </button>`).join("");
+    grid.querySelectorAll("button").forEach((b) => b.addEventListener("click", async () => {
+      b.disabled = true;
+      try {
+        await RansaAPI.post("/api/auth/demo", { rol: b.dataset.rol });
+        window.location.href = "/torre";
+      } catch (err) { showError(err.message || "No fue posible ingresar."); b.disabled = false; }
+    }));
+  } catch (err) { grid.innerHTML = ""; }
+}
+loadDemoUsers();
+
+document.getElementById("gdLoginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("gdLoginBtn");
+  errBox.style.display = "none";
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Ingresando...';
+  try {
+    await RansaAPI.post("/api/auth/login", {
+      email: document.getElementById("gdEmail").value,
+      password: document.getElementById("gdPassword").value,
+    });
+    window.location.href = "/torre";
+  } catch (err) {
+    showError(err.message || "No fue posible iniciar sesión.");
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión';
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+﻿Variable,Tipo_de_Dato,Unidad_de_Medida,Fuente_Publica_de_Referencia,Descripcion,En_Modelo
+ID_Viaje,Identificador,Texto (código),Interno RANSA (simulado),"Identificador único del viaje/envío, formato RNS-AAAA-NNNNNN.",Sí
+Fecha,Numérica (fecha),AAAA-MM-DD,Interno RANSA (simulado),Fecha de despacho del viaje.,Sí
+Día_Semana,Categórica,Texto,Interno RANSA (simulado),Día de la semana del despacho.,Sí
+Mes,Categórica,Texto,Interno RANSA (simulado),Mes calendario del viaje.,Sí
+Trimestre,Ordinal,Entero (1-4),Interno RANSA (simulado),Trimestre del año calendario.,Sí
+Año,Numérica (discreta),Año (AAAA),Interno RANSA (simulado),Año calendario del viaje (2023-2026).,Sí
+Departamento_Origen,Categórica,Texto,INEI (división político-administrativa),Departamento/región del Perú donde se origina el viaje.,Sí
+Ciudad_Origen,Categórica,Texto,INEI (centros poblados),"Ciudad, puerto o centro logístico de origen.",Sí
+Departamento_Destino,Categórica,Texto,INEI (división político-administrativa),Departamento/región de destino.,Sí
+Ciudad_Destino,Categórica,Texto,INEI (centros poblados),"Ciudad, puerto o centro logístico de destino.",Sí
+Corredor_Logístico,Categórica,Texto,MTC – Plan de Desarrollo de Servicios Logísticos de Transporte,Par origen-destino de la red logística.,Sí
+Ruta_Principal,Categórica,Texto,"MTC / Provías Nacional (Red Vial Nacional, SINAC)","Vía nacional o ruta principal recorrida (PE-1N, PE-22, IIRSA, cabotaje, fluvial...).",Sí
+Tipo_Transporte,Categórica,Texto,MTC / APN / DICAPI / CORPAC,"Modo: Carretero, Marítimo (cabotaje), Fluvial o Aéreo.",Sí
+Tipo_Vehículo,Categórica,Texto,MTC – Reglamento Nacional de Vehículos / SUTRAN,"Configuración vehicular, buque, convoy fluvial o aeronave.",Sí
+Tipo_Carga,Categórica,Texto,Interno RANSA (simulado),"Naturaleza de la carga (seca, cadena de frío, concentrado, MATPEL, etc.).",Sí
+Sector_Cliente,Categórica,Texto,Interno RANSA (simulado),Sector económico del cliente.,Sí
+Peso_Toneladas,Numérica continua,Toneladas,MTC – pesos y medidas vehiculares,Peso bruto de la carga transportada.,Sí
+Volumen_m3,Numérica continua,m³,Interno RANSA (simulado),Volumen de la carga.,Sí
+Distancia_Km,Numérica continua,Kilómetros,OpenStreetMap / Provías Nacional,Distancia recorrida por la ruta real.,Sí
+Altitud_Max_Ruta_msnm,Numérica continua,m s. n. m.,SRTM 90 m (NASA) / IGN,Altitud máxima de la ruta (pasos andinos como Ticlio 4.818 m) o del aeropuerto más alto.,Sí
+Tiempo_Programado_Horas,Numérica continua,Horas,RANSA (tiempos de tránsito comprometidos),Tiempo de tránsito comprometido con el cliente.,Sí
+Tiempo_Entrega_Real_Horas,Numérica continua,Horas,"Interno RANSA (simulado, TMS/GPS)",Tiempo real de entrega puerta a puerta.,Sí
+Velocidad_Promedio_Kmh,Numérica continua,km/h,SUTRAN / GPS (simulado),Velocidad comercial promedio del viaje.,Sí
+Tiempo_Espera_Horas,Numérica continua,Horas,"Interno RANSA (simulado, TMS/GPS)","Tiempo en colas de muelle, garita o andén.",Sí
+Consumo_Combustible_Galones,Numérica continua,Galones,MINEM / OSINERGMIN (rendimientos de referencia),Combustible atribuible al envío.,Sí
+Costo_Transporte_PEN,Numérica continua,Soles (S/),"Interno RANSA (simulado, tarifas por modo/vehículo/región)",Costo de flete del envío.,Sí
+Costo_Peajes_PEN,Numérica continua,Soles (S/),MTC / Provías Nacional y concesionarias viales,Costo total de peajes del recorrido.,Sí
+Disponibilidad_Flota_Pct,Numérica continua,%,"Interno RANSA (simulado, KPI de flota)",Disponibilidad de la flota al despacho.,Sí
+Utilización_Flota_Pct,Numérica continua,%,"Interno RANSA (simulado, KPI de flota)",Utilización de la flota.,Sí
+Estado_Vía,Ordinal,Texto,Provías Nacional (estado de la Red Vial Nacional),"Estado de la vía (Bueno, Regular, Malo, Crítico).",Sí
+Índice_Deterioro_Vial,Numérica continua,Índice 0-100,Provías Nacional / MTC,Deterioro de la vía (100 = peor).,Sí
+Número_Cierres_Viales,Numérica discreta (conteo),Conteo,SUTRAN / Provías (estado de tránsito en vías nacionales),Cierres viales reportados en el corredor.,Sí
+Número_Bloqueos_Carretera,Numérica discreta (conteo),Conteo,PNP / SUTRAN,Bloqueos de carretera reportados.,Sí
+Índice_Bloqueos,Numérica continua,Índice 0-100,PNP / Defensoría del Pueblo (conflictos sociales),Exposición a bloqueos en el corredor.,Sí
+Obras_Viales_Activas,Numérica discreta (conteo),Conteo,Provías Nacional / MML,Obras viales activas en el recorrido.,Sí
+Restricciones_Peso,Binaria,0/1,MTC – pesos y medidas,Restricción de peso por puentes o tramos.,Sí
+Restricciones_Horarias,Binaria,0/1,MML / ATU (horarios de carga pesada en Lima),Restricción horaria para carga pesada.,Sí
+Índice_Seguridad,Numérica continua,Índice 0-100,PNP / INEI (victimización),Seguridad del corredor (100 = más seguro).,Sí
+Riesgo_Hurto_Carga,Ordinal,Texto,PNP (denuncias por robo de carga),Riesgo de robo/hurto de carga.,Sí
+Número_Eventos_Seguridad,Numérica discreta (conteo),Conteo,PNP,Eventos de seguridad reportados en el corredor.,Sí
+Presencia_Crimen_Organizado,Binaria,0/1,PNP / Ministerio del Interior (extorsión al transporte),Extorsión o crimen organizado activo en la zona.,Sí
+Índice_Orden_Público,Numérica continua,Índice 0-100,Ministerio del Interior / PNP,Orden público (100 = normalidad).,Sí
+Riesgo_Extorsión,Ordinal,Texto,PNP / Ministerio del Interior,Riesgo de extorsión a transportistas.,Sí
+Riesgo_Vandalismo,Ordinal,Texto,PNP,Riesgo de vandalismo contra la unidad o la carga.,Sí
+Riesgo_Saqueo,Ordinal,Texto,PNP / INDECI,Riesgo de saqueo (protestas o desastres).,Sí
+Número_Paros,Numérica discreta (conteo),Conteo,Defensoría del Pueblo (reporte de conflictos sociales),Paros regionales o gremiales activos.,Sí
+Índice_Protestas,Numérica continua,Índice 0-100,Defensoría del Pueblo,Intensidad de la conflictividad social.,Sí
+Manifestaciones,Numérica discreta (conteo),Conteo,PNP,Manifestaciones públicas en el corredor.,Sí
+Huelgas,Binaria,0/1,MTPE / Defensoría del Pueblo,Huelga activa que afecta la operación.,Sí
+Bloqueos_Sociales,Numérica discreta (conteo),Conteo,Defensoría del Pueblo / PNP,"Bloqueos por conflictos sociales (comunidades, gremios).",Sí
+Temperatura_C,Numérica continua,°C,SENAMHI,Temperatura ambiente promedio del recorrido.,Sí
+Precipitación_mm,Numérica continua,mm,SENAMHI,Precipitación acumulada esperada.,Sí
+Humedad_Pct,Numérica continua,%,SENAMHI,Humedad relativa.,Sí
+Velocidad_Viento_Kmh,Numérica continua,km/h,SENAMHI,Velocidad del viento.,Sí
+Alerta_SENAMHI,Ordinal,Texto,SENAMHI (avisos meteorológicos),"Nivel de aviso: Ninguna, Amarilla, Naranja, Roja.",Sí
+Fenómeno_Climático,Categórica,Texto,ENFEN / SENAMHI,"Fenómeno climático dominante (Niño Costero, lluvias de sierra, heladas, friaje, oleajes...).",Sí
+Número_Inundaciones,Numérica discreta (conteo),Conteo,INDECI (SINPAD),Inundaciones reportadas.,Sí
+Índice_Inundaciones,Numérica continua,Índice 0-100,INDECI / CENEPRED,Exposición a inundaciones.,Sí
+Número_Deslizamientos,Numérica discreta (conteo),Conteo,INDECI (SINPAD),Huaicos y deslizamientos reportados.,Sí
+Índice_Deslizamientos,Numérica continua,Índice 0-100,INGEMMET / CENEPRED,Exposición a huaicos y deslizamientos.,Sí
+Número_Derrumbes,Numérica discreta (conteo),Conteo,Provías Nacional / INDECI,Derrumbes en la vía.,Sí
+Índice_Derrumbes,Numérica continua,Índice 0-100,INGEMMET / Provías Nacional,Exposición a derrumbes.,Sí
+Número_Incendios_Forestales,Numérica discreta (conteo),Conteo,SERFOR / INDECI,Incendios forestales cercanos a la ruta.,Sí
+Índice_Incendios,Numérica continua,Índice 0-100,SERFOR / SENAMHI,Exposición a incendios forestales.,Sí
+Riesgo_Geológico,Ordinal,Texto,INGEMMET,Riesgo geológico del corredor.,Sí
+Riesgo_Hidrológico,Ordinal,Texto,ANA / SENAMHI,Riesgo hidrológico del corredor.,Sí
+Número_Accidentes,Numérica discreta (conteo),Conteo,SUTRAN / PNP,Accidentes de tránsito durante el viaje.,Sí
+Intensidad_Incidente,Ordinal,Texto,SUTRAN / PNP,Gravedad del incidente.,Sí
+Duración_Incidente_Horas,Numérica continua,Horas,SUTRAN / PNP,Duración del incidente.,Sí
+Tiempo_Cierre_Vía_Horas,Numérica continua,Horas,SUTRAN / Provías Nacional,Horas de vía cerrada sufridas por el viaje.,Sí
+Precio_Diésel_PEN_Gal,Numérica continua,S/ por galón,OSINERGMIN (Facilito) – referencial,Precio del diésel B5 en la región.,Sí
+Precio_Gasolina_PEN_Gal,Numérica continua,S/ por galón,OSINERGMIN (Facilito) – referencial,Precio del gasohol 90.,Sí
+IPC,Numérica continua,Índice (dic-2021 = 100),INEI – referencial,Índice de precios al consumidor (Lima Metropolitana).,Sí
+Tipo_Cambio_PEN_USD,Numérica continua,S/ por US$,BCRP – referencial,Tipo de cambio.,Sí
+Inflación_Pct,Numérica continua,% anual,INEI / BCRP – referencial,Inflación interanual.,Sí
+Precio_Peajes_Promedio_PEN,Numérica continua,Soles (S/),MTC / Provías Nacional y concesiones,Tarifa promedio por peaje para la categoría del vehículo.,Sí
+Índice_Abastecimiento,Numérica continua,Índice 0-100,MIDAGRI / Interno RANSA (simulado),Nivel de abastecimiento del canal.,Sí
+Nivel_Inventario_Pct,Numérica continua,%,Interno RANSA (simulado),Nivel de inventario del cliente al despacho.,Sí
+Demanda_Unidades,Numérica continua,Unidades,Interno RANSA (simulado),Demanda real del periodo.,Sí
+Demanda_Pronosticada_Unidades,Numérica continua,Unidades,Interno RANSA (simulado),Demanda pronosticada.,Sí
+Prioridad_Cliente,Ordinal,Texto,Interno RANSA (segmentación comercial),Prioridad comercial del cliente.,Sí
+OTIF,Binaria,0/1,Interno RANSA (KPI On Time In Full),1 = llegó a tiempo y completo.,Sí
+Fill_Rate_Pct,Numérica continua,%,Interno RANSA (KPI de completitud),Porcentaje del pedido efectivamente entregado.,Sí
+Nivel_Servicio_Pct,Numérica continua,%,Interno RANSA (KPI compuesto),Nivel de servicio compuesto.,Sí
+Tiempo_Almacenamiento_Horas,Numérica continua,Horas,"Interno RANSA (almacenes, simulado)",Tiempo de permanencia en almacén.,Sí
+Cross_Docking,Binaria,0/1,Interno RANSA,Operación con cross-docking.,Sí
+Tipo_Almacén,Categórica,Texto,"Interno RANSA (almacenes, simulado)","Tipo de almacén (seco, refrigerado, congelado, MATPEL, aduanero...).",Sí
+Capacidad_Almacén_m3,Numérica continua,m³,Interno RANSA (simulado),Capacidad del almacén asociado.,Sí
+Utilización_Almacén_Pct,Numérica continua,%,Interno RANSA (KPI de almacén),Ocupación del almacén.,Sí
+Aseguradora,Categórica,Texto,Mercado asegurador peruano (supuesto de mercado; no es fuente oficial),Compañía de seguros de la carga.,Sí
+Tipo_Cobertura_Seguro,Ordinal,Texto,Supuesto de mercado (SBS – pólizas de transporte),Tipo de cobertura.,Sí
+Valor_Asegurado_PEN,Numérica continua,Soles (S/),"Supuesto de mercado, derivado de peso y tipo de carga",Valor asegurado de la carga.,Sí
+Prima_Seguro_PEN,Numérica continua,Soles (S/),Supuesto de mercado,Prima del seguro del envío.,Sí
+Deducible_PEN,Numérica continua,Soles (S/),Supuesto de mercado,Deducible aplicable.,Sí
+Siniestro,Binaria,0/1,"Supuesto de mercado, ligado a seguridad, accidentes y cadena de frío",1 = hubo siniestro.,Sí
+Valor_Siniestro_PEN,Numérica continua,Soles (S/),Supuesto de mercado,Monto del siniestro.,Sí
+Estado_Reclamación,Categórica,Texto,Supuesto de mercado,Estado del reclamo al seguro.,Sí
+LeadTime_Real_Dias,Numérica continua (variable objetivo),Días,Interno RANSA (KPI Lead Time),Lead time real del envío en días.,Sí
+Aeropuerto_Origen,Categórica,Texto,CORPAC / MTC,Aeropuerto de origen (solo aéreo).,No
+Aeropuerto_Destino,Categórica,Texto,CORPAC / MTC,Aeropuerto de destino (solo aéreo).,No
+Aerolínea,Categórica,Texto,MTC – DGAC,Aerolínea o operador de carga.,No
+Número_Vuelo,Identificador,Texto,Interno RANSA (simulado),Código de vuelo (simulado).,No
+Tipo_Aeronave,Categórica,Texto,MTC – DGAC,Tipo de aeronave.,No
+Capacidad_Bodega_%,Numérica continua,%,Interno RANSA (simulado),Ocupación de la bodega del avión.,No
+Retraso_Vuelo_min,Numérica continua,Minutos,CORPAC (simulado),Retraso del vuelo.,No
+Cancelación_Vuelo,Binaria,0/1,CORPAC (simulado),Vuelo cancelado.,No
+Congestión_Aeroportuaria_%,Numérica continua,%,LAP / CORPAC (simulado),Congestión del terminal de carga.,No
+Puerto_Origen,Categórica,Texto,APN (Autoridad Portuaria Nacional),Terminal portuario/fluvial de origen.,No
+Puerto_Destino,Categórica,Texto,APN,Terminal portuario/fluvial de destino.,No
+Naviera,Categórica,Texto,APN / DICAPI,Naviera o empresa fluvial.,No
+IMO_Buque,Identificador,Número IMO,OMI (simulado),Número IMO del buque.,No
+Tipo_Contenedor,Categórica,Texto,APN,Tipo de contenedor o granel.,No
+Congestión_Portuaria_%,Numérica continua,%,APN (simulado),Congestión del terminal portuario.,No
+Estado_Mar,Categórica,Texto,DHN – Marina de Guerra del Perú (avisos de oleaje),Estado del mar / oleaje anómalo.,No
+Tiempo_Fondeo_h,Numérica continua,Horas,APN (simulado),Tiempo de espera en fondeadero.,No
+Disponibilidad_Grúas_%,Numérica continua,%,APN (simulado),Disponibilidad de grúas de muelle.,No
+Nivel_Río,Categórica,Texto,SENAMHI – Hidrología / DHN,"Nivel del río (Normal, Creciente, Vaciante, Vaciante extrema).",No
+GPS_Activo,Categórica,Sí/No,SUTRAN (GPS obligatorio),Unidad con GPS reportando.,No
+Horas_Conducción,Numérica continua,Horas,SUTRAN (jornada de conducción),Horas continuas de conducción.,No
+Nivel_Combustible_%,Numérica continua,%,Telemetría (simulado),Nivel de combustible al despacho.,No
+Estado_Neumáticos,Categórica,Texto,Inspección pre-viaje (simulado),Estado de neumáticos.,No
+Temperatura_Reefer_C,Numérica continua,°C,Telemetría de cadena de frío (simulado),Temperatura de la unidad refrigerada.,No

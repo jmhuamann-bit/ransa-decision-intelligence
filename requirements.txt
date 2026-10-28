@@ -1,0 +1,18 @@
+# Versiones exactas probadas: los modelos .joblib de data/models se entrenaron con
+# scikit-learn 1.9.1 y deben cargarse con la misma versión.
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3
+Flask-Cors==4.0.1
+Flask-Migrate==4.0.7
+Werkzeug==3.0.4
+SQLAlchemy==2.1.6
+python-dotenv==1.0.1
+pandas==3.1.0
+numpy==2.4.6
+scipy==1.17.1
+scikit-learn==1.9.1
+joblib==1.6.0
+openpyxl==3.1.5
+reportlab==5.1.0
+gunicorn==22.0.0

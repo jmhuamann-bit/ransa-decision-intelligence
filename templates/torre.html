@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% block title %}Gemelo Digital · Torre de Control · RANSA{% endblock %}
+{% block page_title %}Gemelo Digital · Torre de Control Perú{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/torre.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="tw-head">
+  <div class="tw-head-text">
+    Réplica viva de la red RANSA: cada unidad recorre la <b>vía real</b> (OpenStreetMap) con su velocidad según pendiente y altitud.
+    Haz clic en una <b>unidad</b>, <b>ruta</b> o <b>nodo</b>; inyecta eventos o lanza un escenario y decide con la IA.
+  </div>
+  <div class="tw-head-actions">
+    <span class="gd-live-pill" id="twLivePill"><span class="gd-live-dot"></span> En vivo</span>
+    <button class="gd-btn gd-btn-outline gd-btn-sm" id="twTourBtn"><i class="fa-solid fa-person-chalkboard"></i> Modo presentación</button>
+  </div>
+</div>
+
+<!-- KPIs operativos en vivo -->
+<div class="torre-ops-strip mb-3" id="torreOpsKpis"></div>
+
+<div class="row g-3">
+  <div class="col-12 col-xxl-8">
+    <div class="gd-card tw-map-card">
+      <div id="torreMap"></div>
+
+      <!-- Capa superior izquierda: capas y mapa base -->
+      <div class="tw-overlay tw-tl">
+        <div class="tw-panel collapsed" id="twLayersPanel">
+          <button class="tw-panel-toggle" id="twLayersToggle"><i class="fa-solid fa-layer-group"></i> Capas, mapa base y leyenda <i class="fa-solid fa-chevron-down ms-1"></i></button>
+          <div class="tw-panel-body">
+          <div class="tw-panel-title"><i class="fa-solid fa-layer-group"></i> Capas</div>
+          <label class="tw-check"><input type="checkbox" data-layer="rutas" checked> Red vial y rutas</label>
+          <label class="tw-check"><input type="checkbox" data-layer="flota" checked> Flota en vivo</label>
+          <label class="tw-check"><input type="checkbox" data-layer="eventos" checked> Eventos y tramos cortados</label>
+          <label class="tw-check"><input type="checkbox" data-layer="nodos" checked> Nodos (CD, puertos, aeropuertos)</label>
+          <label class="tw-check"><input type="checkbox" data-layer="hotspots"> Puntos críticos históricos</label>
+          <label class="tw-check"><input type="checkbox" data-layer="calor"> Calor de riesgo (IA)</label>
+          <div class="tw-panel-title mt-2"><i class="fa-solid fa-map"></i> Mapa base</div>
+          <div class="tw-seg" id="twBasemap">
+            <button data-base="claro" class="active">Mapa</button>
+            <button data-base="relieve">Relieve</button>
+            <button data-base="satelite">Satélite</button>
+            <button data-base="oscuro">Noche</button>
+          </div>
+          <div class="tw-panel-title mt-2"><i class="fa-solid fa-filter"></i> Modo</div>
+          <select class="gd-input gd-select tw-select" id="torreTransporte">
+            <option value="">Todos los modos</option>
+            <option value="Carretero">Carretero</option>
+            <option value="Marítimo">Marítimo (cabotaje)</option>
+            <option value="Fluvial">Fluvial (Amazonía)</option>
+            <option value="Aéreo">Aéreo</option>
+          </select>
+          <div class="tw-panel-title mt-2"><i class="fa-solid fa-circle-half-stroke"></i> Estado de unidades</div>
+          <div class="tw-legend">
+            <span><i style="background:#3d63ff"></i>En ruta</span>
+            <span><i style="background:#eab308"></i>Lento</span>
+            <span><i style="background:#e11d48"></i>Detenido</span>
+            <span><i style="background:#8b5cf6"></i>Desviado</span>
+            <span><i style="background:#94a3b8"></i>Espera / pausa</span>
+            <span><i style="background:#0ea5e9"></i>Fondeado</span>
+          </div>
+          <div class="tw-panel-title mt-2"><i class="fa-solid fa-road"></i> Riesgo histórico de la vía</div>
+          <div class="tw-legend">
+            <span><i style="background:#16a34a"></i>Bajo</span><span><i style="background:#eab308"></i>Medio</span><span><i style="background:#e11d48"></i>Alto</span>
+            <span><i style="background:#8b5cf6;border-radius:2px;"></i>Ruta alterna</span>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Capa superior derecha: escenarios e inyección de eventos -->
+      <div class="tw-overlay tw-tr">
+        <div class="dropdown">
+          <button class="gd-btn gd-btn-accent gd-btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="twScenarioBtn">
+            <i class="fa-solid fa-bolt"></i> Escenarios Perú
+          </button>
+          <div class="dropdown-menu dropdown-menu-end tw-scenarios" id="twScenarioMenu"></div>
+        </div>
+        <div class="dropdown">
+          <button class="gd-btn gd-btn-primary gd-btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="twInjectBtn">
+            <i class="fa-solid fa-location-crosshairs"></i> Inyectar evento
+          </button>
+          <div class="dropdown-menu dropdown-menu-end tw-inject" id="twInjectMenu"></div>
+        </div>
+      </div>
+
+      <!-- Banner de modo inyección / presentación -->
+      <div class="tw-banner" id="twBanner" style="display:none;"></div>
+
+      <!-- Capa inferior izquierda: control de la simulación -->
+      <div class="tw-overlay tw-bl">
+        <div class="tw-sim">
+          <button class="tw-sim-btn" id="twPlay" title="Pausar / reanudar"><i class="fa-solid fa-pause"></i></button>
+          <div class="tw-clock">
+            <div class="tw-clock-time" id="twClock">--:--</div>
+            <div class="tw-clock-date" id="twClockDate">hora Perú (simulada)</div>
+          </div>
+          <div class="tw-seg tw-speed" id="twSpeed">
+            <button data-speed="60">×60</button>
+            <button data-speed="240" class="active">×240</button>
+            <button data-speed="600">×600</button>
+            <button data-speed="1800">×1800</button>
+          </div>
+          <label class="tw-auto" title="La IA aplica automáticamente la mejor opción ante cada evento">
+            <input type="checkbox" id="twAuto"> <i class="fa-solid fa-robot"></i> IA autónoma
+          </label>
+          <button class="tw-sim-btn ghost" id="twReset" title="Reiniciar gemelo"><i class="fa-solid fa-arrow-rotate-left"></i></button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row g-3 mt-0">
+      <div class="col-12 col-lg-7">
+        <div class="gd-card h-100">
+          <div class="gd-card-header">
+            <div>
+              <div class="gd-card-title"><i class="fa-solid fa-brain me-2"></i>Decision Intelligence en vivo</div>
+              <div class="gd-card-subtitle">Eventos activos, unidades afectadas y opciones comparadas por la IA (OTIF 40% · costo 20% · tiempo 20% · CO₂ 10% · riesgo 10%)</div>
+            </div>
+            <span class="torre-feed-count" id="twEventsCount">0</span>
+          </div>
+          <div class="gd-card-body tw-decisions" id="twDecisions"></div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-5">
+        <div class="gd-card h-100">
+          <div class="gd-card-header">
+            <div>
+              <div class="gd-card-title"><i class="fa-solid fa-tower-broadcast me-2"></i>Actividad en vivo</div>
+              <div class="gd-card-subtitle">Bitácora de la operación (hora simulada)</div>
+            </div>
+            <span class="torre-feed-count" id="torreFeedCount">0</span>
+          </div>
+          <div class="gd-card-body tw-feed" id="torreFeed"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-xxl-4">
+    <div class="gd-card gd-inspector tw-inspector">
+      <div class="tw-tabs" id="twTabs">
+        <button data-tab="contexto" class="active"><i class="fa-solid fa-layer-group"></i> Contexto</button>
+        <button data-tab="unidad"><i class="fa-solid fa-truck-fast"></i> Unidad</button>
+        <button data-tab="nodos"><i class="fa-solid fa-warehouse"></i> Nodos</button>
+      </div>
+
+      <!-- Contexto (cross-filtering con datos históricos) -->
+      <div class="tw-tab" data-pane="contexto">
+        <div class="gd-inspector-head">
+          <div class="d-flex align-items-center gap-2" style="min-width:0;">
+            <div class="gd-inspector-icon" id="inspIcon"><i class="fa-solid fa-diagram-project"></i></div>
+            <div style="min-width:0;">
+              <div class="gd-inspector-title" id="inspTitulo">Toda la red logística</div>
+              <div class="gd-inspector-sub" id="inspSub">Operación nacional RANSA Perú</div>
+            </div>
+          </div>
+          <button class="gd-btn gd-btn-outline gd-btn-sm" id="torreReset" style="display:none;"><i class="fa-solid fa-arrow-rotate-left"></i> Red</button>
+        </div>
+        <div class="gd-inspector-body">
+          <div class="tw-kpi-grid" id="torreKpiRow"></div>
+          <div id="inspDetalle" class="gd-inspector-detalle mt-2"></div>
+          <div class="gd-flow-label">Flujo de decisión</div>
+          <div class="gd-flow" id="inspFlujo"></div>
+          <div id="inspChartWrap" style="display:none;">
+            <div class="gd-flow-label mt-3">Tendencia histórica (Lead Time vs OTIF)</div>
+            <div style="position:relative;height:160px;"><canvas id="inspChart"></canvas></div>
+          </div>
+          <button class="gd-btn gd-btn-accent w-100 mt-3" id="inspCopilot"><i class="fa-solid fa-robot"></i> Preguntar al Copilot sobre esto</button>
+        </div>
+      </div>
+
+      <!-- Unidad seleccionada: telemetría + perfil de altitud -->
+      <div class="tw-tab" data-pane="unidad" style="display:none;">
+        <div id="twUnitEmpty" class="tw-empty">
+          <i class="fa-solid fa-hand-pointer"></i>
+          <div>Haz clic en una unidad del mapa para ver su telemetría en tiempo real y el perfil de altitud de su ruta.</div>
+        </div>
+        <div id="twUnit" style="display:none;">
+          <div class="tw-unit-head">
+            <div class="tw-unit-icon" id="twUnitIcon"><i class="fa-solid fa-truck"></i></div>
+            <div style="min-width:0;flex:1;">
+              <div class="tw-unit-title"><span id="twUnitId">—</span> <span class="tw-unit-name" id="twUnitName"></span></div>
+              <div class="tw-unit-sub" id="twUnitSub">—</div>
+            </div>
+            <span class="tw-chip" id="twUnitState">—</span>
+          </div>
+          <div class="tw-progress"><div id="twUnitBar"></div></div>
+          <div class="tw-progress-txt"><span id="twUnitKm">—</span><span id="twUnitEta">—</span></div>
+          <div class="tw-unit-alert" id="twUnitAlert" style="display:none;"></div>
+          <div class="tw-telemetry" id="twUnitTelemetry"></div>
+          <div class="gd-flow-label mt-3"><i class="fa-solid fa-mountain me-1"></i>Perfil de altitud de la ruta <span id="twProfileMax" class="tw-muted"></span></div>
+          <div style="position:relative;height:170px;"><canvas id="twProfileChart"></canvas></div>
+          <div class="tw-cargo" id="twUnitCargo"></div>
+          <div class="d-flex gap-2 mt-3">
+            <button class="gd-btn gd-btn-outline gd-btn-sm flex-fill" id="twFollow"><i class="fa-solid fa-crosshairs"></i> Seguir unidad</button>
+            <button class="gd-btn gd-btn-accent gd-btn-sm flex-fill" id="twUnitCopilot"><i class="fa-solid fa-robot"></i> Copilot</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado de nodos -->
+      <div class="tw-tab" data-pane="nodos" style="display:none;">
+        <div class="gd-inspector-body">
+          <div class="tw-muted mb-2" style="font-size:12px;">Puertos, centros de distribución y nodos fluviales: estado en vivo, unidades llegando y colas.</div>
+          <div id="twNodes"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tw-toast" id="twToast"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/torre.js') }}"></script>
+{% endblock %}

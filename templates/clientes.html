@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Clientes · RANSA{% endblock %}
+{% block page_title %}Clientes{% endblock %}
+
+{% block content %}
+<div class="gd-card mb-3">
+  <div class="gd-card-body" style="font-size:12.5px;color:var(--gd-text-muted);">
+    <i class="fa-solid fa-circle-info me-1"></i>
+    El dataset no incluye identidad de cliente (nombre/NIT), solo Sector económico y Prioridad comercial.
+    Mientras se integra el maestro de clientes real, esta vista segmenta por <strong>Sector × Prioridad</strong>,
+    el nivel más fino disponible. SLA objetivo de referencia: <strong>{{ '90' }}% OTIF</strong>.
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-12 col-xl-5">
+    <div class="gd-card h-100">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title">Embarques por sector económico</div>
+          <div class="gd-card-subtitle">Volumen y riesgo promedio</div>
+        </div>
+      </div>
+      <div class="gd-card-body"><canvas id="chartSectores" height="220"></canvas></div>
+    </div>
+  </div>
+  <div class="col-12 col-xl-7">
+    <div class="gd-card h-100">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title">OTIF por sector</div>
+          <div class="gd-card-subtitle">Línea roja: SLA objetivo (90%)</div>
+        </div>
+      </div>
+      <div class="gd-card-body"><canvas id="chartOtifSector" height="220"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="gd-card">
+  <div class="gd-card-header">
+    <div>
+      <div class="gd-card-title">Segmentos de cliente (Sector × Prioridad)</div>
+      <div class="gd-card-subtitle" id="gdClientesTotal">Cargando...</div>
+    </div>
+  </div>
+  <div class="gd-table-wrap" style="border:none;">
+    <table class="gd-table">
+      <thead>
+        <tr>
+          <th>Sector</th><th>Prioridad</th><th>Embarques</th><th>OTIF</th><th>SLA</th>
+          <th>Lead Time</th><th>Costo promedio</th><th>Fill Rate</th><th>Nivel Servicio</th><th>Riesgo</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="gdClientesBody"></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/clientes.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}RANSA Decision Intelligence · Perú{% endblock %}</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><linearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22><stop offset=%220%22 stop-color=%22%23ff7a1a%22/><stop offset=%221%22 stop-color=%22%233d63ff%22/></linearGradient></defs><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22url(%23g)%22/><path d=%22M14 74 L38 36 L52 56 L64 40 L86 74 Z%22 fill=%22white%22 opacity=%22.95%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet">
+{% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+<div class="gd-shell">
+  <aside class="gd-sidebar" id="gdSidebar">
+    <div class="gd-brand">
+      <div class="gd-brand-mark"><i class="fa-solid fa-mountain-sun"></i></div>
+      <div class="gd-brand-text">
+        <span class="gd-brand-title">RANSA</span>
+        <span class="gd-brand-sub">Decision Intelligence · Perú</span>
+      </div>
+    </div>
+
+    <nav class="gd-nav">
+      <div class="gd-nav-group">Operación en Tiempo Real</div>
+      <a href="{{ url_for('web.torre') }}" class="gd-nav-link {{ 'active' if active_page == 'torre' }}"><i class="fa-solid fa-earth-americas"></i><span>Gemelo Digital · Torre</span><span class="gd-nav-live"></span></a>
+      <a href="{{ url_for('web.dashboard') }}" class="gd-nav-link {{ 'active' if active_page == 'dashboard' }}"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+      <a href="{{ url_for('web.monitoreo') }}" class="gd-nav-link {{ 'active' if active_page == 'monitoreo' }}"><i class="fa-solid fa-satellite-dish"></i><span>Detalle de Operaciones</span></a>
+
+      <div class="gd-nav-group">Predicciones Inteligentes</div>
+      <a href="{{ url_for('web.riesgo_24h') }}" class="gd-nav-link {{ 'active' if active_page == 'riesgo_24h' }}"><i class="fa-solid fa-shield-halved"></i><span>Riesgo Predictivo 24h</span></a>
+      <a href="{{ url_for('web.forecast_48h') }}" class="gd-nav-link {{ 'active' if active_page == 'forecast_48h' }}"><i class="fa-solid fa-chess-knight"></i><span>Anticipación Estratégica 48h</span></a>
+      <a href="{{ url_for('web.simulador') }}" class="gd-nav-link {{ 'active' if active_page == 'simulador' }}"><i class="fa-solid fa-flask-vial"></i><span>Simulador What-If</span></a>
+      <a href="{{ url_for('web.contingencias') }}" class="gd-nav-link {{ 'active' if active_page == 'contingencias' }}"><i class="fa-brands fa-whatsapp"></i><span>Contingencias y Soluciones</span></a>
+      <a href="{{ url_for('web.chat') }}" class="gd-nav-link {{ 'active' if active_page == 'chat' }}"><i class="fa-solid fa-robot"></i><span>IA Reportes e Información</span></a>
+
+      <div class="gd-nav-group">Fundamentos Predictivos</div>
+      <a href="{{ url_for('web.predicciones') }}" class="gd-nav-link {{ 'active' if active_page == 'predicciones' }}"><i class="fa-solid fa-brain"></i><span>Predicciones IA</span></a>
+      <a href="{{ url_for('web.modelo_leadtime') }}" class="gd-nav-link {{ 'active' if active_page == 'modelo_leadtime' }}"><i class="fa-solid fa-square-root-variable"></i><span>Modelo Lead Time (ACP)</span></a>
+
+      <div class="gd-nav-group">Datos Operativos</div>
+      <a href="{{ url_for('web.embarques') }}" class="gd-nav-link {{ 'active' if active_page == 'embarques' }}"><i class="fa-solid fa-truck-fast"></i><span>Embarques</span></a>
+      <a href="{{ url_for('web.clientes') }}" class="gd-nav-link {{ 'active' if active_page == 'clientes' }}"><i class="fa-solid fa-building-user"></i><span>Clientes</span></a>
+      <a href="{{ url_for('web.kpis_page') }}" class="gd-nav-link {{ 'active' if active_page == 'kpis' }}"><i class="fa-solid fa-chart-line"></i><span>KPIs</span></a>
+      <a href="{{ url_for('web.reportes') }}" class="gd-nav-link {{ 'active' if active_page == 'reportes' }}"><i class="fa-solid fa-file-export"></i><span>Reportes</span></a>
+
+      <div class="gd-nav-group">Sistema</div>
+      <a href="{{ url_for('web.perfil') }}" class="gd-nav-link {{ 'active' if active_page == 'perfil' }}"><i class="fa-solid fa-user-gear"></i><span>Perfil</span></a>
+      <a href="{{ url_for('web.configuracion') }}" class="gd-nav-link {{ 'active' if active_page == 'configuracion' }}"><i class="fa-solid fa-gears"></i><span>Configuración</span></a>
+      <a href="{{ url_for('web.ayuda') }}" class="gd-nav-link {{ 'active' if active_page == 'ayuda' }}"><i class="fa-solid fa-circle-question"></i><span>Ayuda / Manual</span></a>
+    </nav>
+    <div class="gd-sidebar-foot">Prototipo de demostración · datos 100% simulados</div>
+  </aside>
+
+  <div class="gd-main">
+    <header class="gd-topbar">
+      <button class="gd-icon-btn d-lg-none" id="gdSidebarToggle" aria-label="Menú"><i class="fa-solid fa-bars"></i></button>
+      <div class="gd-topbar-title">{% block page_title %}{% endblock %}</div>
+      <div class="gd-topbar-actions">
+        <span class="gd-env-badge d-none d-md-inline-flex"><i class="fa-solid fa-database"></i> Datos simulados · 30.000 embarques · Perú</span>
+        <button class="gd-copilot-btn" id="gdCopilotBtn" title="RANSA AI Copilot"><i class="fa-solid fa-robot"></i><span class="d-none d-lg-inline">AI Copilot</span></button>
+        <button class="gd-icon-btn" id="gdThemeToggle" title="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
+        <div class="gd-user-menu dropdown">
+          <button class="gd-user-btn dropdown-toggle" data-bs-toggle="dropdown">
+            <span class="gd-avatar" id="gdUserAvatar">--</span>
+            <span class="gd-user-info d-none d-md-flex">
+              <span class="gd-user-name" id="gdUserName">Cargando...</span>
+              <span class="gd-user-role" id="gdUserRole">&nbsp;</span>
+            </span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{{ url_for('web.perfil') }}"><i class="fa-solid fa-user me-2"></i>Mi perfil</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('web.ayuda') }}"><i class="fa-solid fa-circle-question me-2"></i>Ayuda</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="#" id="gdLogoutBtn"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <main class="gd-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<!-- RANSA AI Copilot — panel deslizable global (disponible en toda vista) -->
+<div class="gd-copilot-backdrop" id="gdCopilotBackdrop"></div>
+<aside class="gd-copilot-panel" id="gdCopilotPanel" aria-hidden="true">
+  <div class="gd-copilot-head">
+    <div class="d-flex align-items-center gap-2">
+      <div class="gd-copilot-avatar"><i class="fa-solid fa-robot"></i></div>
+      <div>
+        <div style="font-weight:700;font-size:14px;">RANSA AI Copilot</div>
+        <div style="font-size:11.5px;color:var(--gd-text-muted);">Analista logístico · explica, predice y recomienda</div>
+      </div>
+    </div>
+    <button class="gd-icon-btn" id="gdCopilotClose" title="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="gd-copilot-chips" id="gdCopilotChips">
+    <span class="gd-chat-chip">¿Qué está pasando ahora en el gemelo?</span>
+    <span class="gd-chat-chip">¿Qué corredor debo monitorear hoy?</span>
+    <span class="gd-chat-chip">¿Qué pasa si cierro el Callao?</span>
+    <span class="gd-chat-chip">Callao vs Chancay</span>
+    <span class="gd-chat-chip">¿Qué embarques van a incumplir el OTIF?</span>
+    <span class="gd-chat-chip">¿Cómo va la cadena de frío?</span>
+  </div>
+  <div class="gd-copilot-messages" id="gdCopilotMessages"></div>
+  <div class="gd-copilot-input-row">
+    <input type="text" class="form-control gd-input" id="gdCopilotInput" placeholder="Pregúntale al Copilot..." autocomplete="off">
+    <button class="gd-btn gd-btn-accent" id="gdCopilotSend"><i class="fa-solid fa-paper-plane"></i></button>
+  </div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

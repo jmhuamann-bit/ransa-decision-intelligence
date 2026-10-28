@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Reportes · RANSA{% endblock %}
+{% block page_title %}Reportes{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-12 col-lg-4">
+    <div class="gd-card h-100">
+      <div class="gd-card-body text-center">
+        <div class="gd-kpi-icon gd-bg-danger mx-auto mb-2"><i class="fa-solid fa-file-pdf"></i></div>
+        <div style="font-weight:700;font-size:15px;">Reporte Ejecutivo</div>
+        <div style="font-size:12.5px;color:var(--gd-text-muted);margin:8px 0 16px;">
+          KPIs consolidados y corredores de mayor riesgo, listos para presentar a dirección.
+        </div>
+        <a href="/api/reports/ejecutivo.pdf" class="gd-btn gd-btn-primary w-100"><i class="fa-solid fa-download"></i> Descargar PDF</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-4">
+    <div class="gd-card h-100">
+      <div class="gd-card-body text-center">
+        <div class="gd-kpi-icon gd-bg-success mx-auto mb-2"><i class="fa-solid fa-file-excel"></i></div>
+        <div style="font-weight:700;font-size:15px;">Centro de Monitoreo — Excel</div>
+        <div style="font-size:12.5px;color:var(--gd-text-muted);margin:8px 0 16px;">
+          Hasta 5,000 embarques con formato de encabezado, listo para análisis en Excel.
+        </div>
+        <a href="/api/reports/monitoreo.xlsx" class="gd-btn gd-btn-accent w-100"><i class="fa-solid fa-download"></i> Descargar Excel</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-4">
+    <div class="gd-card h-100">
+      <div class="gd-card-body text-center">
+        <div class="gd-kpi-icon gd-bg-blue mx-auto mb-2"><i class="fa-solid fa-file-csv"></i></div>
+        <div style="font-weight:700;font-size:15px;">Centro de Monitoreo — CSV</div>
+        <div style="font-size:12.5px;color:var(--gd-text-muted);margin:8px 0 16px;">
+          Exportación ligera para cargar en otras herramientas o sistemas.
+        </div>
+        <a href="/api/monitoring/shipments.csv" class="gd-btn gd-btn-outline w-100"><i class="fa-solid fa-download"></i> Descargar CSV</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="gd-card mt-3">
+  <div class="gd-card-header"><div><div class="gd-card-title">Vista previa de indicadores incluidos en el reporte ejecutivo</div></div></div>
+  <div class="gd-card-body">
+    <div class="row g-3" id="gdReportKpiRow"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/reportes.js') }}"></script>
+{% endblock %}

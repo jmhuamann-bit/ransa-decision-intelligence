@@ -1,0 +1,76 @@
+/* Estilos del modulo Strategic Forecast 48h + AI Decision Assistant. */
+
+.gd-assistant-avatar {
+  width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--gd-accent), var(--gd-blue));
+  color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+
+.gd-scenario-card { height: 100%; display: flex; flex-direction: column; }
+.gd-scenario-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--gd-border); }
+.gd-scenario-letter {
+  width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; color: #fff;
+}
+.gd-scenario-title { font-weight: 700; font-size: 14.5px; color: var(--gd-text); }
+.gd-scenario-sub { font-size: 11.5px; color: var(--gd-text-muted); }
+.gd-scenario-prob { margin-left: auto; text-align: right; }
+.gd-scenario-prob .val { font-size: 24px; font-weight: 800; }
+.gd-scenario-prob .lbl { font-size: 10px; color: var(--gd-text-subtle); text-transform: uppercase; }
+
+.gd-scenario-body { padding: 16px 18px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.gd-scenario-block-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--gd-text-subtle); margin-bottom: 3px; }
+.gd-scenario-block-text { font-size: 12.5px; color: var(--gd-text); line-height: 1.5; }
+.gd-scenario-actions { font-size: 12.5px; color: var(--gd-text); padding-left: 18px; margin: 2px 0 0; }
+.gd-scenario-actions li { margin-bottom: 4px; }
+
+.gd-scenario-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px; }
+.gd-scenario-metric { font-size: 11px; color: var(--gd-text-muted); }
+.gd-scenario-metric b { display: block; font-size: 13.5px; color: var(--gd-text); font-weight: 700; margin-top: 2px; }
+
+.gd-scenario-footer { padding: 14px 18px; border-top: 1px solid var(--gd-border); display: flex; align-items: center; gap: 10px; }
+
+/* ---------- Centro de Contingencias: comparación de planes A/B/C/D ---------- */
+.gd-planes-baseline {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;
+  background: var(--gd-surface-2); border: 1px solid var(--gd-border);
+  border-radius: var(--gd-radius); padding: 14px 16px; margin-bottom: 16px;
+}
+.gd-planes-baseline .item { font-size: 11.5px; color: var(--gd-text-muted); }
+.gd-planes-baseline .item b { display: block; font-size: 15px; color: var(--gd-text); font-weight: 700; margin-top: 2px; }
+.gd-planes-baseline .item.danger b { color: var(--gd-danger); }
+
+.gd-plan-card {
+  border: 1px solid var(--gd-border); border-radius: var(--gd-radius);
+  padding: 16px; height: 100%; display: flex; flex-direction: column; background: var(--gd-surface);
+  transition: border-color var(--gd-transition), box-shadow var(--gd-transition);
+}
+.gd-plan-card.recomendado { border-color: var(--gd-accent); box-shadow: 0 0 0 3px rgba(255,122,26,.14); }
+.gd-plan-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.gd-plan-letra {
+  width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0; color: #fff; font-weight: 800; font-size: 14px;
+  display: flex; align-items: center; justify-content: center; background: var(--gd-primary);
+}
+.gd-plan-card.recomendado .gd-plan-letra { background: linear-gradient(135deg, var(--gd-accent), var(--gd-blue)); }
+.gd-plan-nombre { font-weight: 700; font-size: 13.5px; color: var(--gd-text); }
+.gd-plan-desc { font-size: 11.5px; color: var(--gd-text-muted); line-height: 1.45; margin-bottom: 10px; }
+
+.gd-plan-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 0; border-top: 1px dashed var(--gd-border); border-bottom: 1px dashed var(--gd-border); }
+.gd-plan-metric { font-size: 10.5px; color: var(--gd-text-muted); }
+.gd-plan-metric b { display: block; font-size: 13px; color: var(--gd-text); font-weight: 700; margin-top: 1px; }
+.gd-plan-metric b.up { color: var(--gd-success); }
+.gd-plan-metric b.down { color: var(--gd-danger); }
+
+.gd-plan-pros { margin: 10px 0 0; padding-left: 16px; font-size: 11.5px; color: var(--gd-text); }
+.gd-plan-pros li { margin-bottom: 3px; }
+.gd-plan-pros.contra { color: var(--gd-text-muted); }
+.gd-plan-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin-top: 10px; }
+.gd-plan-label.ok { color: var(--gd-success); }
+.gd-plan-label.no { color: var(--gd-danger); }
+.gd-plan-foot { margin-top: auto; padding-top: 12px; }
+
+.gd-planes-justificacion {
+  margin-top: 16px; padding: 14px 16px; border-radius: var(--gd-radius);
+  background: rgba(255,122,26,.08); border: 1px solid rgba(255,122,26,.25);
+  font-size: 12.5px; color: var(--gd-text); line-height: 1.55;
+}

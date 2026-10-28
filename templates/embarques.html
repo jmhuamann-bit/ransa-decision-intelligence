@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Embarques · RANSA{% endblock %}
+{% block page_title %}Embarques{% endblock %}
+
+{% block content %}
+<div class="gd-card">
+  <div class="gd-card-header">
+    <div>
+      <div class="gd-card-title">Embarques</div>
+      <div class="gd-card-subtitle" id="gdEmbTotal">Cargando...</div>
+    </div>
+    <button class="gd-btn gd-btn-accent gd-btn-sm" id="btnNuevoEmbarque"><i class="fa-solid fa-plus"></i> Nuevo Embarque</button>
+  </div>
+  <div class="gd-table-wrap" style="border:none;max-height:65vh;">
+    <table class="gd-table">
+      <thead>
+        <tr>
+          <th>ID Viaje</th><th>Fecha</th><th>Corredor</th><th>Transporte</th><th>Prioridad</th>
+          <th>Lead Time</th><th>OTIF</th><th>Costo</th><th>Riesgo</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="gdEmbBody"></tbody>
+    </table>
+  </div>
+  <div class="gd-card-body d-flex justify-content-between align-items-center">
+    <div id="gdEmbPaginaInfo" style="font-size:12.5px;color:var(--gd-text-muted);"></div>
+    <div class="d-flex gap-2">
+      <button class="gd-btn gd-btn-outline gd-btn-sm" id="btnEmbAnterior"><i class="fa-solid fa-chevron-left"></i> Anterior</button>
+      <button class="gd-btn gd-btn-outline gd-btn-sm" id="btnEmbSiguiente">Siguiente <i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalEmbarque" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEmbarqueTitulo">Nuevo Embarque</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="gdEmbFormError" class="alert alert-danger py-2 px-3" style="display:none;font-size:13px;"></div>
+        <form id="formEmbarque">
+          <input type="hidden" id="fId">
+          <div class="row g-2">
+            <div class="col-6"><label class="gd-label">Fecha *</label><input type="date" class="form-control gd-input" id="fFecha" required></div>
+            <div class="col-6"><label class="gd-label">Prioridad del cliente *</label><select class="form-select gd-input" id="fPrioridad" required></select></div>
+
+            <div class="col-6"><label class="gd-label">Departamento origen *</label><select class="form-select gd-input" id="fDeptoOrigen" required></select></div>
+            <div class="col-6"><label class="gd-label">Municipio origen *</label><select class="form-select gd-input" id="fMunOrigen" required></select></div>
+            <div class="col-6"><label class="gd-label">Departamento destino *</label><select class="form-select gd-input" id="fDeptoDestino" required></select></div>
+            <div class="col-6"><label class="gd-label">Municipio destino *</label><select class="form-select gd-input" id="fMunDestino" required></select></div>
+
+            <div class="col-4"><label class="gd-label">Transporte *</label><select class="form-select gd-input" id="fTransporte" required></select></div>
+            <div class="col-4"><label class="gd-label">Vehículo</label><select class="form-select gd-input" id="fVehiculo"></select></div>
+            <div class="col-4"><label class="gd-label">Tipo de carga *</label><select class="form-select gd-input" id="fCarga" required></select></div>
+
+            <div class="col-4"><label class="gd-label">Sector cliente *</label><select class="form-select gd-input" id="fSector" required></select></div>
+            <div class="col-4"><label class="gd-label">Peso (ton) *</label><input type="number" step="0.01" min="0" class="form-control gd-input" id="fPeso" required></div>
+            <div class="col-4"><label class="gd-label">Volumen (m³) *</label><input type="number" step="0.01" min="0" class="form-control gd-input" id="fVolumen" required></div>
+
+            <div class="col-4"><label class="gd-label">Distancia (km) *</label><input type="number" step="0.1" min="0" class="form-control gd-input" id="fDistancia" required></div>
+            <div class="col-4"><label class="gd-label">Tiempo programado (h) *</label><input type="number" step="0.1" min="0" class="form-control gd-input" id="fTiempoProg" required></div>
+            <div class="col-4"><label class="gd-label">Disponibilidad flota (%)</label><input type="number" step="1" min="0" max="100" class="form-control gd-input" id="fFlota"></div>
+
+            <div class="col-6"><label class="gd-label">Costo transporte (S/)</label><input type="number" step="1000" min="0" class="form-control gd-input" id="fCostoTransporte"></div>
+            <div class="col-6"><label class="gd-label">Costo peajes (S/)</label><input type="number" step="1000" min="0" class="form-control gd-input" id="fCostoPeajes"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="gd-btn gd-btn-outline" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="gd-btn gd-btn-primary" id="btnGuardarEmbarque"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/embarques.js') }}"></script>
+{% endblock %}

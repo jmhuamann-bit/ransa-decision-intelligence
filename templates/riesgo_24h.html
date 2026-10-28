@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Riesgo Predictivo 24h · RANSA{% endblock %}
+{% block page_title %}Predictive Intelligence — Riesgo a 24 horas{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/predictive.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="gd-card mb-3">
+  <div class="gd-card-body" style="font-size:12.5px;color:var(--gd-text-muted);">
+    <i class="fa-solid fa-circle-info me-1"></i>
+    Cada tarjeta muestra la <b>probabilidad estimada</b> <span id="gdMetodoInfo"></span> de que ocurra un tipo de evento en las próximas 24 horas en ese corredor, calculada a partir de la frecuencia histórica real (SENAMHI, INDECI, PNP, MTC/Provías) combinada con el modelo de riesgo OTIF. Las <b style="color:var(--gd-danger);">alertas altas</b> tienen probabilidad ≥ <span id="gdUmbral">80</span>%. Los eventos <b>en observación</b> se muestran para cobertura de todas las zonas de distribución RANSA en el Perú.
+  </div>
+</div>
+
+<div class="row g-3 mb-3" id="predKpiRow"></div>
+
+<!-- Category filter + auto-cycle controls -->
+<div class="pred-controls mb-3">
+  <div class="pred-filter-row" id="predFilters"></div>
+  <div class="pred-auto-row">
+    <button class="pred-auto-btn" id="predAutoBtn" title="Auto-simulación">
+      <i class="fa-solid fa-play" id="predAutoIcon"></i>
+      <span id="predAutoLabel">Auto-simulación</span>
+    </button>
+    <span class="pred-auto-status" id="predAutoStatus"></span>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Map (wider) -->
+  <div class="col-12 col-xl-6">
+    <div class="gd-card h-100">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title"><i class="fa-solid fa-map-location-dot me-2"></i>Mapa de riesgo interactivo</div>
+          <div class="gd-card-subtitle">Click en un marcador para ver detalles · las rutas se destacan al seleccionar un evento</div>
+        </div>
+        <div class="pred-map-legend" id="predLegend"></div>
+      </div>
+      <div class="gd-card-body p-2"><div id="predMap"></div></div>
+    </div>
+  </div>
+
+  <!-- Events -->
+  <div class="col-12 col-xl-6">
+    <div class="gd-card h-100">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title"><i class="fa-solid fa-bolt me-2"></i>Eventos de alta probabilidad</div>
+          <div class="gd-card-subtitle" id="predEventosSub">Próximas 24 horas</div>
+        </div>
+        <div class="pred-event-count" id="predEventCount"></div>
+      </div>
+      <div class="gd-card-body" id="predEventos" style="max-height:600px;overflow-y:auto;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Simulation timeline -->
+<div class="row g-3 mt-1">
+  <div class="col-12">
+    <div class="gd-card">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title"><i class="fa-solid fa-chart-area me-2"></i>Distribución de riesgo por categoría</div>
+          <div class="gd-card-subtitle">Resumen de todos los eventos detectados</div>
+        </div>
+      </div>
+      <div class="gd-card-body">
+        <div class="pred-dist-row" id="predDistRow"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="{{ url_for('static', filename='js/riesgo_24h.js') }}"></script>
+{% endblock %}

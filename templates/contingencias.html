@@ -1,0 +1,728 @@
+{% extends "base.html" %}
+{% block title %}Centro de Contingencias · RANSA{% endblock %}
+{% block page_title %}Centro de Contingencias Inteligente{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/contingencias.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-3" id="gdContSummaryRow"></div>
+
+<div class="gd-card mb-3">
+  <div class="gd-card-body d-flex flex-wrap gap-2 align-items-end">
+    <div>
+      <label class="gd-label">Buscar ID de viaje</label>
+      <input type="text" class="form-control gd-input" id="fContBusqueda" placeholder="RNS-2024-000123">
+    </div>
+    <div>
+      <label class="gd-label">Estado</label>
+      <select class="form-select gd-input" id="fContEstado" style="min-width:150px;">
+        <option value="">Todos</option>
+        <option value="Abierta">Abierta</option>
+        <option value="Pendiente Aprobación Directiva">Pendiente Aprobación Directiva</option>
+        <option value="En Gestion">En Gestión</option>
+        <option value="Comunicada">Comunicada</option>
+        <option value="Resuelta">Resuelta</option>
+      </select>
+    </div>
+    <div>
+      <label class="gd-label">Severidad</label>
+      <select class="form-select gd-input" id="fContSeveridad" style="min-width:140px;">
+        <option value="">Todas</option>
+        <option value="Critica">Crítica</option>
+        <option value="Alta">Alta</option>
+        <option value="Media">Media</option>
+        <option value="Baja">Baja</option>
+      </select>
+    </div>
+    <div>
+      <label class="gd-label">Origen</label>
+      <select class="form-select gd-input" id="fContTipo" style="min-width:170px;">
+        <option value="">Todos</option>
+        <option value="prediccion_ia">Predicción IA</option>
+        <option value="contingencia_manual">Contingencia manual</option>
+        <option value="plan_contingencia_ia">Plan de contingencia IA</option>
+      </select>
+    </div>
+    <button class="gd-btn gd-btn-accent ms-auto" id="btnNuevaContingencia"><i class="fa-solid fa-plus"></i> Nueva Contingencia</button>
+  </div>
+</div>
+
+<div class="gd-card">
+  <div class="gd-card-header">
+    <div><div class="gd-card-title">Alertas y Contingencias</div><div class="gd-card-subtitle" id="gdContTotal">Cargando...</div></div>
+  </div>
+  <div class="gd-table-wrap" style="border:none;max-height:55vh;">
+    <table class="gd-table">
+      <thead><tr><th>Severidad</th><th>Título</th><th>ID Viaje</th><th>Origen</th><th>Probabilidad</th><th>Estado</th><th>Creada</th><th></th></tr></thead>
+      <tbody id="gdContBody"></tbody>
+    </table>
+  </div>
+  <div class="gd-card-body d-flex justify-content-between align-items-center">
+    <div id="gdContPaginaInfo" style="font-size:12.5px;color:var(--gd-text-muted);"></div>
+    <div class="d-flex gap-2">
+      <button class="gd-btn gd-btn-outline gd-btn-sm" id="btnContAnterior"><i class="fa-solid fa-chevron-left"></i> Anterior</button>
+      <button class="gd-btn gd-btn-outline gd-btn-sm" id="btnContSiguiente">Siguiente <i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECCIÓN 3: SIMULACIÓN WhatsApp — INLINE (3 conversaciones)   -->
+<!-- ============================================================ -->
+<div class="gd-card mt-3">
+  <div class="gd-card-header">
+    <div>
+      <div class="gd-card-title"><i class="fa-brands fa-whatsapp me-2" style="color:#25D366;"></i>Simulación de Comunicación 72h</div>
+      <div class="gd-card-subtitle">Simulación de cómo el bot coordina la contingencia de extremo a extremo con las áreas de RANSA, el conductor y los clientes</div>
+    </div>
+  </div>
+  <div class="gd-card-body">
+    <div class="wa-controls-bar">
+      <button class="gd-btn gd-btn-accent gd-btn-sm" id="wa-start"><i class="fa-solid fa-hand-pointer"></i> <span>Iniciar (interactivo)</span></button>
+      <button class="gd-btn gd-btn-outline gd-btn-sm" id="wa-auto"><i class="fa-solid fa-wand-magic-sparkles"></i> <span>Auto-demo</span></button>
+      <button class="gd-btn gd-btn-outline gd-btn-sm" id="wa-pause"><i class="fa-solid fa-pause"></i> <span>Pausar</span></button>
+      <button class="gd-btn gd-btn-outline gd-btn-sm" id="wa-restart"><i class="fa-solid fa-rotate-right"></i> Reiniciar</button>
+      <div class="wa-speed">
+        <span>Velocidad</span>
+        <button class="spd active" data-spd="1">1×</button>
+        <button class="spd" data-spd="2">2×</button>
+        <button class="spd" data-spd="4">4×</button>
+      </div>
+      <div class="wa-note"><i class="fa-solid fa-circle-info"></i> Interactivo: tú decides en cada teléfono (motivo · 🍎/🍐 · confirmar/rechazar) y el sistema reacciona. «Auto-demo» reproduce el camino recomendado.</div>
+    </div>
+
+    <div class="wa-triple-layout">
+      <!-- Teléfono 1: Sala de Crisis (RANSA) -->
+      <div class="wa-phone-col main-col">
+        <div class="wa-col-label"><i class="fa-solid fa-tower-observation"></i> Sala de Crisis · RANSA</div>
+        <div class="wa-phone">
+          <div class="wa-frame">
+            <div class="wa-notch"></div>
+            <div class="wa-header">
+              <span class="wa-back">‹</span>
+              <div class="wa-avatar"><i class="fa-solid fa-robot"></i></div>
+              <div class="wa-hinfo">
+                <div class="wa-hname">Sala de Crisis · RANSA</div>
+                <div class="wa-hsub" id="wa-hsub">bot activo · 7 participantes</div>
+              </div>
+              <div class="wa-hicons"><i class="fa-solid fa-video"></i> <i class="fa-solid fa-phone"></i></div>
+            </div>
+            <div class="wa-body" id="wa-body">
+              <div class="wa-sys wa-day">HOY</div>
+              <div class="wa-sys wa-encrypt">🔒 Mensajes cifrados · Integración Torre de Control</div>
+              <div class="wa-hint" id="wa-hint">Pulsa «Iniciar simulación» para ver el flujo completo H0 → H72.</div>
+            </div>
+            <div class="wa-quick" id="wa-quick"></div>
+            <div class="wa-inputbar">
+              <span class="wa-emoji"><i class="fa-regular fa-face-smile"></i></span>
+              <div class="wa-input">Mensaje</div>
+              <span class="wa-mic"><i class="fa-solid fa-microphone"></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Teléfono 2: Conductor -->
+      <div class="wa-phone-col">
+        <div class="wa-col-label"><i class="fa-solid fa-truck"></i> Conductor</div>
+        <div class="wa-phone">
+          <div class="wa-frame">
+            <div class="wa-notch"></div>
+            <div class="wa-header">
+              <span class="wa-back">‹</span>
+              <div class="wa-avatar" style="background:#34B7F1;"><i class="fa-solid fa-robot"></i></div>
+              <div class="wa-hinfo">
+                <div class="wa-hname">RANSA Asistente</div>
+                <div class="wa-hsub">bot activo</div>
+              </div>
+            </div>
+            <div class="wa-body" id="wa-body-conductor">
+              <div class="wa-sys wa-day">HOY</div>
+              <div class="wa-sys wa-encrypt">🔒 Mensajes cifrados</div>
+              <div class="wa-hint">Flujo conductor: detección → reporte → código de seguridad</div>
+            </div>
+            <div class="wa-quick" id="wa-quick-conductor"></div>
+            <div class="wa-inputbar">
+              <span class="wa-emoji"><i class="fa-regular fa-face-smile"></i></span>
+              <div class="wa-input">Mensaje</div>
+              <span class="wa-mic"><i class="fa-solid fa-microphone"></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Teléfono 3: Cliente -->
+      <div class="wa-phone-col">
+        <div class="wa-col-label"><i class="fa-solid fa-building-user"></i> Cliente</div>
+        <div class="wa-phone">
+          <div class="wa-frame">
+            <div class="wa-notch"></div>
+            <div class="wa-header">
+              <span class="wa-back">‹</span>
+              <div class="wa-avatar" style="background:#9B5DE5;"><i class="fa-solid fa-robot"></i></div>
+              <div class="wa-hinfo">
+                <div class="wa-hname">RANSA Logística</div>
+                <div class="wa-hsub">bot activo</div>
+              </div>
+            </div>
+            <div class="wa-body" id="wa-body-cliente">
+              <div class="wa-sys wa-day">HOY</div>
+              <div class="wa-sys wa-encrypt">🔒 Mensajes cifrados</div>
+              <div class="wa-hint">Flujo cliente: notificación → nueva ETA → aceptar/rechazar ruta</div>
+            </div>
+            <div class="wa-quick" id="wa-quick-cliente"></div>
+            <div class="wa-inputbar">
+              <span class="wa-emoji"><i class="fa-regular fa-face-smile"></i></span>
+              <div class="wa-input">Mensaje</div>
+              <span class="wa-mic"><i class="fa-solid fa-microphone"></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de estado (mini-dashboard) -->
+    <div class="wa-status-panel">
+      <div class="wa-status-block wa-block-state">
+        <div id="wa-banner" class="wa-banner verde"><i class="fa-solid fa-circle-check"></i><div><b>Operación normal</b><small>Nivel 1 · En espera de disrupción</small></div></div>
+        <div class="wa-clock" id="wa-clock">72:00:00</div>
+        <div class="wa-clock-lbl">tiempo restante para resolver</div>
+        <div class="wa-phase" id="wa-phase">En espera de disrupción</div>
+        <div class="gd-wa-progress"><div class="gd-wa-bar" id="wa-bar"></div></div>
+      </div>
+
+      <div class="wa-status-block">
+        <div class="gd-card-title mb-2"><i class="fa-solid fa-map-location-dot"></i> Mapa del corredor</div>
+        <div class="wa-map" id="wa-map">
+          <div class="wa-map-line"></div>
+          <div class="wa-map-pt origin"><i class="fa-solid fa-warehouse"></i><span>Callao</span></div>
+          <div class="wa-map-pt dest"><i class="fa-solid fa-flag-checkered"></i><span>Huancayo</span></div>
+          <div class="wa-marker verde" id="wa-marker" title="Vehículo TRC-0457"><i class="fa-solid fa-truck"></i></div>
+          <div class="wa-police" id="wa-police" style="display:none;" title="Estación de Policía"><i class="fa-solid fa-shield-halved"></i></div>
+        </div>
+      </div>
+
+      <div class="wa-status-block">
+        <div class="gd-card-title mb-2"><i class="fa-solid fa-list-check"></i> Bitácora en vivo</div>
+        <div class="wa-log" id="wa-log"><div class="wa-log-empty">Sin eventos aún · pulsa Iniciar</div></div>
+      </div>
+
+      <div class="wa-status-block">
+        <div class="gd-card-title mb-2"><i class="fa-solid fa-diagram-project"></i> Flujo de automatización</div>
+        <div class="wa-flow" id="wa-flow">
+          <div class="wa-node" data-node="fuentes"><span class="wa-node-ic"><i class="fa-solid fa-satellite-dish"></i></span><div><b>Fuentes</b><small>GPS · Provías · SENAMHI</small></div></div>
+          <div class="wa-flow-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+          <div class="wa-node" data-node="rde"><span class="wa-node-ic"><i class="fa-solid fa-brain"></i></span><div><b>Motor de IA</b><small>Modelo OTIF + heurísticas</small></div></div>
+          <div class="wa-flow-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+          <div class="wa-node" data-node="wa"><span class="wa-node-ic"><i class="fa-brands fa-whatsapp"></i></span><div><b>WhatsApp API</b><small>alertas y aprobaciones</small></div></div>
+          <div class="wa-flow-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+          <div class="wa-node" data-node="comite"><span class="wa-node-ic"><i class="fa-solid fa-people-group"></i></span><div><b>Comité · Conductor · Cliente</b><small>decisión en cascada</small></div></div>
+        </div>
+      </div>
+      <div class="wa-status-block">
+        <div class="gd-card-title mb-2"><i class="fa-solid fa-gauge-high"></i> Estado en vivo</div>
+        <div class="wa-kpis" id="wa-kpis"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECCIÓN 1: ARQUITECTURA DEL SISTEMA                          -->
+<!-- ============================================================ -->
+<div class="gd-card mt-3">
+  <div class="gd-card-header">
+    <div>
+      <div class="gd-card-title"><i class="fa-solid fa-diagram-project me-2"></i>Arquitectura del Sistema de Contingencias</div>
+      <div class="gd-card-subtitle">Flujo completo: desde la detección del evento hasta la resolución en menos de 72 horas</div>
+    </div>
+  </div>
+  <div class="gd-card-body" style="overflow-x:auto;">
+    <div class="arch-diagram">
+      <!-- Capa 1: Fuentes -->
+      <div class="arch-layer">
+        <div class="arch-label">Fuentes de datos en tiempo real</div>
+        <div class="arch-sources">
+          <div class="arch-src"><i class="fa-brands fa-waze"></i><span>Waze</span></div>
+          <div class="arch-src"><i class="fa-solid fa-map-location-dot"></i><span>Google Maps</span></div>
+          <div class="arch-src"><i class="fa-solid fa-road"></i><span>Provías</span></div>
+          <div class="arch-src"><i class="fa-solid fa-cloud-sun-rain"></i><span>SENAMHI</span></div>
+          <div class="arch-src"><i class="fa-solid fa-satellite-dish"></i><span>GPS flota</span></div>
+          <div class="arch-src"><i class="fa-solid fa-newspaper"></i><span>Noticias</span></div>
+        </div>
+      </div>
+
+      <div class="arch-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+
+      <!-- Capa 2: Motor de Detección -->
+      <div class="arch-layer">
+        <div class="arch-engine detect">
+          <div class="arch-engine-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+          <div class="arch-engine-body">
+            <div class="arch-engine-title">Motor de Detección de Eventos</div>
+            <div class="arch-engine-tags">
+              <span class="arch-tag t-red">Accidentes</span>
+              <span class="arch-tag t-orange">Derrumbes</span>
+              <span class="arch-tag t-yellow">Cierres</span>
+              <span class="arch-tag t-purple">Paro comunal / bloqueo</span>
+              <span class="arch-tag t-blue">Protestas</span>
+              <span class="arch-tag t-red">Delincuencia</span>
+              <span class="arch-tag t-orange">Sismos</span>
+              <span class="arch-tag t-yellow">Incendios</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+
+      <!-- Capa 3: Motor de Decisiones -->
+      <div class="arch-layer">
+        <div class="arch-engine decide">
+          <div class="arch-engine-icon"><i class="fa-solid fa-brain"></i></div>
+          <div class="arch-engine-body">
+            <div class="arch-engine-title">Motor de Decisiones</div>
+            <div class="arch-engine-sub">Inteligencia Artificial + Reglas de negocio + Matriz de riesgo 5×5</div>
+            <div class="arch-engine-caps">
+              <span><i class="fa-solid fa-route"></i> Rutas alternas</span>
+              <span><i class="fa-solid fa-ranking-star"></i> Priorización de carga</span>
+              <span><i class="fa-solid fa-shield-halved"></i> Protocolo de seguridad</span>
+              <span><i class="fa-solid fa-clock-rotate-left"></i> Estimación de tiempos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow-triple">
+        <div class="arch-arrow-branch left"><i class="fa-solid fa-chevron-down"></i></div>
+        <div class="arch-arrow-branch center"><i class="fa-solid fa-chevron-down"></i></div>
+        <div class="arch-arrow-branch right"><i class="fa-solid fa-chevron-down"></i></div>
+      </div>
+
+      <!-- Capa 4: Tres salidas -->
+      <div class="arch-outputs">
+        <div class="arch-output conductor">
+          <div class="arch-out-icon"><i class="fa-brands fa-whatsapp"></i></div>
+          <div class="arch-out-title">Conductor</div>
+          <div class="arch-out-type">Chatbot WhatsApp</div>
+          <ul class="arch-out-list">
+            <li>Recibe alerta automática</li>
+            <li>Reporta estado</li>
+            <li>Código Manzana / Pera</li>
+            <li>Recibe instrucciones</li>
+          </ul>
+        </div>
+        <div class="arch-output ransa">
+          <div class="arch-out-icon"><i class="fa-solid fa-tower-observation"></i></div>
+          <div class="arch-out-title">RANSA</div>
+          <div class="arch-out-type">Dashboard + Chatbot</div>
+          <ul class="arch-out-list">
+            <li>Torre de Control</li>
+            <li>Aprueba planes A/B/C/D</li>
+            <li>Comité de crisis</li>
+            <li>Registro de acciones</li>
+          </ul>
+        </div>
+        <div class="arch-output cliente">
+          <div class="arch-out-icon"><i class="fa-solid fa-building-user"></i></div>
+          <div class="arch-out-title">Cliente</div>
+          <div class="arch-out-type">Chatbot WhatsApp</div>
+          <ul class="arch-out-list">
+            <li>Notificación de contingencia</li>
+            <li>Nueva ETA en tiempo real</li>
+            <li>Acepta / rechaza nueva ruta</li>
+            <li>Seguimiento automático</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Capa 5: Niveles de criticidad -->
+      <div class="arch-levels-row">
+        <div class="arch-level lv1"><span class="arch-lv-dot lv1"></span><b>Nivel 1</b> Bajo<br><small>Solo monitoreo</small></div>
+        <div class="arch-level lv2"><span class="arch-lv-dot lv2"></span><b>Nivel 2</b> Medio<br><small>Contactar conductor</small></div>
+        <div class="arch-level lv3"><span class="arch-lv-dot lv3"></span><b>Nivel 3</b> Alto<br><small>Comité operativo</small></div>
+        <div class="arch-level lv4"><span class="arch-lv-dot lv4"></span><b>Nivel 4</b> Crítico<br><small>Protocolo de seguridad</small></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECCIÓN 2: PLAN DE CONTINGENCIA (5 ÁREAS)                    -->
+<!-- ============================================================ -->
+<div class="gd-card mt-3">
+  <div class="gd-card-header">
+    <div>
+      <div class="gd-card-title"><i class="fa-solid fa-clipboard-list me-2"></i>Plan de Contingencia — 5 Áreas</div>
+      <div class="gd-card-subtitle">Protocolo estandarizado para todas las eventualidades de la Matriz de Riesgo 5×5 — aplicable en menos de 72 horas</div>
+    </div>
+  </div>
+  <div class="gd-card-body">
+
+    <!-- Pipeline visual de las 5 áreas -->
+    <div class="cp-pipeline">
+      <div class="cp-step active" data-step="1">
+        <div class="cp-step-num">1</div>
+        <div class="cp-step-icon"><i class="fa-solid fa-eye"></i></div>
+        <div class="cp-step-name">Previsión</div>
+      </div>
+      <div class="cp-connector"></div>
+      <div class="cp-step" data-step="2">
+        <div class="cp-step-num">2</div>
+        <div class="cp-step-icon"><i class="fa-solid fa-magnifying-glass-location"></i></div>
+        <div class="cp-step-name">Identificación</div>
+      </div>
+      <div class="cp-connector"></div>
+      <div class="cp-step" data-step="3">
+        <div class="cp-step-num">3</div>
+        <div class="cp-step-icon"><i class="fa-solid fa-bullhorn"></i></div>
+        <div class="cp-step-name">Comunicación</div>
+      </div>
+      <div class="cp-connector"></div>
+      <div class="cp-step" data-step="4">
+        <div class="cp-step-num">4</div>
+        <div class="cp-step-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+        <div class="cp-step-name">Confirmación</div>
+      </div>
+      <div class="cp-connector"></div>
+      <div class="cp-step" data-step="5">
+        <div class="cp-step-num">5</div>
+        <div class="cp-step-icon"><i class="fa-solid fa-person-running"></i></div>
+        <div class="cp-step-name">Plan de Acción</div>
+      </div>
+    </div>
+
+    <!-- Detalle de cada área -->
+    <div class="cp-areas">
+
+      <!-- Área 1: Previsión -->
+      <div class="cp-area" id="cpArea1">
+        <div class="cp-area-header">
+          <div class="cp-area-badge a1">1</div>
+          <div>
+            <div class="cp-area-title">Previsión</div>
+            <div class="cp-area-sub">Monitoreo permanente antes de que ocurra el evento</div>
+          </div>
+        </div>
+        <div class="cp-area-body">
+          <div class="cp-cols">
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-list-check"></i> Qué se monitorea</div>
+              <ul>
+                <li>Ubicación GPS y velocidad de la flota</li>
+                <li>Tiempo detenido en vía</li>
+                <li>Alertas Provías, SENAMHI, DHN y CORPAC</li>
+                <li>Estado de las vías y condiciones climáticas</li>
+                <li>Noticias regionales, redes sociales y Waze</li>
+                <li>Protestas, bloqueos y orden público</li>
+              </ul>
+            </div>
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-users-gear"></i> Departamento responsable</div>
+              <div class="cp-dept">
+                <div class="cp-dept-item"><span class="cp-dept-badge op">OPS</span> Operaciones — monitoreo 24/7</div>
+                <div class="cp-dept-item"><span class="cp-dept-badge tech">TECH</span> Tecnología — mantenimiento de sensores e IA</div>
+              </div>
+              <div class="cp-col-title mt-3"><i class="fa-solid fa-user-tie"></i> Responsable final</div>
+              <div class="cp-responsible">Jefe de Operaciones</div>
+            </div>
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-bolt"></i> Disparador automático</div>
+              <div class="cp-trigger">
+                <div class="cp-trigger-example">
+                  <span class="cp-trigger-dot yellow"></span>
+                  <div>"El vehículo lleva detenido 18 min en una vía donde normalmente no debería detenerse."</div>
+                </div>
+                <div class="cp-trigger-result">→ Estado cambia a <b>🟡 Posible contingencia</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Área 2: Identificación del problema -->
+      <div class="cp-area" id="cpArea2">
+        <div class="cp-area-header">
+          <div class="cp-area-badge a2">2</div>
+          <div>
+            <div class="cp-area-title">Identificación del Problema</div>
+            <div class="cp-area-sub">Clasificación del evento, nivel de criticidad y validación con el conductor</div>
+          </div>
+        </div>
+        <div class="cp-area-body">
+          <div class="cp-cols">
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-list-check"></i> Acciones</div>
+              <ul>
+                <li>Chatbot contacta al conductor automáticamente</li>
+                <li>Conductor selecciona: accidente, derrumbe, protesta, falla mecánica, etc.</li>
+                <li>Sistema cruza con fuentes externas (Provías, SENAMHI, GPS)</li>
+                <li>Se asigna nivel de criticidad (Matriz 5×5)</li>
+                <li>Protocolo de seguridad: código <b>Manzana</b> (seguro) / <b>Pera</b> (amenaza)</li>
+              </ul>
+            </div>
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-users-gear"></i> Departamento responsable</div>
+              <div class="cp-dept">
+                <div class="cp-dept-item"><span class="cp-dept-badge op">OPS</span> Operaciones — valida con el conductor</div>
+                <div class="cp-dept-item"><span class="cp-dept-badge seg">SEG</span> Seguridad — protocolo Manzana/Pera</div>
+                <div class="cp-dept-item"><span class="cp-dept-badge tech">TECH</span> IA — clasificación automática</div>
+              </div>
+              <div class="cp-col-title mt-3"><i class="fa-solid fa-user-tie"></i> Responsable final</div>
+              <div class="cp-responsible">Coordinador de Seguridad</div>
+            </div>
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-layer-group"></i> Niveles de criticidad</div>
+              <div class="cp-levels-mini">
+                <div class="cp-lv-mini lv1"><b>N1 Bajo</b> (1–4) Tráfico, lluvia → solo monitoreo</div>
+                <div class="cp-lv-mini lv2"><b>N2 Medio</b> (5–9) Accidente, cierre → contactar conductor</div>
+                <div class="cp-lv-mini lv3"><b>N3 Alto</b> (10–16) Derrumbe, protesta → comité operativo</div>
+                <div class="cp-lv-mini lv4"><b>N4 Crítico</b> (17–25) Código Pera, secuestro → protocolo de seguridad</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Área 3: Comunicación -->
+      <div class="cp-area" id="cpArea3">
+        <div class="cp-area-header">
+          <div class="cp-area-badge a3">3</div>
+          <div>
+            <div class="cp-area-title">Comunicación</div>
+            <div class="cp-area-sub">Notificación en cascada según el nivel de criticidad</div>
+          </div>
+        </div>
+        <div class="cp-area-body">
+          <div class="cp-cols">
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-list-check"></i> Cascada de comunicación</div>
+              <div class="cp-cascade">
+                <div class="cp-cascade-item"><span class="cp-cascade-time">H+0</span> IA detecta → notifica solo a directivos</div>
+                <div class="cp-cascade-item"><span class="cp-cascade-time">H+2</span> Directivos aprueban → se notifica a Operaciones, Seguridad, Servicio al Cliente</div>
+                <div class="cp-cascade-item"><span class="cp-cascade-time">H+6</span> Se notifica al conductor con instrucciones del plan</div>
+                <div class="cp-cascade-item"><span class="cp-cascade-time">H+12</span> Se informa al cliente: contingencia, nueva ETA y opciones de ruta</div>
+              </div>
+            </div>
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-users-gear"></i> Departamento responsable</div>
+              <div class="cp-dept">
+                <div class="cp-dept-item"><span class="cp-dept-badge dir">DIR</span> Dirección — aprueba comunicación</div>
+                <div class="cp-dept-item"><span class="cp-dept-badge sac">SAC</span> Servicio al Cliente — negocia con cliente</div>
+                <div class="cp-dept-item"><span class="cp-dept-badge com">COM</span> Comunicación — comunicado institucional</div>
+              </div>
+              <div class="cp-col-title mt-3"><i class="fa-solid fa-user-tie"></i> Responsable final</div>
+              <div class="cp-responsible">Director de Operaciones</div>
+            </div>
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-brands fa-whatsapp"></i> Canales</div>
+              <div class="cp-channels">
+                <div class="cp-channel"><i class="fa-brands fa-whatsapp"></i> WhatsApp Business API</div>
+                <div class="cp-channel"><i class="fa-solid fa-envelope"></i> Email corporativo</div>
+                <div class="cp-channel"><i class="fa-brands fa-microsoft"></i> Microsoft Teams</div>
+                <div class="cp-channel"><i class="fa-solid fa-tower-observation"></i> Torre de Control (dashboard)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Área 4: Confirmación -->
+      <div class="cp-area" id="cpArea4">
+        <div class="cp-area-header">
+          <div class="cp-area-badge a4">4</div>
+          <div>
+            <div class="cp-area-title">Confirmación</div>
+            <div class="cp-area-sub">Validación del plan y aprobación del cliente para cambio de ruta</div>
+          </div>
+        </div>
+        <div class="cp-area-body">
+          <div class="cp-cols">
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-list-check"></i> Acciones de confirmación</div>
+              <ul>
+                <li>El comité de crisis valida el plan recomendado por la IA (A/B/C/D)</li>
+                <li>El sistema calcula rutas alternas con costo, tiempo y CO₂</li>
+                <li>Se envía propuesta al <b>cliente</b> con motivo del cambio y costos adicionales</li>
+                <li>El cliente <b>acepta o rechaza</b> la nueva ruta (la decisión final es del cliente)</li>
+                <li>Si rechaza: se escala al comité táctico para negociar alternativas</li>
+              </ul>
+            </div>
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-users-gear"></i> Departamento responsable</div>
+              <div class="cp-dept">
+                <div class="cp-dept-item"><span class="cp-dept-badge sac">SAC</span> Servicio al Cliente — presenta opciones</div>
+                <div class="cp-dept-item"><span class="cp-dept-badge fin">FIN</span> Finanzas — valida sobrecostos</div>
+                <div class="cp-dept-item"><span class="cp-dept-badge op">OPS</span> Operaciones — confirma viabilidad</div>
+              </div>
+              <div class="cp-col-title mt-3"><i class="fa-solid fa-user-tie"></i> Responsable final</div>
+              <div class="cp-responsible">Cliente (acepta/rechaza) → Gerencia General (si escala)</div>
+            </div>
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-building-user"></i> Mensaje al cliente</div>
+              <div class="cp-client-msg">
+                <div class="cp-msg-header"><i class="fa-brands fa-whatsapp"></i> Notificación al Cliente</div>
+                <div class="cp-msg-body">
+                  <p>Su carga presenta una contingencia en carretera.</p>
+                  <p><b>Motivo:</b> Cierre temporal de vía por derrumbe</p>
+                  <p><b>ETA original:</b> 4:00 pm → <b>Nueva ETA:</b> 6:15 pm</p>
+                  <p><b>Ruta alternativa:</b> Cañete–Lunahuaná–Yauyos, PE-24 (+3h, +35% costo)</p>
+                  <p><b>RANSA recomienda</b> esta ruta para proteger su carga de Salud.</p>
+                  <div class="cp-msg-actions">
+                    <span class="cp-msg-btn accept">✅ Aceptar nueva ruta</span>
+                    <span class="cp-msg-btn reject">❌ Rechazar cambio</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Área 5: Plan de Acción -->
+      <div class="cp-area" id="cpArea5">
+        <div class="cp-area-header">
+          <div class="cp-area-badge a5">5</div>
+          <div>
+            <div class="cp-area-title">Plan de Acción</div>
+            <div class="cp-area-sub">Ejecución, seguimiento y cierre de la contingencia</div>
+          </div>
+        </div>
+        <div class="cp-area-body">
+          <div class="cp-cols">
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-list-check"></i> Ejecución del plan</div>
+              <div class="cp-action-timeline">
+                <div class="cp-act-item"><span class="cp-act-h">H+0 – H+2</span> Detección + contacto con conductor + código de seguridad</div>
+                <div class="cp-act-item"><span class="cp-act-h">H+2 – H+6</span> Activar comité → evaluar rutas → aprobar plan</div>
+                <div class="cp-act-item"><span class="cp-act-h">H+6 – H+12</span> Comunicar a áreas + conductor + cliente</div>
+                <div class="cp-act-item"><span class="cp-act-h">H+12 – H+24</span> Ejecutar desvíos, cambios de modalidad o redistribución</div>
+                <div class="cp-act-item"><span class="cp-act-h">H+24 – H+48</span> Seguimiento: medir OTIF, ajustar plan si es necesario</div>
+                <div class="cp-act-item"><span class="cp-act-h">H+48 – H+72</span> Normalización + cierre + lecciones aprendidas</div>
+              </div>
+            </div>
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-users-gear"></i> Departamento responsable</div>
+              <div class="cp-dept">
+                <div class="cp-dept-item"><span class="cp-dept-badge op">OPS</span> Operaciones — ejecuta desvíos</div>
+                <div class="cp-dept-item"><span class="cp-dept-badge seg">SEG</span> Seguridad — protocolo si es Nivel 4</div>
+                <div class="cp-dept-item"><span class="cp-dept-badge sac">SAC</span> Servicio al Cliente — seguimiento</div>
+                <div class="cp-dept-item"><span class="cp-dept-badge fin">FIN</span> Finanzas — sobrecostos</div>
+                <div class="cp-dept-item"><span class="cp-dept-badge tech">TECH</span> IA — retroalimenta modelo</div>
+              </div>
+              <div class="cp-col-title mt-3"><i class="fa-solid fa-user-tie"></i> Responsable final</div>
+              <div class="cp-responsible">Director de Operaciones (N1–N3) · Gerencia General (N4)</div>
+            </div>
+            <div class="cp-col">
+              <div class="cp-col-title"><i class="fa-solid fa-shield-halved"></i> Emergencia (Código Pera)</div>
+              <div class="cp-emergency">
+                <div class="cp-emerg-title">🔴 Protocolo Nivel 4 — Crítico</div>
+                <ul>
+                  <li>Se bloquea cualquier otra interacción con el conductor</li>
+                  <li>Se guarda GPS, velocidad, hora y ruta</li>
+                  <li>Se identifica estación de policía más cercana</li>
+                  <li>Se genera protocolo interno de seguridad</li>
+                  <li>Se notifica al equipo de seguridad y autoridades</li>
+                  <li><b>No se le pregunta nada más al conductor</b></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- .cp-areas -->
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECCIÓN 4: Cola H2 + Comité (existentes)                     -->
+<!-- ============================================================ -->
+<div class="row g-3 mt-1">
+  <div class="col-12 col-xl-7">
+    <div class="gd-card h-100">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title">Cola de priorización de carga (H2)
+            <i class="fa-solid fa-circle-info gd-help" data-bs-toggle="tooltip" title="Si no se puede despachar todo durante una crisis, esta cola dice qué carga sale primero."></i>
+          </div>
+          <div class="gd-card-subtitle" id="h2Sub">Triaje de los embarques en riesgo</div>
+        </div>
+      </div>
+      <div class="gd-card-body pb-0"><div class="gd-h2-pesos" id="h2Pesos"></div></div>
+      <div class="gd-table-wrap" style="border:none;max-height:340px;">
+        <table class="gd-table">
+          <thead><tr><th>#</th><th>ID Viaje</th><th>Sector</th><th>Corredor</th><th>Riesgo</th><th>Score</th><th>Nivel</th></tr></thead>
+          <tbody id="h2Body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-xl-5">
+    <div class="gd-card h-100">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title">Comité de crisis &amp; Plan 72h</div>
+          <div class="gd-card-subtitle">Quién decide, cuándo se activa y cómo se comunica</div>
+        </div>
+      </div>
+      <div class="gd-card-body">
+        <div class="gd-comite" id="gdComite"></div>
+        <div class="gd-flow-label mt-3" style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--gd-text-subtle);">Cronograma 0–72h</div>
+        <div class="gd-timeline72" id="gdTimeline72"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals (contingencia manual + detalle) -->
+<div class="modal fade" id="modalContingencia" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nueva Contingencia Manual</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="gdContFormError" class="alert alert-danger py-2 px-3" style="display:none;font-size:13px;"></div>
+        <div class="mb-2"><label class="gd-label">Título *</label><input class="form-control gd-input" id="cTitulo" placeholder="Ej. Bloqueo vial en la Ruta del Sol"></div>
+        <div class="mb-2"><label class="gd-label">ID de viaje (opcional)</label><input class="form-control gd-input" id="cIdViaje" placeholder="RNS-2024-000123"></div>
+        <div class="mb-2"><label class="gd-label">Severidad</label>
+          <select class="form-select gd-input" id="cSeveridad">
+            <option value="Critica">Crítica</option>
+            <option value="Alta" selected>Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
+        </div>
+        <div class="mb-2"><label class="gd-label">Descripción</label><textarea class="form-control gd-input" id="cDescripcion" rows="3"></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="gd-btn gd-btn-outline" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="gd-btn gd-btn-primary" id="btnGuardarContingencia">Crear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalDetalle" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalle de la Alerta</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="gdDetalleBody" style="font-size:13.5px;"></div>
+      <div class="modal-footer" id="gdDetalleFooter"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/contingencias.js') }}"></script>
+<script src="{{ url_for('static', filename='js/contingencias_extra.js') }}"></script>
+{% endblock %}

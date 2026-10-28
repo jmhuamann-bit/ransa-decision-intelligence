@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Modelo Lead Time (ACP) · RANSA{% endblock %}
+{% block page_title %}Modelo estadístico de Lead Time — ACP + Regresión Múltiple{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/leadtime.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div id="ltNoModel" class="gd-construction" style="display:none;">
+  <i class="fa-solid fa-square-root-variable"></i>
+  <h3>El modelo aún no se ha ajustado</h3>
+  <p style="max-width:520px;">Ejecuta <code>backend/scripts/fit_leadtime_pca.py</code> para generar los resultados del Análisis de Componentes Principales y la regresión.</p>
+</div>
+
+<div id="ltContent" style="display:none;">
+  <div class="gd-card mb-3">
+    <div class="gd-card-body" style="font-size:12.5px;color:var(--gd-text-muted);">
+      <i class="fa-solid fa-circle-info me-1"></i>
+      El tiempo de entrega no depende de una sola variable. Este modelo resume <b id="ltNvars">76</b> variables numéricas en <b>5 factores</b> mediante <b>Análisis de Componentes Principales (ACP)</b> y los usa para estimar el <b>Lead Time real en días</b> con una regresión lineal múltiple. Es la <b>misma metodología del prototipo anterior</b> aplicada a la red peruana —con validación VIF, partición train/test y RMSE/MAE/MAPE— y con una mejora: los factores se <b>nombran solos</b> leyendo sus cargas factoriales, sin listas fijas.
+    </div>
+  </div>
+
+  <!-- Ecuación -->
+  <div class="gd-card mb-3 gd-eq-card">
+    <div class="gd-card-header">
+      <div>
+        <div class="gd-card-title">Ecuación de regresión obtenida</div>
+        <div class="gd-card-subtitle">Los factores son puntuaciones estandarizadas: 0 = operación promedio, +1 = una desviación estándar por encima</div>
+      </div>
+    </div>
+    <div class="gd-card-body"><div class="gd-eq" id="ltEcuacion"></div></div>
+  </div>
+
+  <div class="row g-3 mb-3" id="ltKpiRow"></div>
+
+  <div class="row g-3 mb-3">
+    <!-- Multicolinealidad -->
+    <div class="col-12 col-xl-6">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Multicolinealidad: por qué hizo falta el ACP <span id="ltVifHelp"></span></div>
+            <div class="gd-card-subtitle">VIF de las variables originales vs. VIF de los 5 factores</div>
+          </div>
+        </div>
+        <div class="gd-card-body">
+          <div class="gd-vif-summary" id="ltVifResumen"></div>
+          <div class="gd-table-wrap" style="border:none;margin-top:12px;">
+            <table class="gd-table">
+              <thead><tr><th>Variable original</th><th class="text-end">VIF</th></tr></thead>
+              <tbody id="ltVifBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Varianza / autovalores -->
+    <div class="col-12 col-xl-6">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Componentes principales retenidos</div>
+            <div class="gd-card-subtitle">Autovalor y % de varianza explicada por cada factor</div>
+          </div>
+        </div>
+        <div class="gd-card-body"><canvas id="ltChartScree" height="200"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Los 5 factores -->
+  <div class="gd-card mb-3">
+    <div class="gd-card-header">
+      <div>
+        <div class="gd-card-title">Los 5 factores y su efecto sobre el Lead Time</div>
+        <div class="gd-card-subtitle">Cada factor resume decenas de variables; se muestran sus 6 variables dominantes (carga factorial = correlación variable–factor)</div>
+      </div>
+    </div>
+    <div class="gd-card-body"><div class="row g-3" id="ltFactores"></div></div>
+  </div>
+
+  <!-- Simulador de sensibilidad -->
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-xl-5">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Explorar la ecuación</div>
+            <div class="gd-card-subtitle">Mueve cada factor y observa el Lead Time estimado</div>
+          </div>
+        </div>
+        <div class="gd-card-body" id="ltSliders"></div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-7">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Lead Time estimado</div>
+            <div class="gd-card-subtitle">Aporte de cada factor en días, sobre el intercepto</div>
+          </div>
+        </div>
+        <div class="gd-card-body">
+          <div class="gd-eq-result" id="ltResultado"></div>
+          <canvas id="ltChartAportes" height="150"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metodología y limitaciones -->
+  <div class="gd-card">
+    <div class="gd-card-header">
+      <div>
+        <div class="gd-card-title">Metodología y limitaciones</div>
+        <div class="gd-card-subtitle">Qué se hizo, y qué hay que tener en cuenta al leer estos resultados</div>
+      </div>
+    </div>
+    <div class="gd-card-body" id="ltNotas"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/modelo_leadtime.js') }}"></script>
+{% endblock %}

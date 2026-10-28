@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Predicciones IA · RANSA{% endblock %}
+{% block page_title %}Predicciones IA{% endblock %}
+
+{% block content %}
+<div id="gdNoModel" class="gd-construction" style="display:none;">
+  <i class="fa-solid fa-brain"></i>
+  <h3>Aún no se ha entrenado ningún modelo</h3>
+  <p style="max-width:480px;">Entrena Regresión Logística y Gradient Boosting sobre los 30,000 embarques simulados; la plataforma activa automáticamente el de mayor AUC.</p>
+  <button class="gd-btn gd-btn-accent mt-2" id="btnEntrenarVacio"><i class="fa-solid fa-play"></i> Entrenar modelo ahora</button>
+</div>
+
+<div id="gdModelContent" style="display:none;">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+      <div style="font-size:13px;color:var(--gd-text-muted);">
+        Modelo activo: <strong id="gdAlgoLabel">—</strong> ·
+        entrenado el <span id="gdFechaEntrenamiento">—</span> ·
+        versión <span class="gd-mono" id="gdVersion">—</span>
+      </div>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      <select class="gd-input gd-select" id="selAlgoritmo" style="min-width:230px;">
+        <option value="todos">Entrenar todos y activar el mejor</option>
+        <option value="gradient_boosting">Solo Gradient Boosting</option>
+        <option value="logistic_regression">Solo Regresión Logística</option>
+      </select>
+      <button class="gd-btn gd-btn-accent" id="btnReentrenar"><i class="fa-solid fa-rotate"></i> Reentrenar</button>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3" id="gdMetricRow"></div>
+
+  <div class="gd-card mb-3">
+    <div class="gd-card-header">
+      <div>
+        <div class="gd-card-title"><i class="fa-solid fa-scale-balanced me-2"></i>Comparativo de algoritmos</div>
+        <div class="gd-card-subtitle">Último entrenamiento de cada algoritmo, evaluado en el mismo 20% de embarques no vistos. Línea base del prototipo anterior: Regresión Logística con AUC 0.748.</div>
+      </div>
+    </div>
+    <div class="gd-table-wrap" style="border:none;">
+      <table class="gd-table">
+        <thead><tr><th>Algoritmo</th><th class="text-end">AUC</th><th class="text-end">Accuracy</th><th class="text-end">Recall</th><th class="text-end">Precision</th><th class="text-end">F1</th><th>Estado</th><th></th></tr></thead>
+        <tbody id="gdRunsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-xl-7">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Curva ROC</div>
+            <div class="gd-card-subtitle">Capacidad del modelo para distinguir embarques que incumplirán OTIF (conjunto de prueba, datos no vistos)</div>
+          </div>
+        </div>
+        <div class="gd-card-body"><canvas id="chartRoc" height="220"></canvas></div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-5">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Matriz de Confusión</div>
+            <div class="gd-card-subtitle">Aciertos y errores sobre el conjunto de prueba</div>
+          </div>
+        </div>
+        <div class="gd-card-body" id="gdConfusionMatrix"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-xl-7">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Importancia de Variables</div>
+            <div class="gd-card-subtitle" id="gdImportSub">Top 15 variables con mayor efecto en la predicción</div>
+          </div>
+        </div>
+        <div class="gd-card-body"><canvas id="chartImportancia" height="280"></canvas></div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-5">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Embarques de mayor riesgo</div>
+            <div class="gd-card-subtitle">Top 20 según probabilidad de incumplimiento</div>
+          </div>
+        </div>
+        <div class="gd-table-wrap" style="border:none;max-height:340px;">
+          <table class="gd-table">
+            <thead><tr><th>ID Viaje</th><th>Corredor</th><th>Riesgo</th><th>OTIF real</th></tr></thead>
+            <tbody id="gdTopRiesgoBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gd-card mt-3">
+    <div class="gd-card-body" style="font-size:12.5px;color:var(--gd-text-muted);">
+      <i class="fa-solid fa-circle-info me-1"></i>
+      El modelo se evalúa con un 20% de embarques que nunca vio durante el entrenamiento (conjunto de prueba),
+      para reportar métricas honestas. Las variables usadas son únicamente las conocibles antes o al momento del
+      despacho (ruta, altitud, transporte, clima, vía, seguridad, orden social, economía) — se excluyen deliberadamente el
+      tiempo real de entrega, incidentes del propio viaje y otras variables posteriores al hecho, para evitar fuga
+      de datos. Cuando la probabilidad supera el {{ '80' }}% se genera automáticamente una Alerta Crítica.
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/predicciones.js') }}"></script>
+{% endblock %}
