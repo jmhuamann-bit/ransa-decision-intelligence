@@ -7,6 +7,9 @@ nevadas) en menos de 72 horas, sobre una red trazada en las **vías reales** del
 > **Prototipo independiente de demostración con fines académicos.** Toda la información operativa es
 > **100 % simulada**; no es un sistema oficial ni representa datos reales de RANSA.
 
+**🔗 Demo en vivo:** https://ransa-decision-intelligence.onrender.com — entra con un perfil de demostración
+(un clic). En el plan gratuito de Render el servicio se duerme sin visitas: la primera carga tarda ~50 s.
+
 **Stack:** Python 3.11 · Flask · SQLAlchemy · scikit-learn (Gradient Boosting + Regresión Logística) ·
 Leaflet · Chart.js · Bootstrap 5 · SQLite (PostgreSQL en producción opcional) · Render.
 
