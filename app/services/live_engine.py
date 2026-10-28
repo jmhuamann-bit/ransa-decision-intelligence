@@ -24,6 +24,7 @@ atributos auténticos del dataset y su riesgo calculado por el modelo de IA).
 """
 import bisect
 import math
+import os
 import random
 import threading
 import time
@@ -329,6 +330,11 @@ class LiveOperationsEngine:
         self._lock = threading.RLock()
         self._rnd = random.Random()
         self._thread: Optional[threading.Thread] = None
+        self._start_lock = threading.Lock()
+        self._app = None
+        self._pid: Optional[int] = None
+        self._gen = 0              # generación del bucle: un bucle reemplazado termina solo
+        self._last_beat = 0.0      # latido (time.monotonic) del último ciclo
         self._pools: dict = {}
         self._corridor_weights: dict = {}
         self._reset_state()
@@ -352,15 +358,46 @@ class LiveOperationsEngine:
                        "decisiones": 0, "otif_salvados": 0}
 
     # ------------------------------------------------------------------ arranque
+    def attach(self, app) -> None:
+        """Asocia la app; el bucle arranca con la primera petición del proceso que la atiende."""
+        self._app = app
+
+    def _running_here(self) -> bool:
+        """El bucle corre en ESTE proceso y late (un hilo vivo pero sin ciclos en 15 s está atascado)."""
+        t = self._thread
+        return (t is not None and t.is_alive() and self._pid == os.getpid()
+                and time.monotonic() - self._last_beat < 15)
+
+    def ensure_running(self) -> None:
+        """Vigía barato (se llama en cada petición). Gunicorn puede crear el proceso que atiende con un
+        fork, y los hilos NO sobreviven al fork: si el bucle no corre en ESTE proceso, se relanza sin
+        perder la operación. Así las unidades siempre avanzan, en local y en Render."""
+        if not self._running_here() and self._app is not None:
+            self.start(self._app)
+
     def start(self, app) -> None:
-        with self._lock:
-            if self._thread and self._thread.is_alive():
+        with self._start_lock:
+            if self._running_here():
                 return
-            self._load_pools(app)
-            self._spawn_initial_fleet()
-            self._push_feed("operacion", "Baja", "Gemelo digital iniciado: flota RANSA sincronizada con la red vial del Perú.", None)
-            self._thread = threading.Thread(target=self._run, args=(app,), daemon=True, name="ransa-digital-twin")
+            self._app = app
+            if not self._vehicles:
+                with self._lock:
+                    if not self._vehicles:
+                        self._load_pools(app)
+                        self._spawn_initial_fleet()
+                        self._push_feed("operacion", "Baja", "Gemelo digital iniciado: flota RANSA sincronizada con la red vial del Perú.", None)
+            self._gen += 1
+            self._pid = os.getpid()
+            self._last_beat = time.monotonic()
+            self._thread = threading.Thread(target=self._run, args=(app, self._gen), daemon=True,
+                                            name=f"ransa-digital-twin-{self._gen}")
             self._thread.start()
+
+    def _after_fork_in_child(self) -> None:
+        # en el hijo no existe el hilo del padre y los candados pudieron quedar tomados: se reinician
+        self._lock = threading.RLock()
+        self._start_lock = threading.Lock()
+        self._thread = None
 
     def _load_pools(self, app) -> None:
         from sqlalchemy import func
@@ -489,9 +526,11 @@ class LiveOperationsEngine:
         return v
 
     # ------------------------------------------------------------------ bucle
-    def _run(self, app) -> None:
-        while True:
+    def _run(self, app, gen: int) -> None:
+        while gen == self._gen:
             time.sleep(TICK_SECONDS)
+            if gen != self._gen:  # el vigía lanzó un bucle nuevo: este termina
+                return
             try:
                 self._tick_once()
             except Exception:
@@ -499,6 +538,7 @@ class LiveOperationsEngine:
 
     def _tick_once(self) -> None:
         with self._lock:
+            self._last_beat = time.monotonic()
             self._tick += 1
             if self.paused:
                 return
@@ -1452,6 +1492,10 @@ _engine = LiveOperationsEngine()
 
 def get_engine() -> LiveOperationsEngine:
     return _engine
+
+
+if hasattr(os, "register_at_fork"):  # Unix (Render); en Windows no hay fork
+    os.register_at_fork(after_in_child=_engine._after_fork_in_child)
 
 
 def start_engine(app) -> None:

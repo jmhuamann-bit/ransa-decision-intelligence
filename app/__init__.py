@@ -36,10 +36,17 @@ def create_app(config_name: str = None, start_live_engine: bool = True) -> Flask
 
     # run.py arranca con use_reloader=False y Gunicorn con un único worker (ver render.yaml), así
     # que hay un solo gemelo digital por servidor: todos los usuarios ven la MISMA operación.
-    # Los scripts de carga/entrenamiento crean la app sin arrancar el motor.
+    # El bucle del gemelo NO se lanza al importar: arranca con la primera petición del proceso que
+    # realmente atiende (un hilo creado antes de un fork de Gunicorn no existiría en el worker) y un
+    # vigía lo relanza si dejara de correr. Los scripts de carga/entrenamiento no lo arrancan.
     if start_live_engine:
-        from app.services.live_engine import start_engine
-        start_engine(app)
+        from app.services.live_engine import get_engine
+        engine = get_engine()
+        engine.attach(app)
+
+        @app.before_request
+        def _gemelo_vivo():
+            engine.ensure_running()
 
     return app
 
