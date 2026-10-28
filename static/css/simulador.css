@@ -1,18 +1,5 @@
 /* Simulador — control segmentado + escenarios de red. Reutiliza variables --gd-*. */
 
-.gd-seg {
-  display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 16px;
-  background: var(--gd-surface-2); border: 1px solid var(--gd-border); border-radius: 999px;
-}
-.gd-seg-btn {
-  display: inline-flex; align-items: center; gap: 7px;
-  border: none; background: transparent; cursor: pointer;
-  font-size: 12.5px; font-weight: 600; color: var(--gd-text-muted);
-  padding: 8px 16px; border-radius: 999px; transition: all var(--gd-transition);
-}
-.gd-seg-btn:hover { color: var(--gd-text); }
-.gd-seg-btn.active { background: var(--gd-primary); color: #fff; }
-
 .gd-esc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .gd-esc-item {
   display: flex; align-items: center; gap: 8px; cursor: pointer;

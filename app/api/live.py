@@ -3,7 +3,7 @@ inyección de eventos, escenarios y ejecución de decisiones de la IA."""
 from flask import Blueprint, Response, jsonify, request
 from flask_login import current_user, login_required
 
-from app.services import geo_data
+from app.services import geo_data, ransa_profile
 from app.services.auth_service import register_audit
 from app.services.live_engine import get_engine, list_event_types, list_scenarios
 
@@ -19,6 +19,12 @@ def poll():
     return jsonify(get_engine().snapshot(since_id=since_id))
 
 
+@bp.get("/kpis")
+@login_required
+def kpis():
+    return jsonify(get_engine().summary())
+
+
 @bp.get("/network")
 @login_required
 def network():
@@ -26,7 +32,12 @@ def network():
     se sirve con caché de navegador para que el mapa cargue una sola vez ~600 KB."""
     if "body" not in _network_cache:
         import json
-        _network_cache["body"] = json.dumps(geo_data.get_network(), ensure_ascii=False, separators=(",", ":"))
+        net = geo_data.get_network()
+        for n in net["nodes"]:  # sedes públicas de RANSA en los nodos de la red
+            sede = ransa_profile.sede_de(n["nombre"])
+            if sede:
+                n["sede"] = sede
+        _network_cache["body"] = json.dumps(net, ensure_ascii=False, separators=(",", ":"))
     resp = Response(_network_cache["body"], mimetype="application/json")
     resp.headers["Cache-Control"] = "private, max-age=86400"
     return resp

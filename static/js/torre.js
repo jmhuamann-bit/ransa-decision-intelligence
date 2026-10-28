@@ -28,6 +28,10 @@
   let inspChart = null, profileChart = null, profileRouteId = null;
   let lastDecisionsHash = "", lastNodesHash = "";
   let tour = null;
+  let modeFilter = "";
+  const sedeByNode = {};
+  const LINEA_ICON = { "Distribución": "fa-boxes-stacked", "Comercio Exterior": "fa-ship", "Logística de Frío": "fa-snowflake",
+    "Minería y Energía": "fa-helmet-safety", "Automotriz": "fa-car-side" };
 
   const $ = (id) => document.getElementById(id);
   const esc = (t) => { const d = document.createElement("div"); d.textContent = t == null ? "" : String(t); return d.innerHTML; };
@@ -74,15 +78,17 @@
     baseLayer = BASEMAPS[name]().addTo(map);
     baseLayer.bringToBack();
     currentBase = name;
-    document.querySelectorAll("#twBasemap button").forEach((b) => b.classList.toggle("active", b.dataset.base === name));
+    const shown = name === "oscuro" ? "claro" : name;
+    document.querySelectorAll("#twBasemap button").forEach((b) => b.classList.toggle("active", b.dataset.base === shown));
   }
+  const isDark = () => document.documentElement.getAttribute("data-theme") === "dark";
 
   function initMap() {
     map = L.map("torreMap", { zoomControl: true, preferCanvas: false, minZoom: 4, zoomSnap: 0.25, zoomDelta: 0.5, worldCopyJump: false });
     map.fitBounds(PERU_BOUNDS, { padding: [6, 6] });
     const dark = document.documentElement.getAttribute("data-theme") === "dark";
     setBase(dark ? "oscuro" : "claro");
-    ["rutas", "alternas", "tramos", "eventos", "nodos", "hotspots", "flota"].forEach((k) => { L_[k] = L.layerGroup().addTo(map); });
+    ["rutas", "alternas", "tramos", "eventos", "sedes", "nodos", "hotspots", "flota"].forEach((k) => { L_[k] = L.layerGroup().addTo(map); });
     map.removeLayer(L_.hotspots);
     map.on("click", onMapClick);
     map.on("dragstart", () => { follow = false; updateFollowBtn(); });
@@ -110,16 +116,24 @@
     });
 
     L_.nodos.clearLayers();
+    L_.sedes.clearLayers();
     net.nodes.forEach((n) => {
       const cls = n.es_puerto ? "puerto" : n.es_fluvial ? "fluvial" : n.roles.includes("cd") ? "" : "aero";
       const icon = n.es_puerto ? "fa-anchor" : n.es_fluvial ? "fa-water" : n.roles.includes("cd") ? "fa-warehouse" : "fa-plane";
-      const hub = n.roles.includes("hub");
+      const label = n.roles.includes("hub") || n.sede;
+      if (n.sede) {
+        sedeByNode[n.nombre] = n.sede;
+        L.marker([n.lat, n.lon], { icon: L.divIcon({ className: "", html: '<div class="tw-sede-ring"></div>', iconSize: [44, 44], iconAnchor: [22, 22] }),
+          interactive: false, zIndexOffset: 300 }).addTo(L_.sedes);
+      }
       const m = L.marker([n.lat, n.lon], {
-        icon: L.divIcon({ className: "", html: `<div class="tw-node ${cls}" data-node="${esc(n.nombre)}"><i class="fa-solid ${icon}"></i></div>${hub ? `<div class="tw-node-label">${esc(n.nombre)}</div>` : ""}`,
+        icon: L.divIcon({ className: "", html: `<div class="tw-node ${cls}${n.sede ? " sede" : ""}" data-node="${esc(n.nombre)}"><i class="fa-solid ${icon}"></i></div>${label ? `<div class="tw-node-label">${esc(n.nombre)}</div>` : ""}`,
           iconSize: [24, 24], iconAnchor: [12, 12] }),
         zIndexOffset: 400,
       });
-      m.bindTooltip(`<b>${esc(n.nombre)}</b> · ${esc(n.departamento)}<br>${gdFormatNumber(n.altitud_msnm, 0)} m s. n. m.${n.iata ? ` · Aeropuerto ${n.iata}` : ""}`, { direction: "top", offset: [0, -12] });
+      m.bindTooltip(`<b>${esc(n.nombre)}</b> · ${esc(n.departamento)}<br>${gdFormatNumber(n.altitud_msnm, 0)} m s. n. m.${n.iata ? ` · Aeropuerto ${n.iata}` : ""}` +
+        (n.sede ? `<div class="tw-tip-sede"><i class="fa-solid fa-building"></i> <b>Sede RANSA</b> · ${esc(n.sede.titulo)}<br>${esc(n.sede.detalle)}</div>` : ""),
+        { direction: "top", offset: [0, -12] });
       m.on("click", (e) => { L.DomEvent.stopPropagation(e); if (!injectTipo) selectNodo(n.nombre); });
       m.addTo(L_.nodos);
     });
@@ -146,20 +160,27 @@
   function renderOpsKpis(k) {
     const otifCls = k.otif_proyectado_pct >= 85 ? "success" : k.otif_proyectado_pct >= 70 ? "warning" : "danger";
     const items = [
-      { icon: "fa-truck-fast", label: "Unidades activas", value: gdFormatNumber(k.operaciones_activas, 0) },
-      { icon: "fa-route", label: "En movimiento", value: gdFormatNumber(k.vehiculos_en_operacion, 0) },
-      { icon: "fa-bullseye", label: "OTIF proyectado", value: gdFormatPct(k.otif_proyectado_pct), cls: otifCls },
-      { icon: "fa-sack-dollar", label: "Carga en riesgo", value: gdFormatPENShort(k.carga_en_riesgo_pen), cls: k.carga_en_riesgo_pen > 0 ? "warning" : "" },
-      { icon: "fa-triangle-exclamation", label: "Incidentes", value: gdFormatNumber(k.incidentes_actuales, 0), cls: k.incidentes_actuales ? "danger" : "" },
-      { icon: "fa-truck-ramp-box", label: "Afectadas", value: gdFormatNumber(k.vehiculos_afectados, 0), cls: k.vehiculos_afectados ? "warning" : "" },
-      { icon: "fa-diamond-turn-right", label: "Desvíos", value: gdFormatNumber(k.desvios_activos, 0) },
-      { icon: "fa-brain", label: "Decisiones IA pendientes", value: gdFormatNumber(k.alertas_ia, 0), cls: k.alertas_ia ? "danger" : "success" },
-      { icon: "fa-coins", label: "Costo contingencia", value: gdFormatPENShort(k.costo_contingencia_pen) },
-      { icon: "fa-leaf", label: "CO₂ operación", value: `${gdFormatNumber(k.co2_t, 1)} t` },
-      { icon: "fa-flag-checkered", label: "Entregas", value: `${gdFormatNumber(k.entregas, 0)}${k.otif_real_pct != null ? ` · ${gdFormatPct(k.otif_real_pct, 0)}` : ""}` },
+      { id: "mov", icon: "fa-route", label: "En movimiento", value: `${gdFormatNumber(k.vehiculos_en_operacion, 0)}<small>/${gdFormatNumber(k.operaciones_activas, 0)}</small>` },
+      { id: "otif", icon: "fa-bullseye", label: "OTIF proyectado", value: gdFormatPct(k.otif_proyectado_pct), cls: otifCls },
+      { id: "inc", icon: "fa-triangle-exclamation", label: "Eventos activos", value: gdFormatNumber(k.incidentes_actuales, 0), cls: k.incidentes_actuales ? "danger" : "" },
+      { id: "ia", icon: "fa-brain", label: "Decisiones pendientes", value: gdFormatNumber(k.alertas_ia, 0), cls: k.alertas_ia ? "danger" : "success" },
+      { id: "carga", icon: "fa-sack-dollar", label: "Carga en riesgo", value: gdFormatPENShort(k.carga_en_riesgo_pen), cls: k.carga_en_riesgo_pen > 0 ? "warning" : "" },
+      { id: "co2", icon: "fa-leaf", label: "CO₂ viajes en curso", value: `${gdFormatNumber(k.co2_en_curso_t, 1)} t` },
     ];
-    $("torreOpsKpis").innerHTML = items.map((i) =>
-      `<div class="torre-ops-item ${i.cls || ""}"><i class="fa-solid ${i.icon}"></i><span class="torre-ops-val">${i.value}</span><span class="torre-ops-lbl">${i.label}</span></div>`).join("");
+    const box = $("torreOpsKpis");
+    if (!box.children.length) {
+      box.innerHTML = items.map((i) => `<div class="torre-ops-item" data-k="${i.id}"><i class="fa-solid ${i.icon}"></i><span class="torre-ops-val"></span><span class="torre-ops-lbl">${i.label}</span></div>`).join("");
+    }
+    items.forEach((i) => {
+      const el = box.querySelector(`[data-k="${i.id}"]`);
+      const val = el.querySelector(".torre-ops-val");
+      el.className = `torre-ops-item ${i.cls || ""}`;
+      if (val.innerHTML !== i.value) {
+        const first = !val.innerHTML;
+        val.innerHTML = i.value;
+        if (!first) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+      }
+    });
   }
 
   // ======================================================== flota
@@ -432,8 +453,13 @@
     $("inspTitulo").textContent = ficha.titulo;
     $("inspSub").textContent = ficha.subtitulo;
     $("inspIcon").innerHTML = `<i class="fa-solid ${ficha.icono || ICON_BY_TIPO_FICHA[ficha.tipo] || "fa-diagram-project"}"></i>`;
-    $("torreKpiRow").innerHTML = ficha.kpis.map((k) => `<div class="tw-kpi"><div class="l"><i class="fa-solid ${k.icon}"></i>${esc(k.label)}</div><div class="v">${gdFormatByUnit(k.value, k.unit)}</div></div>`).join("");
-    $("inspDetalle").innerHTML = (ficha.detalle || []).map((d) => `<div class="row-item">${esc(d.label)}<b>${esc(d.value)}</b></div>`).join("");
+    $("torreKpiRow").innerHTML = ficha.kpis.slice(0, 6).map((k) => `<div class="tw-kpi"><div class="l"><i class="fa-solid ${k.icon}"></i>${esc(k.label)}</div><div class="v">${gdFormatByUnit(k.value, k.unit)}</div></div>`).join("");
+    const sede = scope.tipo === "nodo" ? sedeByNode[scope.ref] : null;
+    $("inspSede").style.display = sede ? "block" : "none";
+    if (sede) {
+      $("inspSede").innerHTML = `<div class="t"><i class="fa-solid fa-building"></i> Sede RANSA · ${esc(sede.titulo)}</div><div>${esc(sede.detalle)}</div>
+        <a href="${sede.fuente.url}" target="_blank" rel="noopener">${esc(sede.fuente.medio)}, ${esc(sede.fuente.fecha)}</a>`;
+    }
     const f = ficha.flujo, pred = f.prediccion;
     const predColor = pred.prob_pct >= 60 ? "var(--gd-danger)" : pred.prob_pct >= 35 ? "#b8860b" : "var(--gd-success)";
     $("inspFlujo").innerHTML = `
@@ -496,7 +522,9 @@
     $("twUnitIcon").innerHTML = `<i class="fa-solid ${MODE_ICON[v.tipo_transporte] || "fa-truck"}"></i>`;
     $("twUnitId").textContent = v.id;
     $("twUnitName").textContent = v.tipo_transporte === "Carretero" ? `Placa ${v.nombre}` : v.nombre;
-    $("twUnitSub").textContent = `${v.origen.nombre} → ${v.destino.nombre} · ${v.tipo_vehiculo}`;
+    $("twUnitSub").innerHTML = `${esc(v.origen.nombre)} → ${esc(v.destino.nombre)} · ${esc(v.tipo_vehiculo)}
+      <div class="tw-unit-tags"><span class="tw-chip"><i class="fa-solid ${LINEA_ICON[v.linea] || "fa-boxes-stacked"}"></i> ${esc(v.linea)}</span>
+      <span class="tw-chip ${/GNL|GNV/.test(v.combustible_tipo) ? "green" : ""}"><i class="fa-solid fa-gas-pump"></i> ${esc(v.combustible_tipo)}</span></div>`;
     $("twUnitState").textContent = ESTADO_TXT[v.estado] || v.estado;
     $("twUnitState").className = `tw-chip ${v.estado === "detenido" ? "red" : v.estado === "desviado" ? "violet" : v.otif_proyectado ? "green" : "orange"}`;
     const pct = v.km_total ? (e.kmShown / v.km_total) * 100 : 0;
@@ -533,7 +561,7 @@
     parts.push(tel("CO₂", `${gdFormatNumber(v.co2_kg / 1000, 2)} t`));
     $("twUnitTelemetry").innerHTML = parts.join("");
     $("twUnitCargo").innerHTML = `
-      <div>Carga<b>${esc(v.tipo_carga)}</b></div><div>Sector<b>${esc(v.sector_cliente)}</b></div>
+      <div>Carga<b>${esc(v.tipo_carga)}</b></div><div>Cliente (sector)<b>${esc(v.sector_cliente)}</b></div>
       <div>Prioridad<b>${esc(v.prioridad_cliente)}</b></div><div>Valor asegurado<b>${gdFormatPENShort(v.valor_carga_pen)}</b></div>
       <div>Corredor<b>${esc(v.corredor)}</b></div><div>Embarque histórico<b class="gd-mono">${esc(v.id_viaje || "—")}</b></div>`;
     renderProfile(v, e, full);
@@ -602,7 +630,7 @@
       const icon = n.es_puerto ? "fa-anchor" : n.es_fluvial ? "fa-water" : "fa-warehouse";
       return `<div class="tw-node-row" data-node="${esc(n.nombre)}">
         <i class="fa-solid ${icon}" style="color:var(--gd-accent);width:18px;text-align:center;"></i>
-        <div style="flex:1;min-width:0;"><div class="n">${esc(n.nombre)}</div><div class="s">${n.llegando} llegando · ${n.en_cola} en cola · ocupación ${n.ocupacion_pct}%</div></div>
+        <div style="flex:1;min-width:0;"><div class="n">${esc(n.nombre)}${sedeByNode[n.nombre] ? ' <span class="tw-sede-badge">Sede RANSA</span>' : ""}</div><div class="s">${n.llegando} llegando · ${n.en_cola} en cola · ocupación ${n.ocupacion_pct}%</div></div>
         <div class="occ"><div style="width:${n.ocupacion_pct}%;background:${n.ocupacion_pct > 88 ? "#e11d48" : n.ocupacion_pct > 75 ? "#eab308" : "#3d63ff"}"></div></div>
         <span class="tw-chip ${chip}">${n.estado}</span></div>`;
     }).join("");
@@ -618,7 +646,7 @@
   }
 
   // ======================================================== polling
-  function passFilter(v) { const f = $("torreTransporte").value; return !f || v.tipo_transporte === f; }
+  function passFilter(v) { return !modeFilter || v.tipo_transporte === modeFilter; }
 
   async function poll() {
     if (document.hidden && snap) return;
@@ -710,9 +738,9 @@
 
   // ======================================================== modo presentación
   const TOUR = [
-    { t: "La red RANSA en vivo: camiones, buques de cabotaje, convoyes amazónicos y vuelos de carga sobre las vías reales del Perú.",
+    { t: "La red RANSA en vivo: sus sedes públicas (Callao, Lima, Chancay, Chiclayo, Arequipa…) y 60 unidades —camiones, cabotaje, convoyes amazónicos y vuelos— sobre las vías reales del Perú.",
       run: async () => { map.flyToBounds(PERU_BOUNDS, { duration: 1.2 }); showTab("contexto"); selectRed(); } },
-    { t: "Los Andes cambian todo: seguimos un camión por la Carretera Central y vemos su perfil de altitud rumbo a Ticlio (4.818 m).",
+    { t: "Los Andes cambian todo: seguimos un camión por la Carretera Central y vemos su perfil de altitud rumbo a Ticlio (4,818 m).",
       run: async () => {
         const cands = Object.values(veh).filter((e) => e.data.tipo_transporte === "Carretero" && (routesById[e.data.route_id]?.alt_max || 0) > 4000);
         const pick = cands.find((e) => /Huancayo|Pasco|Huánuco|Pucallpa/.test(e.data.corredor)) || cands[0];
@@ -754,6 +782,7 @@
   // ======================================================== arranque
   document.addEventListener("DOMContentLoaded", async () => {
     initMap();
+    wireControls();  // los controles responden desde el primer segundo, aunque la red siga cargando
     const [network, routesRisk] = await Promise.all([
       RansaAPI.get("/api/live/network"),
       RansaAPI.get("/api/map/routes").catch(() => ({ routes: [] })),
@@ -770,16 +799,24 @@
     requestAnimationFrame(animate);
     setInterval(poll, POLL_MS);
     setInterval(() => { if (scope.tipo === "red") selectRed(); }, 60000);
+  });
 
+  function wireControls() {
     $("torreReset").addEventListener("click", selectRed);
-    $("torreTransporte").addEventListener("change", () => { lastDecisionsHash = ""; poll(); });
+    document.querySelectorAll("#twModes button").forEach((b) => b.addEventListener("click", () => {
+      modeFilter = b.dataset.modo;
+      document.querySelectorAll("#twModes button").forEach((x) => x.classList.toggle("active", x === b));
+      lastDecisionsHash = "";
+      if (snap) upsertVehicles(snap.vehicles.filter(passFilter));
+      poll();
+    }));
     $("inspCopilot").addEventListener("click", () => window.gdOpenCopilot && window.gdOpenCopilot(copilotPrompt()));
     $("twUnitCopilot").addEventListener("click", () => window.gdOpenCopilot && window.gdOpenCopilot(copilotPrompt()));
     $("twFollow").addEventListener("click", () => { follow = !follow; updateFollowBtn(); if (follow) map.setZoom(Math.max(map.getZoom(), 8)); });
     document.querySelectorAll("#twTabs button").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab)));
-    document.querySelectorAll("#twBasemap button").forEach((b) => b.addEventListener("click", () => setBase(b.dataset.base)));
+    document.querySelectorAll("#twBasemap button").forEach((b) => b.addEventListener("click", () => setBase(b.dataset.base === "claro" && isDark() ? "oscuro" : b.dataset.base)));
     document.querySelectorAll("[data-layer]").forEach((cb) => cb.addEventListener("change", () => {
-      const groups = { rutas: [L_.rutas, L_.alternas], flota: [L_.flota], eventos: [L_.eventos, L_.tramos], nodos: [L_.nodos], hotspots: [L_.hotspots], calor: [L_.calor] };
+      const groups = { sedes: [L_.sedes], hotspots: [L_.hotspots], calor: [L_.calor] };
       (groups[cb.dataset.layer] || []).forEach((g) => { if (!g) return; if (cb.checked) g.addTo(map); else map.removeLayer(g); });
     }));
     $("twPlay").addEventListener("click", () => control({ paused: !(snap && snap.paused) }));
@@ -802,5 +839,5 @@
       if (e.detail.theme === "dark" && currentBase === "claro") setBase("oscuro");
       if (e.detail.theme === "light" && currentBase === "oscuro") setBase("claro");
     });
-  });
+  }
 })();

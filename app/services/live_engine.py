@@ -49,6 +49,8 @@ RISK_MULT = {"Bajo": 0.45, "Medio": 1.0, "Alto": 1.9, "Critico": 3.0}
 STANDBY_PEN_H = 78.0          # costo de unidad detenida (sobreestadía) por hora
 TARIFA_DESVIO_PEN_KM = 6.4
 CO2_KG_POR_KM_CAMION = 1.05
+# GNL (tractos extractivos y cisternas de líquidos RANSA) emite hasta 25 % menos que el diésel
+CO2_FACTOR_COMBUSTIBLE = {"GNL": 0.75, "GNV": 0.82, "Diésel B5 · Euro III/IV": 1.05}
 URBAN = {"Callao - Lima", "Lima - Lima", "Callao - Lurín"}
 
 ESTADO_TXT = {"detenido": "detenido", "lento": "avanza con restricción", "desviado": "en ruta alterna",
@@ -287,6 +289,8 @@ class Vehicle:
     eta_prog: datetime
     valor_carga: float
     peso_t: float
+    linea: str = "Distribución"
+    combustible_tipo: str = "Diésel B5 · Euro V"
     estilo: float = 1.0
     v_kmh: float = 0.0
     estado: str = "en_ruta"
@@ -371,7 +375,8 @@ class LiveOperationsEngine:
                         Shipment.corredor_logistico, Shipment.tipo_transporte, Shipment.tipo_vehiculo,
                         Shipment.tipo_carga, Shipment.sector_cliente, Shipment.prioridad_cliente,
                         Shipment.nivel_riesgo, Shipment.prob_riesgo_incumplimiento, Shipment.id_viaje,
-                        Shipment.valor_asegurado_pen, Shipment.peso_toneladas,
+                        Shipment.valor_asegurado_pen, Shipment.peso_toneladas, Shipment.linea_negocio,
+                        Shipment.combustible_unidad,
                     )
                     .order_by(func.random()).limit(6000).all()
                 )
@@ -391,6 +396,7 @@ class LiveOperationsEngine:
                 "sector": r.sector_cliente, "prioridad": r.prioridad_cliente, "nivel_riesgo": r.nivel_riesgo or "Medio",
                 "prob_riesgo": r.prob_riesgo_incumplimiento if r.prob_riesgo_incumplimiento is not None else 25.0,
                 "id_viaje": r.id_viaje, "valor": r.valor_asegurado_pen or 0.0, "peso": r.peso_toneladas or 0.0,
+                "linea": r.linea_negocio or "Distribución", "combustible": r.combustible_unidad or "Diésel B5 · Euro V",
             })
             key = (r.tipo_transporte, r.corredor_logistico)
             counts[key] = counts.get(key, 0) + 1
@@ -406,7 +412,8 @@ class LiveOperationsEngine:
             if r["id"].startswith(prefix) and not r["alterna_de"]:
                 out.append({"corredor": r["corredor"], "tipo_vehiculo": "Unidad", "tipo_carga": "Consumo masivo (seca)",
                             "sector": "Consumo Masivo", "prioridad": "Estándar", "nivel_riesgo": "Medio", "prob_riesgo": 25.0,
-                            "id_viaje": None, "valor": 250000.0, "peso": 20.0})
+                            "id_viaje": None, "valor": 250000.0, "peso": 20.0, "linea": "Distribución",
+                            "combustible": "Diésel B5 · Euro V"})
         return out
 
     def _spawn_initial_fleet(self) -> None:
@@ -472,7 +479,8 @@ class LiveOperationsEngine:
             nivel_riesgo=row["nivel_riesgo"], prob_riesgo=float(row["prob_riesgo"]), id_viaje=row["id_viaje"],
             corredor=row["corredor"], route_id=route["id"], base_route_id=route["id"], km=km, km_total=total,
             salida=salida, eta_prog=salida + timedelta(hours=plan_h), valor_carga=float(row["valor"] or 0),
-            peso_t=float(row["peso"] or 0), estilo=self._rnd.uniform(0.93, 1.05),
+            peso_t=float(row["peso"] or 0), linea=row.get("linea") or "Distribución",
+            combustible_tipo=row.get("combustible") or "Diésel B5 · Euro V", estilo=self._rnd.uniform(0.93, 1.05),
             combustible=self._rnd.uniform(45, 95), temp_motor=self._rnd.uniform(84, 90),
             reefer_set=reefer_set, reefer=(reefer_set + self._rnd.uniform(-0.6, 0.6)) if reefer_set is not None else None,
             horas_conduccion=self._rnd.uniform(0, 3.5) if modo == "Carretero" else 0.0,
@@ -613,7 +621,8 @@ class LiveOperationsEngine:
         v.km = min(v.km_total, v.km + d_km)
         if v.modo == "Carretero":
             v.horas_conduccion += dt_h
-            v.co2_kg += d_km * CO2_KG_POR_KM_CAMION * (1.25 if geo_data.slope_at_km(route, v.km) > 20 else 1.0)
+            v.co2_kg += d_km * CO2_KG_POR_KM_CAMION * CO2_FACTOR_COMBUSTIBLE.get(v.combustible_tipo, 1.0) * (
+                1.25 if geo_data.slope_at_km(route, v.km) > 20 else 1.0)
         elif v.modo == "Marítimo":
             v.co2_kg += d_km * 18.0
         elif v.modo == "Fluvial":
@@ -1310,6 +1319,19 @@ class LiveOperationsEngine:
                 "last_id": self._feed[-1].id if self._feed else since_id,
             }
 
+    def summary(self) -> dict:
+        """Versión liviana del estado (KPIs + eventos activos) para el pulso del Resumen RANSA."""
+        orden = {"Critica": 0, "Alta": 1, "Media": 2, "Baja": 3}
+        with self._lock:
+            vehicles = [self._vehicle_to_dict(v) for v in self._vehicles.values()]
+            eventos = sorted(self._events.values(), key=lambda e: (orden.get(e.severidad, 9), -e.id))
+            return {
+                "sim_time": self._sim_time.isoformat(),
+                "kpis": self._compute_kpis(vehicles),
+                "eventos": [{"id": e.id, "titulo": e.titulo, "lugar": e.lugar, "severidad": e.severidad, "icon": e.icon}
+                            for e in eventos],
+            }
+
     def _vehicle_to_dict(self, v: Vehicle) -> dict:
         route = self._route_of(v)
         lat, lon, heading = geo_data.point_at_km(route, v.km)
@@ -1327,6 +1349,7 @@ class LiveOperationsEngine:
         return {
             "id": v.id, "nombre": v.nombre, "tipo_transporte": v.modo, "tipo_vehiculo": v.tipo_vehiculo,
             "tipo_carga": v.tipo_carga, "corredor": v.corredor, "id_viaje": v.id_viaje, "sector_cliente": v.sector,
+            "linea": v.linea, "combustible_tipo": v.combustible_tipo,
             "prioridad_cliente": v.prioridad, "nivel_riesgo": v.nivel_riesgo, "prob_riesgo": round(v.prob_riesgo, 1),
             "estado": v.estado, "route_id": route["id"], "km": round(v.km, 2), "km_total": round(v.km_total, 1),
             "t": round(v.km / v.km_total, 4) if v.km_total else 0, "v_kmh": v.v_kmh,
@@ -1417,6 +1440,7 @@ class LiveOperationsEngine:
             "entregas": entregas,
             "otif_real_pct": round(self._stats["entregas_a_tiempo"] / entregas * 100, 1) if entregas else None,
             "co2_t": round(co2_t, 1),
+            "co2_en_curso_t": round(sum(v["co2_kg"] for v in vehicles) / 1000, 1),
             "costo_contingencia_pen": round(self._stats["costo_contingencia"]),
             "decisiones": self._stats["decisiones"],
             "otif_salvados": self._stats["otif_salvados"],

@@ -1,6 +1,6 @@
 """
 Modelo Embarque (Viaje/Shipment) - generado automaticamente desde field_metadata.FIELDS
-para garantizar correspondencia exacta con las 98 columnas del dataset RANSA Perú.
+para garantizar correspondencia exacta con las 101 columnas del dataset RANSA Perú.
 NO editar a mano: regenerar con scripts/_gen_shipment_model.py
 """
 from app.extensions import db
@@ -27,6 +27,7 @@ class Shipment(db.Model):
     tipo_vehiculo = db.Column(db.String(255))
     tipo_carga = db.Column(db.String(255))
     sector_cliente = db.Column(db.String(255), index=True)
+    linea_negocio = db.Column(db.String(255), index=True)
     peso_toneladas = db.Column(db.Float)
     volumen_m3 = db.Column(db.Float)
     distancia_km = db.Column(db.Float)
@@ -36,6 +37,8 @@ class Shipment(db.Model):
     velocidad_promedio_kmh = db.Column(db.Float)
     tiempo_espera_horas = db.Column(db.Float)
     consumo_combustible_galones = db.Column(db.Float)
+    combustible_unidad = db.Column(db.String(255))
+    emisiones_co2_kg = db.Column(db.Float)
     costo_transporte_pen = db.Column(db.Float)
     costo_peajes_pen = db.Column(db.Float)
     disponibilidad_flota_pct = db.Column(db.Float)
@@ -132,6 +135,7 @@ class Shipment(db.Model):
         "tipo_vehiculo",
         "tipo_carga",
         "sector_cliente",
+        "linea_negocio",
         "peso_toneladas",
         "volumen_m3",
         "distancia_km",
@@ -141,6 +145,8 @@ class Shipment(db.Model):
         "velocidad_promedio_kmh",
         "tiempo_espera_horas",
         "consumo_combustible_galones",
+        "combustible_unidad",
+        "emisiones_co2_kg",
         "costo_transporte_pen",
         "costo_peajes_pen",
         "disponibilidad_flota_pct",

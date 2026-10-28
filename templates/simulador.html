@@ -1,15 +1,18 @@
 {% extends "base.html" %}
 {% block title %}Simulador · RANSA{% endblock %}
-{% block page_title %}Simulador de Escenarios{% endblock %}
+{% block page_title %}Simulador what-if · ¿y si…?{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/simulador.css') }}" />
 {% endblock %}
 
 {% block content %}
-<div class="gd-seg" id="simTabs">
-  <button class="gd-seg-btn active" data-tab="embarque"><i class="fa-solid fa-truck-fast"></i> Un embarque</button>
-  <button class="gd-seg-btn" data-tab="red"><i class="fa-solid fa-diagram-project"></i> Escenarios de red</button>
+<div class="gd-page-tabs mb-3">
+  <div class="gd-seg" id="simTabs">
+    <button class="gd-seg-btn active" data-tab="embarque"><i class="fa-solid fa-truck-fast"></i> Un embarque</button>
+    <button class="gd-seg-btn" data-tab="red"><i class="fa-solid fa-diagram-project"></i> Toda la red</button>
+  </div>
+  <div class="gd-page-hint">Mueve una variable y la IA recalcula riesgo, OTIF, Lead Time y costo al instante.</div>
 </div>
 
 <!-- ============ SIMULADOR DE RED ============ -->
@@ -17,7 +20,8 @@
   <div class="gd-card mb-3">
     <div class="gd-card-body" style="font-size:12.5px;color:var(--gd-text-muted);">
       <i class="fa-solid fa-circle-info me-1"></i>
-      Activa un escenario y la plataforma recalcula el impacto sobre <b>toda la red</b>: OTIF, Lead Time, costos, CO₂, riesgo y clientes afectados, comparando contra la línea base de los 30,000 embarques simulados. Los factores de impacto de cada escenario son supuestos de negocio declarados y auditables, no salidas de un modelo entrenado.
+      Elige un escenario (crisis social del sur, Niño Costero, vaciante, Chancay como hub alterno…) y compara toda la red
+      contra la línea base de los 30,000 embarques. Los factores de impacto son supuestos de negocio declarados y auditables.
     </div>
   </div>
 
@@ -72,8 +76,8 @@
 <div id="gdSimNoModel" class="gd-construction" style="display:none;">
   <i class="fa-solid fa-sliders"></i>
   <h3>El Simulador necesita un modelo entrenado</h3>
-  <p style="max-width:480px;">Ve a Predicciones IA y entrena el modelo antes de usar el simulador.</p>
-  <a href="{{ url_for('web.predicciones') }}" class="gd-btn gd-btn-accent mt-2"><i class="fa-solid fa-brain"></i> Ir a Predicciones IA</a>
+  <p style="max-width:480px;">Ve a Modelos IA y entrena el modelo antes de usar el simulador.</p>
+  <a href="{{ url_for('web.modelos') }}" class="gd-btn gd-btn-accent mt-2"><i class="fa-solid fa-brain"></i> Ir a Modelos IA</a>
 </div>
 
 <div id="gdSimContent" class="row g-3">
@@ -156,11 +160,8 @@
     <div class="gd-card mt-3">
       <div class="gd-card-body" style="font-size:12.5px;color:var(--gd-text-muted);">
         <i class="fa-solid fa-circle-info me-1"></i>
-        El riesgo y el OTIF esperado provienen del modelo de Regresión Logística de Predicciones IA.
-        El Lead Time y el Costo provienen de dos regresores (Ridge) entrenados sobre el mismo dataset
-        real, únicamente con variables conocibles antes del despacho. Las variables no editables en
-        este formulario se completan con el perfil histórico del corredor elegido (o la mediana/moda
-        global si no hay corredor seleccionado).
+        Riesgo y OTIF: modelo activo de Modelos IA (Gradient Boosting). Lead Time y costo: dos regresores Gradient Boosting
+        (R² ≈ 0,97 y 0,96) con variables conocidas antes del despacho. Lo que no editas se completa con el perfil histórico del corredor.
       </div>
     </div>
   </div>

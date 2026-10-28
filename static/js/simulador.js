@@ -46,7 +46,7 @@
       resultTile("fa-clock", "gd-bg-blue", "Nuevo Lead Time", result.leadtime_dias !== null ? `${gdFormatNumber(result.leadtime_dias)} días` : "—"),
       resultTile("fa-sack-dollar", "gd-bg-accent", "Nuevo Costo", result.costo_pen !== null ? gdFormatPEN(result.costo_pen) : "—"),
       resultTile("fa-bullseye", "gd-bg-success", "OTIF Esperado", gdFormatPct(result.otif_esperado_pct)),
-      resultTile(result.nivel_riesgo === "Bajo" ? "fa-shield-halved" : "fa-triangle-exclamation", riskTone(result.nivel_riesgo), "Nivel de Riesgo", `${result.nivel_riesgo} (${gdFormatPct(result.prob_riesgo_incumplimiento)})`),
+      resultTile(result.nivel_riesgo === "Bajo" ? "fa-shield-halved" : "fa-triangle-exclamation", riskTone(result.nivel_riesgo), "Nivel de Riesgo", `${result.nivel_riesgo === "Critico" ? "Crítico" : result.nivel_riesgo} (${gdFormatPct(result.prob_riesgo_incumplimiento)})`),
     ].join("");
 
     renderComparativo(result);

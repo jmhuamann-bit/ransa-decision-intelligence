@@ -63,70 +63,10 @@ def dashboard():
     return render_template("dashboard.html", active_page="dashboard")
 
 
-@bp.get("/monitoreo")
+@bp.get("/riesgo")
 @login_required
-def monitoreo():
-    return render_template("monitoreo.html", active_page="monitoreo")
-
-
-@bp.get("/gemelo")
-@login_required
-def gemelo():
-    return redirect(url_for("web.torre"))
-
-
-@bp.get("/live")
-@login_required
-def live():
-    return redirect(url_for("web.torre"))
-
-
-@bp.get("/mapa")
-@login_required
-def mapa():
-    return redirect(url_for("web.torre"))
-
-
-@bp.get("/predicciones")
-@login_required
-def predicciones():
-    return render_template("predicciones.html", active_page="predicciones")
-
-
-@bp.get("/riesgo-24h")
-@login_required
-def riesgo_24h():
-    return render_template("riesgo_24h.html", active_page="riesgo_24h")
-
-
-@bp.get("/forecast-48h")
-@login_required
-def forecast_48h():
-    return render_template("forecast_48h.html", active_page="forecast_48h")
-
-
-@bp.get("/modelo-leadtime")
-@login_required
-def modelo_leadtime():
-    return render_template("modelo_leadtime.html", active_page="modelo_leadtime")
-
-
-@bp.get("/contingencias")
-@login_required
-def contingencias():
-    return render_template("contingencias.html", active_page="contingencias")
-
-
-@bp.get("/embarques")
-@login_required
-def embarques():
-    return render_template("embarques.html", active_page="embarques")
-
-
-@bp.get("/clientes")
-@login_required
-def clientes():
-    return render_template("clientes.html", active_page="clientes")
+def riesgo():
+    return render_template("riesgo.html", active_page="riesgo")
 
 
 @bp.get("/simulador")
@@ -135,28 +75,16 @@ def simulador():
     return render_template("simulador.html", active_page="simulador")
 
 
-@bp.get("/chat")
+@bp.get("/modelos")
 @login_required
-def chat():
-    return render_template("chat.html", active_page="chat")
+def modelos():
+    return render_template("modelos.html", active_page="modelos")
 
 
-@bp.get("/kpis")
+@bp.get("/embarques")
 @login_required
-def kpis_page():
-    return render_template("kpis.html", active_page="kpis")
-
-
-@bp.get("/reportes")
-@login_required
-def reportes():
-    return render_template("reportes.html", active_page="reportes")
-
-
-@bp.get("/configuracion")
-@login_required
-def configuracion():
-    return render_template("configuracion.html", active_page="configuracion")
+def embarques():
+    return render_template("embarques.html", active_page="embarques")
 
 
 @bp.get("/perfil")
@@ -169,3 +97,27 @@ def perfil():
 @login_required
 def ayuda():
     return render_template("ayuda.html", active_page="ayuda")
+
+
+# Rutas de la versión anterior (más módulos): se fusionaron para simplificar la plataforma y
+# redirigen a su nuevo lugar para que ningún enlace guardado quede roto.
+_REDIRECCIONES = {
+    "/gemelo": ("web.torre", {}), "/live": ("web.torre", {}), "/mapa": ("web.torre", {}),
+    "/contingencias": ("web.torre", {}), "/chat": ("web.torre", {}),
+    "/monitoreo": ("web.embarques", {}),
+    "/riesgo-24h": ("web.riesgo", {}), "/forecast-48h": ("web.riesgo", {"vista": "48h"}),
+    "/predicciones": ("web.modelos", {}), "/modelo-leadtime": ("web.modelos", {"vista": "leadtime"}),
+    "/kpis": ("web.dashboard", {}), "/clientes": ("web.dashboard", {}), "/reportes": ("web.dashboard", {}),
+    "/configuracion": ("web.perfil", {}),
+}
+
+
+def _redireccion(destino: str, params: dict):
+    def view():
+        return redirect(url_for(destino, **params))
+    return view
+
+
+for _ruta, (_destino, _params) in _REDIRECCIONES.items():
+    bp.add_url_rule(_ruta, endpoint="old_" + _ruta.strip("/").replace("-", "_"),
+                    view_func=login_required(_redireccion(_destino, _params)))

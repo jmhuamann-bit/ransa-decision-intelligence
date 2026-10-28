@@ -2,15 +2,15 @@
   "leadtime_real_dias": {
     "label": "Lead Time (días)",
     "mae": 0.09,
-    "r2": 0.969,
+    "r2": 0.971,
     "n_train": 24000,
     "n_test": 6000,
     "algoritmo": "HistGradientBoostingRegressor"
   },
   "costo_total_pen": {
     "label": "Costo total (S/)",
-    "mae": 1930.488,
-    "r2": 0.98,
+    "mae": 2594.146,
+    "r2": 0.964,
     "n_train": 24000,
     "n_test": 6000,
     "algoritmo": "HistGradientBoostingRegressor"

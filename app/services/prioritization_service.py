@@ -27,6 +27,7 @@ SECTOR_SCORES = {
     "Tecnología": 50,
     "Retail": 45,
     "Industrial": 40,
+    "Automotriz": 35,         # vehículos nuevos: alto valor, tolera reprogramación
 }
 PRIORIDAD_SCORES = {"Crítica / Estratégico": 100, "Alta": 70, "Estándar": 40}
 

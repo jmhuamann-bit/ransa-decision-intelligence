@@ -15,6 +15,7 @@ Tipo_Transporte,Categórica,Texto,MTC / APN / DICAPI / CORPAC,"Modo: Carretero, 
 Tipo_Vehículo,Categórica,Texto,MTC – Reglamento Nacional de Vehículos / SUTRAN,"Configuración vehicular, buque, convoy fluvial o aeronave.",Sí
 Tipo_Carga,Categórica,Texto,Interno RANSA (simulado),"Naturaleza de la carga (seca, cadena de frío, concentrado, MATPEL, etc.).",Sí
 Sector_Cliente,Categórica,Texto,Interno RANSA (simulado),Sector económico del cliente.,Sí
+Línea_Negocio,Categórica,Texto,RANSA – líneas de negocio públicas (prensa 2023-2026),"Línea de negocio RANSA que atiende el embarque: Distribución, Comercio Exterior, Logística de Frío, Minería y Energía o Automotriz.",Sí
 Peso_Toneladas,Numérica continua,Toneladas,MTC – pesos y medidas vehiculares,Peso bruto de la carga transportada.,Sí
 Volumen_m3,Numérica continua,m³,Interno RANSA (simulado),Volumen de la carga.,Sí
 Distancia_Km,Numérica continua,Kilómetros,OpenStreetMap / Provías Nacional,Distancia recorrida por la ruta real.,Sí
@@ -24,6 +25,8 @@ Tiempo_Entrega_Real_Horas,Numérica continua,Horas,"Interno RANSA (simulado, TMS
 Velocidad_Promedio_Kmh,Numérica continua,km/h,SUTRAN / GPS (simulado),Velocidad comercial promedio del viaje.,Sí
 Tiempo_Espera_Horas,Numérica continua,Horas,"Interno RANSA (simulado, TMS/GPS)","Tiempo en colas de muelle, garita o andén.",Sí
 Consumo_Combustible_Galones,Numérica continua,Galones,MINEM / OSINERGMIN (rendimientos de referencia),Combustible atribuible al envío.,Sí
+Combustible_Unidad,Categórica,Texto,"RANSA – renovación de flota a GNL (ProActivo, nov-2025) / MTC","Tecnología de la unidad: Diésel B5 Euro V o III/IV, GNL, GNV, fuelóleo marino, diésel marino o Turbo A-1.",Sí
+Emisiones_CO2_kg,Numérica continua,kg CO₂,MINAM – Huella de Carbono Perú / GHG Protocol (factores de emisión),Emisiones de CO₂ del viaje (consumo × factor de emisión del combustible).,Sí
 Costo_Transporte_PEN,Numérica continua,Soles (S/),"Interno RANSA (simulado, tarifas por modo/vehículo/región)",Costo de flete del envío.,Sí
 Costo_Peajes_PEN,Numérica continua,Soles (S/),MTC / Provías Nacional y concesionarias viales,Costo total de peajes del recorrido.,Sí
 Disponibilidad_Flota_Pct,Numérica continua,%,"Interno RANSA (simulado, KPI de flota)",Disponibilidad de la flota al despacho.,Sí

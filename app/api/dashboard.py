@@ -11,6 +11,7 @@ def _filtros_from_request() -> dict:
         "anio": request.args.get("anio", type=int),
         "departamento_origen": request.args.get("departamento_origen"),
         "tipo_transporte": request.args.get("tipo_transporte"),
+        "linea": request.args.get("linea"),
     }
 
 
@@ -29,7 +30,13 @@ def tendencia():
 @bp.get("/corredores-riesgo")
 @login_required
 def corredores_riesgo():
-    return jsonify({"corredores": dashboard_service.get_top_corredores_riesgo()})
+    return jsonify({"corredores": dashboard_service.get_top_corredores_riesgo(filtros=_filtros_from_request())})
+
+
+@bp.get("/lineas")
+@login_required
+def lineas():
+    return jsonify({"lineas": dashboard_service.get_lineas(_filtros_from_request())})
 
 
 @bp.get("/actividad-reciente")

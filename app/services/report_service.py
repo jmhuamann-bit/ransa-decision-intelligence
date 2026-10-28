@@ -85,7 +85,7 @@ def build_executive_pdf() -> bytes:
     elements.append(Spacer(1, 20))
     elements.append(Paragraph(
         "Reporte generado automáticamente por RANSA Decision Intelligence (prototipo con datos simulados). "
-        "Los niveles de riesgo provienen del modelo de Predicciones IA vigente al momento de la generación.",
+        "Los niveles de riesgo provienen del modelo de IA activo (Modelos IA) al momento de la generación.",
         body_style,
     ))
 

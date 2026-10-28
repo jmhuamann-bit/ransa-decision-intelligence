@@ -131,3 +131,45 @@ function gdKpiTile({ icon, bg, label, value, unit, sub, col }) {
       </div>
     </div>`;
 }
+
+/* Pestañas de página (?vista=…): muestra el panel [data-vista-pane] elegido, recuerda la vista en la URL y
+   avisa a mapas y gráficos (resize + gd:vista) para que recalculen su tamaño al hacerse visibles. */
+function gdPageTabs(segId, hints) {
+  const seg = document.getElementById(segId);
+  if (!seg) return;
+  const hint = seg.parentElement.querySelector(".gd-page-hint");
+  const botones = [...seg.querySelectorAll("[data-vista]")];
+  function show(vista, recordar) {
+    botones.forEach((b) => b.classList.toggle("active", b.dataset.vista === vista));
+    document.querySelectorAll("[data-vista-pane]").forEach((p) => { p.style.display = p.dataset.vistaPane === vista ? "" : "none"; });
+    if (hint) hint.textContent = (hints || {})[vista] || "";
+    if (recordar) {
+      const u = new URL(window.location.href);
+      u.searchParams.set("vista", vista);
+      history.replaceState(null, "", u);
+    }
+    setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+      window.dispatchEvent(new CustomEvent("gd:vista", { detail: vista }));
+    }, 40);
+  }
+  botones.forEach((b) => b.addEventListener("click", () => show(b.dataset.vista, true)));
+  const pedida = new URLSearchParams(window.location.search).get("vista");
+  show(botones.some((b) => b.dataset.vista === pedida) ? pedida : botones[0].dataset.vista, false);
+}
+
+/* Contador animado: lleva el número mostrado en `el` hasta `to` (formato con `fmt`). */
+function gdCountUp(el, to, fmt, ms = 900) {
+  if (!el) return;
+  const from = Number(el.dataset.v || 0);
+  const t0 = performance.now();
+  el.dataset.v = to;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = fmt(to); return; }
+  function step(t) {
+    const k = Math.min(1, (t - t0) / ms);
+    const e = 1 - Math.pow(1 - k, 3);
+    el.textContent = fmt(from + (to - from) * e);
+    if (k < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}

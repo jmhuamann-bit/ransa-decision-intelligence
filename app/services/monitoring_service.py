@@ -3,6 +3,7 @@ from app.extensions import db
 from app.models.shipment import Shipment
 
 FILTERABLE_FIELDS = {
+    "linea_negocio": Shipment.linea_negocio,
     "sector_cliente": Shipment.sector_cliente,
     "departamento_origen": Shipment.departamento_origen,
     "ciudad_origen": Shipment.ciudad_origen,
@@ -53,6 +54,10 @@ def search_shipments(filtros: dict, page: int = 1, page_size: int = 25, sort_by:
             "id_viaje": s.id_viaje,
             "fecha": s.fecha.isoformat() if s.fecha else None,
             "sector_cliente": s.sector_cliente,
+            "linea_negocio": s.linea_negocio,
+            "tipo_carga": s.tipo_carga,
+            "combustible_unidad": s.combustible_unidad,
+            "emisiones_co2_kg": s.emisiones_co2_kg,
             "departamento_origen": s.departamento_origen,
             "ciudad_origen": s.ciudad_origen,
             "departamento_destino": s.departamento_destino,

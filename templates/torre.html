@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Gemelo Digital · Torre de Control · RANSA{% endblock %}
-{% block page_title %}Gemelo Digital · Torre de Control Perú{% endblock %}
+{% block page_title %}Torre de Control · gemelo digital de RANSA Perú{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -10,12 +10,11 @@
 {% block content %}
 <div class="tw-head">
   <div class="tw-head-text">
-    Réplica viva de la red RANSA: cada unidad recorre la <b>vía real</b> (OpenStreetMap) con su velocidad según pendiente y altitud.
-    Haz clic en una <b>unidad</b>, <b>ruta</b> o <b>nodo</b>; inyecta eventos o lanza un escenario y decide con la IA.
+    <b>60 unidades RANSA</b> sobre las vías reales del Perú. Toca una unidad, ruta o sede; lanza un escenario y decide con la IA.
   </div>
   <div class="tw-head-actions">
     <span class="gd-live-pill" id="twLivePill"><span class="gd-live-dot"></span> En vivo</span>
-    <button class="gd-btn gd-btn-outline gd-btn-sm" id="twTourBtn"><i class="fa-solid fa-person-chalkboard"></i> Modo presentación</button>
+    <button class="gd-btn gd-btn-accent gd-btn-sm" id="twTourBtn"><i class="fa-solid fa-person-chalkboard"></i> Presentación guiada</button>
   </div>
 </div>
 
@@ -27,47 +26,43 @@
     <div class="gd-card tw-map-card">
       <div id="torreMap"></div>
 
-      <!-- Capa superior izquierda: capas y mapa base -->
+      <!-- Capa superior izquierda: mapa base y capas opcionales -->
       <div class="tw-overlay tw-tl">
         <div class="tw-panel collapsed" id="twLayersPanel">
-          <button class="tw-panel-toggle" id="twLayersToggle"><i class="fa-solid fa-layer-group"></i> Capas, mapa base y leyenda <i class="fa-solid fa-chevron-down ms-1"></i></button>
+          <button class="tw-panel-toggle" id="twLayersToggle"><i class="fa-solid fa-layer-group"></i> Mapa y capas <i class="fa-solid fa-chevron-down ms-1"></i></button>
           <div class="tw-panel-body">
-          <div class="tw-panel-title"><i class="fa-solid fa-layer-group"></i> Capas</div>
-          <label class="tw-check"><input type="checkbox" data-layer="rutas" checked> Red vial y rutas</label>
-          <label class="tw-check"><input type="checkbox" data-layer="flota" checked> Flota en vivo</label>
-          <label class="tw-check"><input type="checkbox" data-layer="eventos" checked> Eventos y tramos cortados</label>
-          <label class="tw-check"><input type="checkbox" data-layer="nodos" checked> Nodos (CD, puertos, aeropuertos)</label>
-          <label class="tw-check"><input type="checkbox" data-layer="hotspots"> Puntos críticos históricos</label>
-          <label class="tw-check"><input type="checkbox" data-layer="calor"> Calor de riesgo (IA)</label>
-          <div class="tw-panel-title mt-2"><i class="fa-solid fa-map"></i> Mapa base</div>
-          <div class="tw-seg" id="twBasemap">
-            <button data-base="claro" class="active">Mapa</button>
-            <button data-base="relieve">Relieve</button>
-            <button data-base="satelite">Satélite</button>
-            <button data-base="oscuro">Noche</button>
+            <div class="tw-seg" id="twBasemap">
+              <button data-base="claro" class="active">Mapa</button>
+              <button data-base="relieve">Relieve</button>
+              <button data-base="satelite">Satélite</button>
+            </div>
+            <label class="tw-check mt-2"><input type="checkbox" data-layer="sedes" checked> Sedes RANSA (fuentes públicas)</label>
+            <label class="tw-check"><input type="checkbox" data-layer="hotspots"> Puntos críticos históricos</label>
+            <label class="tw-check"><input type="checkbox" data-layer="calor"> Calor de riesgo (IA)</label>
+            <div class="tw-legend mt-2">
+              <span><i style="background:#16a34a"></i>Vía de riesgo bajo</span><span><i style="background:#eab308"></i>Medio</span>
+              <span><i style="background:#e11d48"></i>Alto</span><span><i style="background:#8b5cf6;border-radius:2px;"></i>Ruta alterna</span>
+            </div>
           </div>
-          <div class="tw-panel-title mt-2"><i class="fa-solid fa-filter"></i> Modo</div>
-          <select class="gd-input gd-select tw-select" id="torreTransporte">
-            <option value="">Todos los modos</option>
-            <option value="Carretero">Carretero</option>
-            <option value="Marítimo">Marítimo (cabotaje)</option>
-            <option value="Fluvial">Fluvial (Amazonía)</option>
-            <option value="Aéreo">Aéreo</option>
-          </select>
-          <div class="tw-panel-title mt-2"><i class="fa-solid fa-circle-half-stroke"></i> Estado de unidades</div>
-          <div class="tw-legend">
+        </div>
+      </div>
+
+      <!-- Bajo los botones de escenarios: leyenda viva + filtro por modo -->
+      <div class="tw-overlay tw-tr2">
+        <div class="tw-legendbar">
+          <div class="tw-modes" id="twModes">
+            <button data-modo="" class="active">Todos</button>
+            <button data-modo="Carretero" title="Carretero"><i class="fa-solid fa-truck"></i></button>
+            <button data-modo="Marítimo" title="Marítimo (cabotaje)"><i class="fa-solid fa-ship"></i></button>
+            <button data-modo="Fluvial" title="Fluvial (Amazonía)"><i class="fa-solid fa-ferry"></i></button>
+            <button data-modo="Aéreo" title="Aéreo"><i class="fa-solid fa-plane"></i></button>
+          </div>
+          <div class="tw-legend" id="twStateLegend">
             <span><i style="background:#3d63ff"></i>En ruta</span>
             <span><i style="background:#eab308"></i>Lento</span>
             <span><i style="background:#e11d48"></i>Detenido</span>
             <span><i style="background:#8b5cf6"></i>Desviado</span>
-            <span><i style="background:#94a3b8"></i>Espera / pausa</span>
-            <span><i style="background:#0ea5e9"></i>Fondeado</span>
-          </div>
-          <div class="tw-panel-title mt-2"><i class="fa-solid fa-road"></i> Riesgo histórico de la vía</div>
-          <div class="tw-legend">
-            <span><i style="background:#16a34a"></i>Bajo</span><span><i style="background:#eab308"></i>Medio</span><span><i style="background:#e11d48"></i>Alto</span>
-            <span><i style="background:#8b5cf6;border-radius:2px;"></i>Ruta alterna</span>
-          </div>
+            <span><i style="background:#94a3b8"></i>Espera</span>
           </div>
         </div>
       </div>
@@ -99,10 +94,9 @@
             <div class="tw-clock-time" id="twClock">--:--</div>
             <div class="tw-clock-date" id="twClockDate">hora Perú (simulada)</div>
           </div>
-          <div class="tw-seg tw-speed" id="twSpeed">
+          <div class="tw-seg tw-speed" id="twSpeed" title="1 s real = 1, 4 o 30 min simulados">
             <button data-speed="60">×60</button>
             <button data-speed="240" class="active">×240</button>
-            <button data-speed="600">×600</button>
             <button data-speed="1800">×1800</button>
           </div>
           <label class="tw-auto" title="La IA aplica automáticamente la mejor opción ante cada evento">
@@ -120,7 +114,7 @@
           <div class="gd-card-header">
             <div>
               <div class="gd-card-title"><i class="fa-solid fa-brain me-2"></i>Decision Intelligence en vivo</div>
-              <div class="gd-card-subtitle">Eventos activos, unidades afectadas y opciones comparadas por la IA (OTIF 40% · costo 20% · tiempo 20% · CO₂ 10% · riesgo 10%)</div>
+              <div class="gd-card-subtitle">Para cada evento, la IA compara las salidas y recomienda una (OTIF 40 % · costo 20 % · tiempo 20 % · CO₂ 10 % · riesgo 10 %)</div>
             </div>
             <span class="torre-feed-count" id="twEventsCount">0</span>
           </div>
@@ -132,7 +126,7 @@
           <div class="gd-card-header">
             <div>
               <div class="gd-card-title"><i class="fa-solid fa-tower-broadcast me-2"></i>Actividad en vivo</div>
-              <div class="gd-card-subtitle">Bitácora de la operación (hora simulada)</div>
+              <div class="gd-card-subtitle">Bitácora en hora simulada · clic para ubicar</div>
             </div>
             <span class="torre-feed-count" id="torreFeedCount">0</span>
           </div>
@@ -147,7 +141,7 @@
       <div class="tw-tabs" id="twTabs">
         <button data-tab="contexto" class="active"><i class="fa-solid fa-layer-group"></i> Contexto</button>
         <button data-tab="unidad"><i class="fa-solid fa-truck-fast"></i> Unidad</button>
-        <button data-tab="nodos"><i class="fa-solid fa-warehouse"></i> Nodos</button>
+        <button data-tab="nodos"><i class="fa-solid fa-warehouse"></i> Sedes y puertos</button>
       </div>
 
       <!-- Contexto (cross-filtering con datos históricos) -->
@@ -163,9 +157,9 @@
           <button class="gd-btn gd-btn-outline gd-btn-sm" id="torreReset" style="display:none;"><i class="fa-solid fa-arrow-rotate-left"></i> Red</button>
         </div>
         <div class="gd-inspector-body">
+          <div id="inspSede" class="tw-sede-card" style="display:none;"></div>
           <div class="tw-kpi-grid" id="torreKpiRow"></div>
-          <div id="inspDetalle" class="gd-inspector-detalle mt-2"></div>
-          <div class="gd-flow-label">Flujo de decisión</div>
+          <div class="gd-flow-label">Cómo decide la IA aquí</div>
           <div class="gd-flow" id="inspFlujo"></div>
           <div id="inspChartWrap" style="display:none;">
             <div class="gd-flow-label mt-3">Tendencia histórica (Lead Time vs OTIF)</div>
@@ -207,7 +201,7 @@
       <!-- Estado de nodos -->
       <div class="tw-tab" data-pane="nodos" style="display:none;">
         <div class="gd-inspector-body">
-          <div class="tw-muted mb-2" style="font-size:12px;">Puertos, centros de distribución y nodos fluviales: estado en vivo, unidades llegando y colas.</div>
+          <div class="tw-muted mb-2" style="font-size:12px;">Sedes RANSA, puertos y nodos fluviales: estado en vivo, unidades llegando y colas.</div>
           <div id="twNodes"></div>
         </div>
       </div>

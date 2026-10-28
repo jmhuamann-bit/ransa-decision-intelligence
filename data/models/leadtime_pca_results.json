@@ -2,9 +2,9 @@
   "dataset": {
     "archivo": "RANSA_Peru_Dataset_Simulado.csv",
     "observaciones": 30000,
-    "variables_totales": 122,
-    "variables_numericas": 80,
-    "variables_acp": 69,
+    "variables_totales": 125,
+    "variables_numericas": 81,
+    "variables_acp": 70,
     "excluidas_por_faltantes": [
       "Capacidad_Bodega_%",
       "Retraso_Vuelo_min",
@@ -19,60 +19,60 @@
     "imputadas_por_mediana": [
       {
         "variable": "Horas_Conducción",
-        "faltantes": 6737,
-        "pct": 22.46
+        "faltantes": 6675,
+        "pct": 22.25
       },
       {
         "variable": "Nivel_Combustible_%",
-        "faltantes": 6737,
-        "pct": 22.46
+        "faltantes": 6675,
+        "pct": 22.25
       }
     ]
   },
   "multicolinealidad": {
-    "vif_originales_sobre_10": 15,
-    "vif_originales_sobre_5": 27,
-    "total_variables": 69,
+    "vif_originales_sobre_10": 17,
+    "vif_originales_sobre_5": 28,
+    "total_variables": 70,
     "top_vif_originales": [
       {
-        "variable": "IPC",
-        "vif": 90.2
-      },
-      {
-        "variable": "Peso_Toneladas",
-        "vif": 83.4
-      },
-      {
-        "variable": "Costo_Transporte_PEN",
-        "vif": 77.7
-      },
-      {
-        "variable": "Año",
-        "vif": 47.9
-      },
-      {
-        "variable": "Valor_Asegurado_PEN",
-        "vif": 38.0
-      },
-      {
-        "variable": "Demanda_Unidades",
-        "vif": 33.1
-      },
-      {
-        "variable": "Demanda_Pronosticada_Unidades",
-        "vif": 33.1
+        "variable": "Emisiones_CO2_kg",
+        "vif": 5297.3
       },
       {
         "variable": "Consumo_Combustible_Galones",
-        "vif": 26.6
+        "vif": 5030.2
       },
       {
-        "variable": "Inflación_Pct",
-        "vif": 17.9
+        "variable": "Peso_Toneladas",
+        "vif": 97.3
       },
       {
-        "variable": "Distancia_Km",
-        "vif": 17.8
+        "variable": "IPC",
+        "vif": 88.8
+      },
+      {
+        "variable": "Costo_Transporte_PEN",
+        "vif": 78.6
+      },
+      {
+        "variable": "Valor_Asegurado_PEN",
+        "vif": 57.1
+      },
+      {
+        "variable": "Año",
+        "vif": 47.2
+      },
+      {
+        "variable": "Demanda_Pronosticada_Unidades",
+        "vif": 32.8
+      },
+      {
+        "variable": "Demanda_Unidades",
+        "vif": 32.8
+      },
+      {
+        "variable": "Deducible_PEN",
+        "vif": 24.9
       }
     ],
     "vif_factores": [
@@ -85,55 +85,55 @@
   },
   "acp": {
     "n_componentes": 5,
-    "varianza_acumulada_pct": 37.7743,
+    "varianza_acumulada_pct": 38.7526,
     "kaiser_real": 18,
     "componentes": [
       {
         "n": 1,
         "nombre_publicado": "Factor_Clima_Riesgo_Natural",
         "etiqueta_real": "Clima y riesgo natural (lluvias, huaicos, inundaciones)",
-        "autovalor": 8.609938,
-        "pct_varianza": 12.477755,
+        "autovalor": 9.005299,
+        "pct_varianza": 12.864284,
         "variables_dominantes": [
           {
             "variable": "Índice_Deterioro_Vial",
-            "carga": 0.8224
+            "carga": 0.7985
           },
           {
             "variable": "Índice_Bloqueos",
-            "carga": 0.7768
+            "carga": 0.7444
           },
           {
             "variable": "Índice_Derrumbes",
-            "carga": 0.7458
+            "carga": 0.6948
           },
           {
             "variable": "Índice_Deslizamientos",
-            "carga": 0.703
+            "carga": 0.6572
           },
           {
             "variable": "Precipitación_mm",
-            "carga": 0.6449
+            "carga": 0.5982
           },
           {
             "variable": "Índice_Protestas",
-            "carga": 0.6187
+            "carga": 0.5966
           },
           {
             "variable": "Altitud_Max_Ruta_msnm",
-            "carga": 0.5954
+            "carga": 0.565
           },
           {
-            "variable": "Índice_Orden_Público",
-            "carga": -0.5348
+            "variable": "Emisiones_CO2_kg",
+            "carga": -0.56
           },
           {
-            "variable": "Índice_Inundaciones",
-            "carga": 0.5225
+            "variable": "Consumo_Combustible_Galones",
+            "carga": -0.5599
           },
           {
-            "variable": "Número_Bloqueos_Carretera",
-            "carga": 0.5149
+            "variable": "Costo_Transporte_PEN",
+            "carga": -0.5434
           }
         ]
       },
@@ -141,48 +141,48 @@
         "n": 2,
         "nombre_publicado": "Factor_Operacion_Costos",
         "etiqueta_real": "Magnitud y costo de la operación",
-        "autovalor": 5.843592,
-        "pct_varianza": 8.468692,
+        "autovalor": 6.468158,
+        "pct_varianza": 9.239918,
         "variables_dominantes": [
           {
             "variable": "Consumo_Combustible_Galones",
-            "carga": 0.7255
+            "carga": 0.7102
+          },
+          {
+            "variable": "Emisiones_CO2_kg",
+            "carga": 0.7089
           },
           {
             "variable": "Costo_Transporte_PEN",
-            "carga": 0.6953
+            "carga": 0.6789
           },
           {
             "variable": "Peso_Toneladas",
-            "carga": 0.6863
+            "carga": 0.675
           },
           {
             "variable": "Volumen_m3",
-            "carga": 0.6853
+            "carga": 0.6424
           },
           {
             "variable": "Valor_Asegurado_PEN",
-            "carga": 0.6541
-          },
-          {
-            "variable": "Prima_Seguro_PEN",
-            "carga": 0.5994
+            "carga": 0.6209
           },
           {
             "variable": "Deducible_PEN",
-            "carga": 0.5977
+            "carga": 0.5898
+          },
+          {
+            "variable": "Prima_Seguro_PEN",
+            "carga": 0.5474
           },
           {
             "variable": "Tiempo_Programado_Horas",
-            "carga": 0.5789
+            "carga": 0.5393
           },
           {
-            "variable": "Índice_Seguridad",
-            "carga": 0.5004
-          },
-          {
-            "variable": "Precio_Diésel_PEN_Gal",
-            "carga": 0.4189
+            "variable": "Precipitación_mm",
+            "carga": 0.4389
           }
         ]
       },
@@ -190,48 +190,48 @@
         "n": 3,
         "nombre_publicado": "Factor_Macroeconomico",
         "etiqueta_real": "Entorno macroeconómico (IPC, inflación, combustibles, tipo de cambio)",
-        "autovalor": 4.620653,
-        "pct_varianza": 6.696376,
+        "autovalor": 4.649424,
+        "pct_varianza": 6.641813,
         "variables_dominantes": [
           {
             "variable": "IPC",
-            "carga": 0.866
+            "carga": 0.873
           },
           {
             "variable": "Precio_Gasolina_PEN_Gal",
-            "carga": -0.8481
+            "carga": -0.8535
           },
           {
             "variable": "Año",
-            "carga": 0.8188
+            "carga": 0.8273
           },
           {
             "variable": "Inflación_Pct",
-            "carga": -0.768
+            "carga": -0.772
           },
           {
             "variable": "Tipo_Cambio_PEN_USD",
-            "carga": -0.7184
+            "carga": -0.7293
           },
           {
             "variable": "Precio_Diésel_PEN_Gal",
-            "carga": -0.601
+            "carga": -0.6291
+          },
+          {
+            "variable": "Índice_Seguridad",
+            "carga": -0.3162
+          },
+          {
+            "variable": "Velocidad_Promedio_Kmh",
+            "carga": -0.2647
           },
           {
             "variable": "Valor_Asegurado_PEN",
-            "carga": 0.2995
+            "carga": 0.2342
           },
           {
-            "variable": "Volumen_m3",
-            "carga": 0.2893
-          },
-          {
-            "variable": "Deducible_PEN",
-            "carga": 0.2767
-          },
-          {
-            "variable": "Prima_Seguro_PEN",
-            "carga": 0.271
+            "variable": "Peso_Toneladas",
+            "carga": 0.2215
           }
         ]
       },
@@ -239,48 +239,48 @@
         "n": 4,
         "nombre_publicado": "Factor_Conflictividad_Seguridad",
         "etiqueta_real": "Conflictividad social, bloqueos y seguridad",
-        "autovalor": 3.520791,
-        "pct_varianza": 5.102425,
+        "autovalor": 3.557575,
+        "pct_varianza": 5.082081,
         "variables_dominantes": [
           {
             "variable": "Índice_Orden_Público",
-            "carga": 0.5815
+            "carga": 0.5706
           },
           {
             "variable": "Índice_Protestas",
-            "carga": -0.5494
-          },
-          {
-            "variable": "Bloqueos_Sociales",
-            "carga": -0.4599
+            "carga": -0.5226
           },
           {
             "variable": "Horas_Conducción",
-            "carga": 0.4377
+            "carga": 0.5044
+          },
+          {
+            "variable": "Bloqueos_Sociales",
+            "carga": -0.453
           },
           {
             "variable": "Distancia_Km",
-            "carga": 0.4129
+            "carga": 0.4512
           },
           {
             "variable": "Número_Paros",
-            "carga": -0.3898
+            "carga": -0.3834
+          },
+          {
+            "variable": "Índice_Seguridad",
+            "carga": 0.3715
           },
           {
             "variable": "Índice_Bloqueos",
-            "carga": -0.3755
-          },
-          {
-            "variable": "Manifestaciones",
-            "carga": -0.3677
-          },
-          {
-            "variable": "Precipitación_mm",
-            "carga": 0.364
+            "carga": -0.3581
           },
           {
             "variable": "Velocidad_Promedio_Kmh",
-            "carga": 0.349
+            "carga": 0.3534
+          },
+          {
+            "variable": "Manifestaciones",
+            "carga": -0.3443
           }
         ]
       },
@@ -288,102 +288,102 @@
         "n": 5,
         "nombre_publicado": "Factor_Geografia_Altitud",
         "etiqueta_real": "Geografía andina: altitud, temperatura y jornada de conducción",
-        "autovalor": 3.470177,
-        "pct_varianza": 5.029074,
+        "autovalor": 3.447255,
+        "pct_varianza": 4.924487,
         "variables_dominantes": [
           {
             "variable": "Horas_Conducción",
-            "carga": 0.6078
-          },
-          {
-            "variable": "Distancia_Km",
-            "carga": 0.4881
-          },
-          {
-            "variable": "Temperatura_C",
-            "carga": -0.4817
-          },
-          {
-            "variable": "Altitud_Max_Ruta_msnm",
-            "carga": 0.4767
+            "carga": 0.5638
           },
           {
             "variable": "Índice_Inundaciones",
-            "carga": -0.4748
+            "carga": -0.4961
+          },
+          {
+            "variable": "Temperatura_C",
+            "carga": -0.4676
           },
           {
             "variable": "Humedad_Pct",
-            "carga": -0.4718
+            "carga": -0.4584
           },
           {
-            "variable": "Costo_Peajes_PEN",
-            "carga": 0.4003
+            "variable": "Altitud_Max_Ruta_msnm",
+            "carga": 0.4539
+          },
+          {
+            "variable": "Distancia_Km",
+            "carga": 0.4532
           },
           {
             "variable": "Índice_Deslizamientos",
-            "carga": -0.3976
-          },
-          {
-            "variable": "Velocidad_Promedio_Kmh",
-            "carga": 0.3862
+            "carga": -0.4159
           },
           {
             "variable": "Precipitación_mm",
-            "carga": -0.3701
+            "carga": -0.3916
+          },
+          {
+            "variable": "Índice_Protestas",
+            "carga": 0.3723
+          },
+          {
+            "variable": "Costo_Peajes_PEN",
+            "carga": 0.3695
           }
         ]
       }
     ]
   },
   "regresion": {
-    "intercepto": 1.04245413,
+    "intercepto": 1.04350747,
     "coeficientes": [
       {
         "factor": "Factor_Clima_Riesgo_Natural",
         "etiqueta_real": "Clima y riesgo natural (lluvias, huaicos, inundaciones)",
-        "coef": -0.07280171
+        "coef": -0.09977167
       },
       {
         "factor": "Factor_Operacion_Costos",
         "etiqueta_real": "Magnitud y costo de la operación",
-        "coef": 0.29329453
+        "coef": 0.26587729
       },
       {
         "factor": "Factor_Macroeconomico",
         "etiqueta_real": "Entorno macroeconómico (IPC, inflación, combustibles, tipo de cambio)",
-        "coef": 0.07355631
+        "coef": 0.03586044
       },
       {
         "factor": "Factor_Conflictividad_Seguridad",
         "etiqueta_real": "Conflictividad social, bloqueos y seguridad",
-        "coef": 0.11932037
+        "coef": 0.12807871
       },
       {
         "factor": "Factor_Geografia_Altitud",
         "etiqueta_real": "Geografía andina: altitud, temperatura y jornada de conducción",
-        "coef": 0.03464342
+        "coef": 0.03353203
       }
     ],
-    "r2": 0.4657,
-    "r2_ajustado": 0.4656,
-    "error_estandar_residual": 0.8487
+    "r2": 0.4587,
+    "r2_ajustado": 0.4587,
+    "error_estandar_residual": 0.852
   },
   "validacion": {
     "metodo": "Holdout 80/20 (random_state=42)",
-    "r2_test": 0.4784,
-    "r2_test_dias": 0.4784,
-    "rmse_dias": 0.8244,
-    "mae_dias": 0.527,
-    "mape_pct": 80.69,
+    "r2_test": 0.4392,
+    "r2_test_dias": 0.4392,
+    "rmse_dias": 0.8881,
+    "mae_dias": 0.5378,
+    "mape_pct": 76.57,
     "n_test": 6000,
     "n_mape": 6000
   },
   "objetivo": {
     "variable": "LeadTime_Real_Dias",
     "transformacion": null,
-    "media": 1.0425,
-    "media_log": 1.0425,
-    "min": 0.096,
-    "max": 9.178
+    "media": 1.0435,
+    "media_log": 1.0435,
+    "min": 0.094,
+    "max": 9.111
   }
 }

@@ -24,34 +24,19 @@
     </div>
 
     <nav class="gd-nav">
-      <div class="gd-nav-group">Operación en Tiempo Real</div>
-      <a href="{{ url_for('web.torre') }}" class="gd-nav-link {{ 'active' if active_page == 'torre' }}"><i class="fa-solid fa-earth-americas"></i><span>Gemelo Digital · Torre</span><span class="gd-nav-live"></span></a>
-      <a href="{{ url_for('web.dashboard') }}" class="gd-nav-link {{ 'active' if active_page == 'dashboard' }}"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
-      <a href="{{ url_for('web.monitoreo') }}" class="gd-nav-link {{ 'active' if active_page == 'monitoreo' }}"><i class="fa-solid fa-satellite-dish"></i><span>Detalle de Operaciones</span></a>
+      <div class="gd-nav-group">Operar</div>
+      <a href="{{ url_for('web.torre') }}" class="gd-nav-link {{ 'active' if active_page == 'torre' }}"><i class="fa-solid fa-earth-americas"></i><span>Torre de Control</span><span class="gd-nav-live"></span></a>
+      <a href="{{ url_for('web.dashboard') }}" class="gd-nav-link {{ 'active' if active_page == 'dashboard' }}"><i class="fa-solid fa-gauge-high"></i><span>Resumen RANSA</span></a>
 
-      <div class="gd-nav-group">Predicciones Inteligentes</div>
-      <a href="{{ url_for('web.riesgo_24h') }}" class="gd-nav-link {{ 'active' if active_page == 'riesgo_24h' }}"><i class="fa-solid fa-shield-halved"></i><span>Riesgo Predictivo 24h</span></a>
-      <a href="{{ url_for('web.forecast_48h') }}" class="gd-nav-link {{ 'active' if active_page == 'forecast_48h' }}"><i class="fa-solid fa-chess-knight"></i><span>Anticipación Estratégica 48h</span></a>
-      <a href="{{ url_for('web.simulador') }}" class="gd-nav-link {{ 'active' if active_page == 'simulador' }}"><i class="fa-solid fa-flask-vial"></i><span>Simulador What-If</span></a>
-      <a href="{{ url_for('web.contingencias') }}" class="gd-nav-link {{ 'active' if active_page == 'contingencias' }}"><i class="fa-brands fa-whatsapp"></i><span>Contingencias y Soluciones</span></a>
-      <a href="{{ url_for('web.chat') }}" class="gd-nav-link {{ 'active' if active_page == 'chat' }}"><i class="fa-solid fa-robot"></i><span>IA Reportes e Información</span></a>
+      <div class="gd-nav-group">Anticipar</div>
+      <a href="{{ url_for('web.riesgo') }}" class="gd-nav-link {{ 'active' if active_page == 'riesgo' }}"><i class="fa-solid fa-shield-halved"></i><span>Riesgo 24–48 h</span></a>
+      <a href="{{ url_for('web.simulador') }}" class="gd-nav-link {{ 'active' if active_page == 'simulador' }}"><i class="fa-solid fa-flask-vial"></i><span>Simulador what-if</span></a>
 
-      <div class="gd-nav-group">Fundamentos Predictivos</div>
-      <a href="{{ url_for('web.predicciones') }}" class="gd-nav-link {{ 'active' if active_page == 'predicciones' }}"><i class="fa-solid fa-brain"></i><span>Predicciones IA</span></a>
-      <a href="{{ url_for('web.modelo_leadtime') }}" class="gd-nav-link {{ 'active' if active_page == 'modelo_leadtime' }}"><i class="fa-solid fa-square-root-variable"></i><span>Modelo Lead Time (ACP)</span></a>
-
-      <div class="gd-nav-group">Datos Operativos</div>
-      <a href="{{ url_for('web.embarques') }}" class="gd-nav-link {{ 'active' if active_page == 'embarques' }}"><i class="fa-solid fa-truck-fast"></i><span>Embarques</span></a>
-      <a href="{{ url_for('web.clientes') }}" class="gd-nav-link {{ 'active' if active_page == 'clientes' }}"><i class="fa-solid fa-building-user"></i><span>Clientes</span></a>
-      <a href="{{ url_for('web.kpis_page') }}" class="gd-nav-link {{ 'active' if active_page == 'kpis' }}"><i class="fa-solid fa-chart-line"></i><span>KPIs</span></a>
-      <a href="{{ url_for('web.reportes') }}" class="gd-nav-link {{ 'active' if active_page == 'reportes' }}"><i class="fa-solid fa-file-export"></i><span>Reportes</span></a>
-
-      <div class="gd-nav-group">Sistema</div>
-      <a href="{{ url_for('web.perfil') }}" class="gd-nav-link {{ 'active' if active_page == 'perfil' }}"><i class="fa-solid fa-user-gear"></i><span>Perfil</span></a>
-      <a href="{{ url_for('web.configuracion') }}" class="gd-nav-link {{ 'active' if active_page == 'configuracion' }}"><i class="fa-solid fa-gears"></i><span>Configuración</span></a>
-      <a href="{{ url_for('web.ayuda') }}" class="gd-nav-link {{ 'active' if active_page == 'ayuda' }}"><i class="fa-solid fa-circle-question"></i><span>Ayuda / Manual</span></a>
+      <div class="gd-nav-group">Analítica</div>
+      <a href="{{ url_for('web.modelos') }}" class="gd-nav-link {{ 'active' if active_page == 'modelos' }}"><i class="fa-solid fa-square-root-variable"></i><span>Modelos IA</span></a>
+      <a href="{{ url_for('web.embarques') }}" class="gd-nav-link {{ 'active' if active_page == 'embarques' }}"><i class="fa-solid fa-table-list"></i><span>Datos de embarques</span></a>
     </nav>
-    <div class="gd-sidebar-foot">Prototipo de demostración · datos 100% simulados</div>
+    <div class="gd-sidebar-foot">Prototipo académico · operación simulada · perfil de RANSA según fuentes públicas</div>
   </aside>
 
   <div class="gd-main">
@@ -59,7 +44,7 @@
       <button class="gd-icon-btn d-lg-none" id="gdSidebarToggle" aria-label="Menú"><i class="fa-solid fa-bars"></i></button>
       <div class="gd-topbar-title">{% block page_title %}{% endblock %}</div>
       <div class="gd-topbar-actions">
-        <span class="gd-env-badge d-none d-md-inline-flex"><i class="fa-solid fa-database"></i> Datos simulados · 30.000 embarques · Perú</span>
+        <span class="gd-env-badge d-none d-xl-inline-flex" style="white-space:nowrap;"><i class="fa-solid fa-database"></i> Operación simulada · 30,000 embarques</span>
         <button class="gd-copilot-btn" id="gdCopilotBtn" title="RANSA AI Copilot"><i class="fa-solid fa-robot"></i><span class="d-none d-lg-inline">AI Copilot</span></button>
         <button class="gd-icon-btn" id="gdThemeToggle" title="Cambiar tema"><i class="fa-solid fa-moon"></i></button>
         <div class="gd-user-menu dropdown">
@@ -104,8 +89,8 @@
     <span class="gd-chat-chip">¿Qué corredor debo monitorear hoy?</span>
     <span class="gd-chat-chip">¿Qué pasa si cierro el Callao?</span>
     <span class="gd-chat-chip">Callao vs Chancay</span>
-    <span class="gd-chat-chip">¿Qué embarques van a incumplir el OTIF?</span>
-    <span class="gd-chat-chip">¿Cómo va la cadena de frío?</span>
+    <span class="gd-chat-chip">¿Cómo va la línea automotriz?</span>
+    <span class="gd-chat-chip">¿Cuánto CO₂ evita el GNL?</span>
   </div>
   <div class="gd-copilot-messages" id="gdCopilotMessages"></div>
   <div class="gd-copilot-input-row">

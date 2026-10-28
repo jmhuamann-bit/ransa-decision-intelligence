@@ -1,79 +1,79 @@
 {% extends "base.html" %}
-{% block title %}Embarques · RANSA{% endblock %}
-{% block page_title %}Embarques{% endblock %}
+{% block title %}Datos de embarques · RANSA{% endblock %}
+{% block page_title %}Datos de embarques · de dónde aprende la IA{% endblock %}
 
 {% block content %}
-<div class="gd-card">
-  <div class="gd-card-header">
-    <div>
-      <div class="gd-card-title">Embarques</div>
-      <div class="gd-card-subtitle" id="gdEmbTotal">Cargando...</div>
+<div class="gd-card mb-3">
+  <div class="gd-card-body">
+    <div class="row g-2 align-items-end">
+      <div class="col-12 col-md-3">
+        <label class="gd-label">Buscar ID de viaje</label>
+        <input type="text" class="form-control gd-input" id="fBusqueda" placeholder="RNS-2026-000123">
+      </div>
+      <div class="col-6 col-md-2"><label class="gd-label">Línea de negocio</label><select class="form-select gd-input" id="fLinea"></select></div>
+      <div class="col-6 col-md-2"><label class="gd-label">Modo</label><select class="form-select gd-input" id="fTransporte"></select></div>
+      <div class="col-6 col-md-2"><label class="gd-label">Riesgo IA</label><select class="form-select gd-input" id="fRiesgo"></select></div>
+      <div class="col-6 col-md-1"><label class="gd-label">OTIF</label>
+        <select class="form-select gd-input" id="fOtif">
+          <option value="">Todos</option>
+          <option value="1">Cumplido</option>
+          <option value="0">Incumplido</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-2 d-flex gap-2">
+        <button class="gd-btn gd-btn-outline flex-fill" id="btnMasFiltros" data-bs-toggle="collapse" data-bs-target="#masFiltros"><i class="fa-solid fa-sliders"></i> Más</button>
+        <button class="gd-btn gd-btn-outline" id="btnLimpiar" title="Limpiar filtros"><i class="fa-solid fa-rotate-left"></i></button>
+      </div>
     </div>
-    <button class="gd-btn gd-btn-accent gd-btn-sm" id="btnNuevoEmbarque"><i class="fa-solid fa-plus"></i> Nuevo Embarque</button>
-  </div>
-  <div class="gd-table-wrap" style="border:none;max-height:65vh;">
-    <table class="gd-table">
-      <thead>
-        <tr>
-          <th>ID Viaje</th><th>Fecha</th><th>Corredor</th><th>Transporte</th><th>Prioridad</th>
-          <th>Lead Time</th><th>OTIF</th><th>Costo</th><th>Riesgo</th><th></th>
-        </tr>
-      </thead>
-      <tbody id="gdEmbBody"></tbody>
-    </table>
-  </div>
-  <div class="gd-card-body d-flex justify-content-between align-items-center">
-    <div id="gdEmbPaginaInfo" style="font-size:12.5px;color:var(--gd-text-muted);"></div>
-    <div class="d-flex gap-2">
-      <button class="gd-btn gd-btn-outline gd-btn-sm" id="btnEmbAnterior"><i class="fa-solid fa-chevron-left"></i> Anterior</button>
-      <button class="gd-btn gd-btn-outline gd-btn-sm" id="btnEmbSiguiente">Siguiente <i class="fa-solid fa-chevron-right"></i></button>
+    <div class="collapse" id="masFiltros">
+      <div class="row g-2 mt-1">
+        <div class="col-6 col-md-2"><label class="gd-label">Sector cliente</label><select class="form-select gd-input" id="fSector"></select></div>
+        <div class="col-6 col-md-2"><label class="gd-label">Prioridad</label><select class="form-select gd-input" id="fPrioridad"></select></div>
+        <div class="col-12 col-md-2"><label class="gd-label">Corredor</label><select class="form-select gd-input" id="fCorredor"></select></div>
+        <div class="col-6 col-md-2"><label class="gd-label">Depto. origen</label><select class="form-select gd-input" id="fDeptoOrigen"></select></div>
+        <div class="col-6 col-md-2"><label class="gd-label">Depto. destino</label><select class="form-select gd-input" id="fDeptoDestino"></select></div>
+        <div class="col-6 col-md-1"><label class="gd-label">Desde</label><input type="date" class="form-control gd-input" id="fFechaDesde"></div>
+        <div class="col-6 col-md-1"><label class="gd-label">Hasta</label><input type="date" class="form-control gd-input" id="fFechaHasta"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="modalEmbarque" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalEmbarqueTitulo">Nuevo Embarque</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div id="gdEmbFormError" class="alert alert-danger py-2 px-3" style="display:none;font-size:13px;"></div>
-        <form id="formEmbarque">
-          <input type="hidden" id="fId">
-          <div class="row g-2">
-            <div class="col-6"><label class="gd-label">Fecha *</label><input type="date" class="form-control gd-input" id="fFecha" required></div>
-            <div class="col-6"><label class="gd-label">Prioridad del cliente *</label><select class="form-select gd-input" id="fPrioridad" required></select></div>
-
-            <div class="col-6"><label class="gd-label">Departamento origen *</label><select class="form-select gd-input" id="fDeptoOrigen" required></select></div>
-            <div class="col-6"><label class="gd-label">Municipio origen *</label><select class="form-select gd-input" id="fMunOrigen" required></select></div>
-            <div class="col-6"><label class="gd-label">Departamento destino *</label><select class="form-select gd-input" id="fDeptoDestino" required></select></div>
-            <div class="col-6"><label class="gd-label">Municipio destino *</label><select class="form-select gd-input" id="fMunDestino" required></select></div>
-
-            <div class="col-4"><label class="gd-label">Transporte *</label><select class="form-select gd-input" id="fTransporte" required></select></div>
-            <div class="col-4"><label class="gd-label">Vehículo</label><select class="form-select gd-input" id="fVehiculo"></select></div>
-            <div class="col-4"><label class="gd-label">Tipo de carga *</label><select class="form-select gd-input" id="fCarga" required></select></div>
-
-            <div class="col-4"><label class="gd-label">Sector cliente *</label><select class="form-select gd-input" id="fSector" required></select></div>
-            <div class="col-4"><label class="gd-label">Peso (ton) *</label><input type="number" step="0.01" min="0" class="form-control gd-input" id="fPeso" required></div>
-            <div class="col-4"><label class="gd-label">Volumen (m³) *</label><input type="number" step="0.01" min="0" class="form-control gd-input" id="fVolumen" required></div>
-
-            <div class="col-4"><label class="gd-label">Distancia (km) *</label><input type="number" step="0.1" min="0" class="form-control gd-input" id="fDistancia" required></div>
-            <div class="col-4"><label class="gd-label">Tiempo programado (h) *</label><input type="number" step="0.1" min="0" class="form-control gd-input" id="fTiempoProg" required></div>
-            <div class="col-4"><label class="gd-label">Disponibilidad flota (%)</label><input type="number" step="1" min="0" max="100" class="form-control gd-input" id="fFlota"></div>
-
-            <div class="col-6"><label class="gd-label">Costo transporte (S/)</label><input type="number" step="1000" min="0" class="form-control gd-input" id="fCostoTransporte"></div>
-            <div class="col-6"><label class="gd-label">Costo peajes (S/)</label><input type="number" step="1000" min="0" class="form-control gd-input" id="fCostoPeajes"></div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="gd-btn gd-btn-outline" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="gd-btn gd-btn-primary" id="btnGuardarEmbarque"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
-      </div>
+<div class="gd-card">
+  <div class="gd-card-header">
+    <div>
+      <div class="gd-card-title">Embarques simulados 2023–2026</div>
+      <div class="gd-card-subtitle" id="gdTotalResultados">Cargando...</div>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="gd-btn gd-btn-outline gd-btn-sm" id="btnExportarCsv"><i class="fa-solid fa-file-csv"></i> CSV</button>
+      <a href="/api/reports/monitoreo.xlsx" class="gd-btn gd-btn-outline gd-btn-sm"><i class="fa-solid fa-file-excel"></i> Excel</a>
+      <a href="/api/reports/ejecutivo.pdf" class="gd-btn gd-btn-primary gd-btn-sm"><i class="fa-solid fa-file-pdf"></i> Reporte ejecutivo</a>
     </div>
   </div>
+  <div class="gd-table-wrap" style="border:none;max-height:62vh;">
+    <table class="gd-table" id="tblMonitoreo">
+      <thead>
+        <tr>
+          <th>ID Viaje</th><th>Fecha</th><th>Línea</th><th>Corredor</th><th>Modo</th><th>Carga</th>
+          <th class="text-end">Lead Time</th><th>OTIF</th><th class="text-end">Costo</th><th class="text-end">CO₂</th><th>Riesgo IA</th>
+        </tr>
+      </thead>
+      <tbody id="gdMonitoreoBody"></tbody>
+    </table>
+  </div>
+  <div class="gd-card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div id="gdPaginaInfo" style="font-size:12.5px;color:var(--gd-text-muted);"></div>
+    <div class="d-flex gap-2">
+      <button class="gd-btn gd-btn-outline gd-btn-sm" id="btnAnterior"><i class="fa-solid fa-chevron-left"></i> Anterior</button>
+      <button class="gd-btn gd-btn-outline gd-btn-sm" id="btnSiguiente">Siguiente <i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </div>
+</div>
+<div class="gd-footnote mt-2">
+  <i class="fa-solid fa-database me-1"></i>
+  30,000 embarques × 125 variables generados con geografía real (OpenStreetMap + SRTM), estacionalidad y episodios peruanos
+  con fechas reales. El diccionario de datos indica la fuente pública de referencia de cada variable.
 </div>
 {% endblock %}
 

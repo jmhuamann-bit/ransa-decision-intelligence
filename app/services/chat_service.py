@@ -48,13 +48,23 @@ def answer(message: str) -> dict:
             "Puedo responder sobre:\n"
             "• OTIF y Lead Time actuales\n"
             "• Contingencias y alertas críticas abiertas\n"
-            "• Desempeño del modelo de Predicciones IA\n"
+            "• Desempeño de los Modelos IA\n"
             "• Corredores logísticos con mayor riesgo\n"
             "• Segmentos de cliente (sector y prioridad)\n"
             "• Qué está pasando AHORA en el gemelo digital\n"
             "• Huaicos y lluvias, cadena de frío, Callao vs. Chancay\n"
-            "• Estado de un embarque específico (dame su ID, ej. RNS-2025-000123)"
+            "• Estado de un embarque específico (dame su ID, ej. RNS-2025-000123)\n"
+            "• La empresa: perfil público de RANSA, sus sedes y cada línea de negocio"
         )
+
+    # --- Intents sobre la EMPRESA real (perfil público) y sus líneas de negocio ---
+    linea = _find_linea(text)
+    if linea:
+        return _answer_linea(linea)
+
+    if _contains_any(text, "linea de negocio", "lineas de negocio", "sedes", "colaboradores", "quien es ransa",
+                     "que es ransa", "sobre ransa", "la empresa", "ceo", "accionista", "historia de ransa", "paises"):
+        return _answer_empresa()
 
     # --- Intents de la operación EN VIVO (gemelo digital) ---
     if _contains_any(text, "ahora", "en vivo", "gemelo", "que esta pasando", "situacion actual", "en este momento"):
@@ -82,7 +92,7 @@ def answer(message: str) -> dict:
     if _contains_any(text, "riesgo financiero", "mayor riesgo economico", "riesgo economico", "mas dinero", "mayor perdida"):
         return _answer_riesgo_financiero()
 
-    if _contains_any(text, "emision", "co2", "huella de carbono", "reducir emisiones", "ambiental"):
+    if _contains_any(text, "emision", "co2", "huella de carbono", "reducir emisiones", "ambiental", "gnl", "gnv", "gas natural"):
         return _answer_emisiones()
 
     if _contains_any(text, "otif"):
@@ -110,6 +120,54 @@ def answer(message: str) -> dict:
         "No estoy seguro de haber entendido. Puedo ayudarte con OTIF, Lead Time, contingencias, "
         "predicciones de IA, corredores de riesgo, clientes, o el estado de un embarque "
         "(ej. RNS-2024-000123). ¿Puedes reformular tu pregunta?"
+    )
+
+
+LINEAS_CLAVE = {
+    "Automotriz": ("automotriz", "ciguena", "vehiculos nuevos", "autos"),
+    "Minería y Energía": ("mineria", "minero", "energia", "hidrocarburo", "liquidos", "concentrado"),
+    "Comercio Exterior": ("comercio exterior", "aduana", "deposito temporal", "importacion", "exportacion"),
+    "Logística de Frío": ("logistica de frio", "linea de frio"),
+    "Distribución": ("distribucion", "consumo masivo", "retail"),
+}
+
+
+def _find_linea(text: str):
+    for linea, claves in LINEAS_CLAVE.items():
+        if _contains_any(text, *claves):
+            return linea
+    return None
+
+
+def _answer_empresa():
+    from app.services import ransa_profile as rp
+    escala = " · ".join(f"{c['texto']} {c['etiqueta']}" for c in rp.CIFRAS[1:4])
+    lider = rp.LIDERAZGO[0]
+    fuente = rp.FUENTES[lider["fuente"]]
+    return _text(
+        f"**RANSA** (perfil público): {rp.PROPIEDAD}\n"
+        f"• Escala del grupo: {escala}.\n"
+        "• En el Perú: +3 M m² de almacenamiento, +98 mil posiciones y +20 mil posiciones de frío.\n"
+        f"• Líneas de negocio: {', '.join(x['id'] for x in rp.LINEAS)}.\n"
+        f"• Sedes marcadas en el gemelo: {', '.join(rp.SEDES)}.\n"
+        f"• CEO del grupo: {lider['nombre']} (según {fuente['medio']}, {fuente['fecha']}).\n"
+        "Fuentes y fechas en **Resumen RANSA**. La operación que ves en la plataforma es simulada."
+    )
+
+
+def _answer_linea(linea: str):
+    from app.services import ransa_profile as rp
+    datos = next((x for x in dashboard_service.get_lineas() if x["linea"] == linea), None)
+    perfil = next((x for x in rp.LINEAS if x["id"] == linea), None)
+    if not datos or not perfil:
+        return _text(f"No encontré embarques de la línea {linea}.")
+    return _text(
+        f"**{linea}** — {perfil['resumen']}\n"
+        f"• {datos['participacion_pct']:.1f} % de los embarques simulados ({_n(datos['embarques'])}), "
+        f"OTIF {datos['otif_pct']:.1f} %, Lead Time {datos['lead_time_dias']:.2f} días.\n"
+        f"• Riesgo IA promedio {datos['riesgo_promedio_pct']:.1f} % · {datos['co2_t']:,.0f} t de CO₂.\n"
+        f"• Dato público: {perfil['dato']}\n"
+        "Filtra esta línea en **Resumen RANSA** para ver su tendencia y corredores."
     )
 
 
@@ -148,7 +206,7 @@ def _answer_prediccion():
     from app.models.ml_model import MLModelRun
     run = MLModelRun.query.filter_by(activo=True).order_by(MLModelRun.creado_en.desc()).first()
     if not run:
-        return _text("Aún no se ha entrenado ningún modelo de Predicciones IA. Ve al módulo Predicciones IA para entrenarlo.")
+        return _text("Aún no se ha entrenado ningún modelo de IA. Ve a Modelos IA para entrenarlo.")
     return _text(
         f"El modelo activo es **{run.algoritmo}** (versión {run.version}), entrenado con "
         f"{run.n_muestras_entrenamiento:,} embarques. Métricas sobre el conjunto de prueba: "
@@ -235,7 +293,7 @@ def _answer_corredor_monitorear():
             return _text(
                 f"El corredor a monitorear hoy es **{c['corredor']}**: es el de mayor probabilidad "
                 f"de {top['label'].lower()} en las próximas 24h ({c['probabilidad_pct']}%), con "
-                f"{c['clientes_criticos']} clientes críticos expuestos. Revisa el detalle en Riesgo Predictivo 24h."
+                f"{c['clientes_criticos']} clientes críticos expuestos. Revisa el detalle en Riesgo 24–48 h."
             )
     corredores = dashboard_service.get_top_corredores_riesgo(limit=1)
     if corredores:
@@ -252,7 +310,7 @@ def _answer_embarques_incumpliran():
         .limit(5).all()
     )
     if not rows:
-        return _text("Aún no hay predicciones de riesgo. Entrena el modelo en Predicciones IA.")
+        return _text("Aún no hay predicciones de riesgo. Entrena el modelo en Modelos IA.")
     detalle = "\n".join(
         f"• {s.id_viaje} ({s.corredor_logistico}): {round(s.prob_riesgo_incumplimiento,1)}% de riesgo" for s in rows
     )
@@ -284,11 +342,12 @@ def _answer_emisiones():
     k = dashboard_service.get_kpis()
     co2_txt = f"{k['co2_toneladas']:,.0f}"
     return _text(
-        f"La huella actual estimada es de **{co2_txt} toneladas de CO₂**, basada en el "
-        f"consumo de combustible. Para reducirla: consolidar carga (subir fill rate desde {k['fill_rate_pct']}%), "
-        f"priorizar el cabotaje (Callao–Paita, Callao–Matarani) en corredores costeros largos y optimizar las rutas "
-        f"de mayor distancia y pendiente. "
-        f"El Simulador permite estimar el ahorro de cada medida."
+        f"La huella estimada de la operación simulada es de **{co2_txt} t de CO₂** (consumo × factor de emisión de "
+        f"cada combustible). Los {_n(k['viajes_gnl_gnv'])} viajes en unidades a GNL/GNV ya evitaron "
+        f"**{k['co2_evitado_t']:,.0f} t** frente al diésel; RANSA renovó en el Perú 11 tractos y 27 camiones a GNL "
+        f"(hasta −25 % de CO₂, ProActivo nov-2025) dentro de su plan de descarbonización 2030.\n"
+        f"Para reducir más: consolidar carga (fill rate {k['fill_rate_pct']} %), usar cabotaje en corredores costeros "
+        f"largos (Callao–Paita, Callao–Matarani) y optimizar las rutas de mayor pendiente. El Simulador estima cada medida."
     )
 
 

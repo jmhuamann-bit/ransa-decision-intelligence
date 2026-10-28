@@ -118,7 +118,7 @@ def simulate(overrides: dict) -> dict:
 
     prob = predictor.predict_single(scenario)
     if prob is None:
-        raise RuntimeError("No hay un modelo de IA activo. Entrena el modelo en Predicciones IA primero.")
+        raise RuntimeError("No hay un modelo de IA activo. Entrena el modelo en Modelos IA primero.")
 
     leadtime = predictor.predict_leadtime(scenario)
     costo = predictor.predict_costo(scenario)

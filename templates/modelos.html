@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% block title %}Modelos IA · RANSA{% endblock %}
+{% block page_title %}Modelos IA · los fundamentos matemáticos{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/leadtime.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="gd-page-tabs mb-3">
+  <div class="gd-seg" id="mdTabs">
+    <button class="gd-seg-btn active" data-vista="otif"><i class="fa-solid fa-brain"></i> ¿Llegará a tiempo? · clasificación</button>
+    <button class="gd-seg-btn" data-vista="leadtime"><i class="fa-solid fa-square-root-variable"></i> ¿Cuántos días? · ACP + regresión</button>
+  </div>
+  <div class="gd-page-hint" id="mdHint"></div>
+</div>
+
+<div data-vista-pane="otif">
+<div id="gdNoModel" class="gd-construction" style="display:none;">
+  <i class="fa-solid fa-brain"></i>
+  <h3>Aún no se ha entrenado ningún modelo</h3>
+  <p style="max-width:480px;">Entrena Regresión Logística y Gradient Boosting sobre los 30,000 embarques simulados; la plataforma activa el de mayor AUC.</p>
+  <button class="gd-btn gd-btn-accent mt-2" id="btnEntrenarVacio"><i class="fa-solid fa-play"></i> Entrenar modelo ahora</button>
+</div>
+
+<div id="gdModelContent" style="display:none;">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+      <div style="font-size:13px;color:var(--gd-text-muted);">
+        Modelo activo: <strong id="gdAlgoLabel">—</strong> ·
+        entrenado el <span id="gdFechaEntrenamiento">—</span> ·
+        versión <span class="gd-mono" id="gdVersion">—</span>
+      </div>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      <select class="gd-input gd-select" id="selAlgoritmo" style="min-width:230px;">
+        <option value="todos">Entrenar todos y activar el mejor</option>
+        <option value="gradient_boosting">Solo Gradient Boosting</option>
+        <option value="logistic_regression">Solo Regresión Logística</option>
+      </select>
+      <button class="gd-btn gd-btn-accent" id="btnReentrenar"><i class="fa-solid fa-rotate"></i> Reentrenar</button>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3" id="gdMetricRow"></div>
+
+  <div class="gd-card mb-3">
+    <div class="gd-card-header">
+      <div>
+        <div class="gd-card-title"><i class="fa-solid fa-scale-balanced me-2"></i>Comparativo de algoritmos</div>
+        <div class="gd-card-subtitle">Último entrenamiento de cada algoritmo, evaluado en el mismo 20 % de embarques no vistos. Se activa el de mayor AUC; «línea base» = AUC 0,748 del prototipo anterior.</div>
+      </div>
+    </div>
+    <div class="gd-table-wrap" style="border:none;">
+      <table class="gd-table">
+        <thead><tr><th>Algoritmo</th><th class="text-end">AUC</th><th class="text-end">Accuracy</th><th class="text-end">Recall</th><th class="text-end">Precision</th><th class="text-end">F1</th><th>Estado</th><th></th></tr></thead>
+        <tbody id="gdRunsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-xl-7">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Curva ROC</div>
+            <div class="gd-card-subtitle">Capacidad del modelo para distinguir embarques que incumplirán OTIF (conjunto de prueba, datos no vistos)</div>
+          </div>
+        </div>
+        <div class="gd-card-body"><canvas id="chartRoc" height="220"></canvas></div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-5">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Matriz de Confusión</div>
+            <div class="gd-card-subtitle">Aciertos y errores sobre el conjunto de prueba</div>
+          </div>
+        </div>
+        <div class="gd-card-body" id="gdConfusionMatrix"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-xl-7">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Importancia de Variables</div>
+            <div class="gd-card-subtitle" id="gdImportSub">Top 15 variables con mayor efecto en la predicción</div>
+          </div>
+        </div>
+        <div class="gd-card-body"><canvas id="chartImportancia" height="280"></canvas></div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-5">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Embarques de mayor riesgo</div>
+            <div class="gd-card-subtitle">Top 20 según probabilidad de incumplimiento</div>
+          </div>
+        </div>
+        <div class="gd-table-wrap" style="border:none;max-height:340px;">
+          <table class="gd-table">
+            <thead><tr><th>ID Viaje</th><th>Corredor</th><th>Riesgo</th><th>OTIF real</th></tr></thead>
+            <tbody id="gdTopRiesgoBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gd-footnote mt-2">
+    <i class="fa-solid fa-circle-info me-1"></i>
+    Evaluado en un 20 % de embarques que el modelo nunca vio. Solo usa variables conocidas antes del despacho
+    (ruta, altitud, clima, vía, seguridad, conflictividad, economía): sin fuga de datos. Probabilidad ≥ 80 % → Alerta Crítica.
+  </div>
+</div>
+</div>
+
+<div data-vista-pane="leadtime" style="display:none;">
+<div id="ltNoModel" class="gd-construction" style="display:none;">
+  <i class="fa-solid fa-square-root-variable"></i>
+  <h3>El modelo aún no se ha ajustado</h3>
+  <p style="max-width:520px;">Ejecuta <code>python scripts/fit_leadtime_pca.py</code> para generar los resultados del Análisis de Componentes Principales y la regresión.</p>
+</div>
+
+<div id="ltContent" style="display:none;">
+  <div class="gd-footnote mb-2">
+    <i class="fa-solid fa-circle-info me-1"></i>
+    El Lead Time depende de muchas variables a la vez y muy correlacionadas. El ACP las resume en <b id="ltNvars">70</b> → <b>5 factores</b>
+    independientes (nombrados por sus cargas) y una regresión lineal múltiple estima los días de entrega con ellos.
+  </div>
+
+  <!-- Ecuación -->
+  <div class="gd-card mb-3 gd-eq-card">
+    <div class="gd-card-header">
+      <div>
+        <div class="gd-card-title">Ecuación de regresión obtenida</div>
+        <div class="gd-card-subtitle">Los factores son puntuaciones estandarizadas: 0 = operación promedio, +1 = una desviación estándar por encima</div>
+      </div>
+    </div>
+    <div class="gd-card-body"><div class="gd-eq" id="ltEcuacion"></div></div>
+  </div>
+
+  <div class="row g-3 mb-3" id="ltKpiRow"></div>
+
+  <div class="row g-3 mb-3">
+    <!-- Multicolinealidad -->
+    <div class="col-12 col-xl-6">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Multicolinealidad: por qué hizo falta el ACP <span id="ltVifHelp"></span></div>
+            <div class="gd-card-subtitle">VIF de las variables originales vs. VIF de los 5 factores</div>
+          </div>
+        </div>
+        <div class="gd-card-body">
+          <div class="gd-vif-summary" id="ltVifResumen"></div>
+          <div class="gd-table-wrap" style="border:none;margin-top:12px;">
+            <table class="gd-table">
+              <thead><tr><th>Variable original</th><th class="text-end">VIF</th></tr></thead>
+              <tbody id="ltVifBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Varianza / autovalores -->
+    <div class="col-12 col-xl-6">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Componentes principales retenidos</div>
+            <div class="gd-card-subtitle">Autovalor y % de varianza explicada por cada factor</div>
+          </div>
+        </div>
+        <div class="gd-card-body"><canvas id="ltChartScree" height="200"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Los 5 factores -->
+  <div class="gd-card mb-3">
+    <div class="gd-card-header">
+      <div>
+        <div class="gd-card-title">Los 5 factores y su efecto sobre el Lead Time</div>
+        <div class="gd-card-subtitle">Cada factor resume decenas de variables; se muestran sus 6 variables dominantes (carga factorial = correlación variable–factor)</div>
+      </div>
+    </div>
+    <div class="gd-card-body"><div class="row g-3" id="ltFactores"></div></div>
+  </div>
+
+  <!-- Simulador de sensibilidad -->
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-xl-5">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Explorar la ecuación</div>
+            <div class="gd-card-subtitle">Mueve cada factor y observa el Lead Time estimado</div>
+          </div>
+        </div>
+        <div class="gd-card-body" id="ltSliders"></div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-7">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title">Lead Time estimado</div>
+            <div class="gd-card-subtitle">Aporte de cada factor en días, sobre el intercepto</div>
+          </div>
+        </div>
+        <div class="gd-card-body">
+          <div class="gd-eq-result" id="ltResultado"></div>
+          <canvas id="ltChartAportes" height="150"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metodología y limitaciones -->
+  <div class="gd-card">
+    <div class="gd-card-header">
+      <div>
+        <div class="gd-card-title">Metodología y limitaciones</div>
+        <div class="gd-card-subtitle">Qué se hizo, y qué hay que tener en cuenta al leer estos resultados</div>
+      </div>
+    </div>
+    <div class="gd-card-body" id="ltNotas"></div>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  gdPageTabs("mdTabs", {
+    otif: "Gradient Boosting vs. Regresión Logística: probabilidad de que un embarque incumpla el OTIF.",
+    leadtime: "Análisis de Componentes Principales + regresión múltiple del tiempo de entrega.",
+  });
+</script>
+<script src="{{ url_for('static', filename='js/predicciones.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modelo_leadtime.js') }}"></script>
+{% endblock %}

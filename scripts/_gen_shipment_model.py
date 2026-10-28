@@ -46,7 +46,7 @@ for f in FIELDS:
     if col in (
         "fecha", "departamento_origen", "ciudad_origen", "departamento_destino",
         "ciudad_destino", "tipo_transporte", "prioridad_cliente", "otif", "estado_via",
-        "sector_cliente", "corredor_logistico",
+        "sector_cliente", "corredor_logistico", "linea_negocio",
     ):
         index = ", index=True"
     lines.append(f'    {col} = db.Column({sql_type}{index})')

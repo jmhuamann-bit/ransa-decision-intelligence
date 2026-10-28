@@ -1,73 +1,97 @@
 {% extends "base.html" %}
-{% block title %}Dashboard · RANSA{% endblock %}
-{% block page_title %}Dashboard Ejecutivo{% endblock %}
+{% block title %}Resumen RANSA · Perú{% endblock %}
+{% block page_title %}Resumen RANSA · la empresa y su operación{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/resumen.css') }}" />
+{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-  <div>
-    <div style="font-size:13px;color:var(--gd-text-muted);">Visión consolidada de la operación logística — datos simulados RANSA Perú</div>
+<!-- 1. La empresa real (fuentes públicas) -->
+<section class="rs-hero mb-3">
+  <div class="rs-hero-main">
+    <div class="rs-eyebrow"><i class="fa-solid fa-building"></i> RANSA · perfil público</div>
+    <h2 class="rs-title">El operador logístico de origen peruano que mueve la costa del Pacífico</h2>
+    <p class="rs-owner" id="rsPropiedad">Cargando perfil…</p>
+    <div class="rs-lineas" id="rsLineas"></div>
   </div>
-  <div class="d-flex gap-2">
-    <select class="gd-input gd-select" id="fAnio" style="min-width:110px;">
-      <option value="">Todos los años</option>
+  <div class="rs-cifras" id="rsCifras"></div>
+</section>
+
+<!-- 2. Pulso en vivo del gemelo -->
+<a class="rs-live mb-3" href="{{ url_for('web.torre') }}" id="rsLive">
+  <span class="rs-live-tag"><span class="gd-live-dot"></span> Ahora en la Torre de Control</span>
+  <span class="rs-live-items" id="rsLiveItems"><span class="tw-muted">Sincronizando con el gemelo…</span></span>
+  <span class="rs-live-go">Abrir <i class="fa-solid fa-arrow-right"></i></span>
+</a>
+
+<!-- 3. Operación histórica simulada -->
+<div class="rs-filters mb-3">
+  <div class="rs-filters-title">
+    <div class="gd-card-title mb-0">Operación 2023–2026 <span class="rs-sim">simulada</span></div>
+    <div class="gd-card-subtitle" id="rsFiltroTxt">Toda la operación · 30,000 embarques</div>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <select class="gd-input gd-select" id="fLinea" style="min-width:170px;">
+      <option value="">Todas las líneas</option>
+    </select>
+    <select class="gd-input gd-select" id="fAnio" style="min-width:120px;">
+      <option value="">2023–2026</option>
       <option value="2023">2023</option>
       <option value="2024">2024</option>
       <option value="2025">2025</option>
+      <option value="2026">2026 (ene–set)</option>
     </select>
-    <select class="gd-input gd-select" id="fTransporte" style="min-width:150px;">
-      <option value="">Todo transporte</option>
+    <select class="gd-input gd-select" id="fTransporte" style="min-width:140px;">
+      <option value="">Todos los modos</option>
       <option value="Carretero">Carretero</option>
       <option value="Marítimo">Marítimo</option>
+      <option value="Fluvial">Fluvial</option>
       <option value="Aéreo">Aéreo</option>
     </select>
   </div>
 </div>
 
-<div class="row g-3 mb-3" id="gdKpiRow">
-  <!-- KPI tiles inyectados por JS -->
-</div>
+<div class="row g-3 mb-3" id="gdKpiRow"></div>
 
 <div class="row g-3 mb-3">
-  <div class="col-12 col-xl-8">
-    <div class="gd-card h-100">
-      <div class="gd-card-header">
-        <div>
-          <div class="gd-card-title">Lead Time y OTIF — tendencia mensual</div>
-          <div class="gd-card-subtitle">Promedio de tiempo de entrega real vs. cumplimiento OTIF</div>
-        </div>
-      </div>
-      <div class="gd-card-body">
-        <canvas id="chartTendencia" height="110"></canvas>
-      </div>
-    </div>
-  </div>
-  <div class="col-12 col-xl-4">
-    <div class="gd-card h-100">
-      <div class="gd-card-header">
-        <div>
-          <div class="gd-card-title">Nivel de Riesgo</div>
-          <div class="gd-card-subtitle">Distribución de embarques</div>
-        </div>
-      </div>
-      <div class="gd-card-body d-flex align-items-center justify-content-center">
-        <canvas id="chartRiesgo" height="200"></canvas>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="row g-3">
   <div class="col-12 col-xl-7">
     <div class="gd-card h-100">
       <div class="gd-card-header">
         <div>
-          <div class="gd-card-title">Corredores logísticos con mayor riesgo</div>
-          <div class="gd-card-subtitle">Top corredores por probabilidad de incumplimiento</div>
+          <div class="gd-card-title">OTIF y Lead Time · mes a mes</div>
+          <div class="gd-card-subtitle">Se ven los golpes reales al Perú: Ciclón Yaku (2023), vaciante amazónica, paros de transportistas</div>
         </div>
+      </div>
+      <div class="gd-card-body"><div style="position:relative;height:270px;"><canvas id="chartTendencia"></canvas></div></div>
+    </div>
+  </div>
+  <div class="col-12 col-xl-5">
+    <div class="gd-card h-100">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title">Líneas de negocio</div>
+          <div class="gd-card-subtitle">Haz clic en una línea para filtrar todo el resumen</div>
+        </div>
+      </div>
+      <div class="gd-card-body" id="rsLineasPerf"></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-12 col-xl-7">
+    <div class="gd-card h-100">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title">Corredores que más preocupan</div>
+          <div class="gd-card-subtitle">Probabilidad media de incumplir el OTIF según el modelo IA</div>
+        </div>
+        <a href="{{ url_for('web.riesgo') }}" class="gd-btn gd-btn-outline gd-btn-sm">Riesgo 24–48 h</a>
       </div>
       <div class="gd-table-wrap" style="border:none;">
         <table class="gd-table" id="tblCorredores">
-          <thead><tr><th>Corredor</th><th>Embarques</th><th>OTIF</th><th>Riesgo</th></tr></thead>
+          <thead><tr><th>Corredor</th><th class="text-end">Embarques</th><th class="text-end">OTIF</th><th>Riesgo IA</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -77,16 +101,25 @@
     <div class="gd-card h-100">
       <div class="gd-card-header">
         <div>
-          <div class="gd-card-title">Actividad reciente</div>
-          <div class="gd-card-subtitle">Últimas alertas y contingencias</div>
+          <div class="gd-card-title">Agenda 2026 de RANSA</div>
+          <div class="gd-card-subtitle">Lo que la empresa ha anunciado públicamente</div>
         </div>
-        <a href="{{ url_for('web.contingencias') }}" class="gd-btn gd-btn-outline gd-btn-sm">Ver todas</a>
       </div>
-      <div class="gd-card-body" id="gdActividad" style="max-height:340px;overflow-y:auto;">
+      <div class="gd-card-body">
+        <ul class="rs-agenda" id="rsAgenda"></ul>
+        <div class="rs-team-title">Equipo directivo citado en prensa</div>
+        <div class="rs-team" id="rsTeam"></div>
       </div>
     </div>
   </div>
 </div>
+
+<details class="rs-sources">
+  <summary><i class="fa-solid fa-book-open me-1"></i> Fuentes públicas del perfil de RANSA</summary>
+  <ul id="rsFuentes"></ul>
+  <div class="gd-footnote">Prototipo académico independiente, sin vínculo con RANSA. Las cifras de la empresa son las publicadas por
+    cada medio en su fecha; la operación, los embarques y la flota de la plataforma son simulados.</div>
+</details>
 {% endblock %}
 
 {% block extra_js %}

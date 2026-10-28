@@ -275,3 +275,26 @@
 
 /* la barra superior fija queda por encima de los paneles flotantes del mapa al hacer scroll */
 .gd-topbar { z-index: 1050; }
+
+/* ---------- v2: leyenda viva, filtro por modo y sedes RANSA ---------- */
+.tw-tr2 { top: 56px; right: 12px; }
+.tw-legendbar { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.tw-modes { display: inline-flex; gap: 2px; padding: 3px; background: color-mix(in srgb, var(--gd-surface) 94%, transparent); border: 1px solid var(--gd-border); border-radius: 999px; box-shadow: var(--gd-shadow-sm); }
+.tw-modes button { border: none; background: transparent; color: var(--gd-text-muted); font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 999px; cursor: pointer; transition: all var(--gd-transition); }
+.tw-modes button:hover { color: var(--gd-text); }
+.tw-modes button.active { background: var(--gd-accent); color: #fff; }
+.torre-ops-item .torre-ops-val small { font-size: 11px; font-weight: 700; color: var(--gd-text-muted); margin-left: 1px; }
+.torre-ops-item.bump { animation: twBump .55s cubic-bezier(.2,.8,.2,1); }
+@keyframes twBump { 0% { transform: scale(1); } 35% { transform: scale(1.06); } 100% { transform: scale(1); } }
+.tw-node.sede { box-shadow: 0 0 0 3px rgba(255,122,26,.65), 0 2px 6px rgba(16,24,40,.3); }
+.tw-sede-ring { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,122,26,.75); animation: twSedeRing 2.8s ease-out infinite; pointer-events: none; }
+@keyframes twSedeRing { 0% { transform: scale(.45); opacity: .95; } 100% { transform: scale(1.25); opacity: 0; } }
+.tw-tip-sede { margin-top: 5px; padding-top: 5px; border-top: 1px dashed rgba(148,163,184,.6); max-width: 260px; white-space: normal; }
+.tw-tip-sede i, .tw-tip-sede b { color: #e8650b; }
+.tw-sede-card { border: 1px solid rgba(255,122,26,.35); background: rgba(255,122,26,.07); border-radius: 10px; padding: 9px 11px; margin-bottom: 10px; font-size: 12.5px; line-height: 1.45; }
+.tw-sede-card .t { font-weight: 800; color: var(--gd-accent-dark); margin-bottom: 2px; }
+.tw-sede-card a { font-size: 11px; color: var(--gd-text-subtle); }
+.tw-sede-badge { font-size: 10px; font-weight: 800; color: #fff; background: var(--gd-accent); border-radius: 999px; padding: 1px 7px; margin-left: 4px; vertical-align: middle; }
+.tw-unit-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+@media (max-width: 767px) { .tw-tr2 { display: none; } }
+@media (prefers-reduced-motion: reduce) { .tw-sede-ring, .torre-ops-item.bump { animation: none; } }

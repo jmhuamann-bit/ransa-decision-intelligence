@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Riesgo 24–48 h · RANSA{% endblock %}
+{% block page_title %}Riesgo 24–48 h · anticipar antes de despachar{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/predictive.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/strategic.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="gd-page-tabs mb-3">
+  <div class="gd-seg" id="rgTabs">
+    <button class="gd-seg-btn active" data-vista="24h"><i class="fa-solid fa-map-location-dot"></i> Próximas 24 h · por corredor</button>
+    <button class="gd-seg-btn" data-vista="48h"><i class="fa-solid fa-chess-knight"></i> Próximas 48 h · plan de acción</button>
+  </div>
+  <div class="gd-page-hint" id="rgHint"></div>
+</div>
+
+<!-- ======================= 24 h ======================= -->
+<div data-vista-pane="24h">
+  <div class="row g-3 mb-3" id="predKpiRow"></div>
+
+  <div class="pred-controls mb-3">
+    <div class="pred-filter-row" id="predFilters"></div>
+    <div class="pred-auto-row">
+      <button class="pred-auto-btn" id="predAutoBtn" title="Recorre automáticamente los eventos (modo presentación)">
+        <i class="fa-solid fa-play" id="predAutoIcon"></i>
+        <span id="predAutoLabel">Recorrido automático</span>
+      </button>
+      <span class="pred-auto-status" id="predAutoStatus"></span>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-xl-6">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title"><i class="fa-solid fa-map-location-dot me-2"></i>Mapa de riesgo</div>
+            <div class="gd-card-subtitle">Haz clic en un marcador: se resalta la ruta afectada</div>
+          </div>
+          <div class="pred-map-legend" id="predLegend"></div>
+        </div>
+        <div class="gd-card-body p-2"><div id="predMap"></div></div>
+      </div>
+    </div>
+    <div class="col-12 col-xl-6">
+      <div class="gd-card h-100">
+        <div class="gd-card-header">
+          <div>
+            <div class="gd-card-title"><i class="fa-solid fa-bolt me-2"></i>Eventos más probables</div>
+            <div class="gd-card-subtitle" id="predEventosSub">Próximas 24 horas</div>
+          </div>
+          <div class="pred-event-count" id="predEventCount"></div>
+        </div>
+        <div class="gd-card-body" id="predEventos" style="max-height:600px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gd-card mt-3">
+    <div class="gd-card-header">
+      <div>
+        <div class="gd-card-title"><i class="fa-solid fa-chart-area me-2"></i>Riesgo por categoría</div>
+        <div class="gd-card-subtitle">Resumen de todos los eventos detectados</div>
+      </div>
+    </div>
+    <div class="gd-card-body"><div class="pred-dist-row" id="predDistRow"></div></div>
+  </div>
+  <div class="gd-footnote mt-2">
+    <i class="fa-solid fa-square-root-variable me-1"></i>
+    Probabilidad <span id="gdMetodoInfo"></span> = frecuencia histórica del evento en el corredor (SENAMHI, INDECI, PNP, MTC)
+    combinada con el modelo de riesgo OTIF. Alerta alta: ≥ <span id="gdUmbral">80</span> %.
+  </div>
+</div>
+
+<!-- ======================= 48 h ======================= -->
+<div data-vista-pane="48h" style="display:none;">
+  <div id="assistantIntro" class="gd-card mb-3">
+    <div class="gd-card-body d-flex gap-3 align-items-center">
+      <div class="gd-assistant-avatar"><i class="fa-solid fa-user-shield"></i></div>
+      <div>
+        <div style="font-weight:700;">AI Decision Assistant</div>
+        <div style="font-size:12.5px;color:var(--gd-text-muted);">Motor experto basado en reglas (no un chatbot): explica con los datos históricos, prioriza y propone planes A/B/C/D. Cada plan requiere aprobación humana.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="scenarioGrid" class="row g-3"></div>
+  <div class="gd-footnote mt-2">
+    <i class="fa-solid fa-square-root-variable me-1"></i>
+    Probabilidad 48 h = probabilidad 24 h del corredor más expuesto, ampliada a la ventana de 48 h y ajustada por la
+    estacionalidad peruana del mes (lluvias dic–mar, heladas jun–ago, vaciante ago–oct).
+  </div>
+
+  <div class="modal fade" id="modalPlanes" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div>
+            <h5 class="modal-title" id="planesTitulo">Planes de contingencia</h5>
+            <div style="font-size:12.5px;color:var(--gd-text-muted);" id="planesSub"></div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="planesBaseline" class="gd-planes-baseline"></div>
+          <div class="row g-3" id="planesGrid"></div>
+          <div class="gd-planes-justificacion" id="planesJustificacion"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script>
+  gdPageTabs("rgTabs", {
+    "24h": "Qué puede pasar mañana en cada corredor y con qué probabilidad.",
+    "48h": "Escenarios para toda la red y el plan recomendado para cada uno.",
+  });
+</script>
+<script src="{{ url_for('static', filename='js/riesgo_24h.js') }}"></script>
+<script src="{{ url_for('static', filename='js/forecast_48h.js') }}"></script>
+{% endblock %}

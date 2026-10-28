@@ -48,7 +48,7 @@ TEMAS = [
     ("Geografía andina: altitud, temperatura y jornada de conducción", "Factor_Geografia_Altitud",
      ("Altitud", "Horas_Conducción", "Temperatura")),
     ("Magnitud y costo de la operación", "Factor_Operacion_Costos",
-     ("Peso", "Volumen", "Distancia", "Tiempo_Programado", "Costo", "Consumo", "Valor_Asegurado", "Prima", "Deducible",
+     ("Peso", "Volumen", "Distancia", "Tiempo_Programado", "Costo", "Consumo", "Emisiones", "Valor_Asegurado", "Prima", "Deducible",
       "Velocidad_Promedio", "Altitud", "Peajes", "Tiempo_Espera", "Valor_Siniestro")),
     ("Clima y riesgo natural (lluvias, huaicos, inundaciones)", "Factor_Clima_Riesgo_Natural",
      ("Precipitación", "Inundaciones", "Deslizamientos", "Derrumbes", "Humedad", "Viento", "Incendios",

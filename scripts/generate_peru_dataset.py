@@ -20,6 +20,10 @@ Principios de diseño:
      de riesgo conocidos ANTES del despacho (bloqueos, huaicos, clima, seguridad, congestión
      portuaria, nivel del río...) más ruido. Por eso un modelo de IA puede anticiparlo, pero no
      con certeza absoluta — igual que en la realidad.
+  4. Mezcla de negocio inspirada en el perfil PÚBLICO de RANSA (ver app/services/ransa_profile.py):
+     líneas de Distribución, Comercio Exterior, Logística de Frío, Minería y Energía y Automotriz
+     (cigüeñas Chancay → Lima); flota en transición a GNL en el segmento extractivo y de líquidos;
+     salud/farma solo como piloto (RANSA evalúa entrar a ese negocio en el Perú hacia 2026-27).
 
 Todo es SIMULADO con fines de demostración; los valores de referencia (precios de combustible,
 inflación, tipo de cambio, peajes) son aproximaciones de orden de magnitud, no series oficiales.
@@ -56,17 +60,18 @@ MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto
 # ---------------------------------------------------------------------------- corredores
 # corredor, modo, peso relativo, mezcla de sectores
 SECT = {
-    "urbano": {"Consumo Masivo": .40, "Retail": .30, "Salud": .15, "Tecnología": .15},
-    "callao": {"Consumo Masivo": .32, "Retail": .24, "Industrial": .16, "Tecnología": .12, "Salud": .10, "Pesca": .06},
-    "chancay": {"Industrial": .30, "Tecnología": .26, "Retail": .24, "Consumo Masivo": .20},
-    "nacional": {"Consumo Masivo": .42, "Retail": .22, "Salud": .12, "Industrial": .14, "Tecnología": .10},
+    "urbano": {"Consumo Masivo": .50, "Retail": .34, "Tecnología": .11, "Salud": .05},
+    "callao": {"Consumo Masivo": .30, "Retail": .22, "Industrial": .17, "Tecnología": .09, "Automotriz": .10,
+               "Pesca": .08, "Salud": .04},
+    "chancay": {"Automotriz": .30, "Industrial": .28, "Tecnología": .14, "Retail": .14, "Consumo Masivo": .14},
+    "nacional": {"Consumo Masivo": .48, "Retail": .24, "Industrial": .15, "Tecnología": .08, "Salud": .05},
     "agro": {"Agroexportación": .82, "Industrial": .08, "Pesca": .10},
     "minero": {"Minería": 1.0},
     "minero_mix": {"Minería": .55, "Consumo Masivo": .30, "Industrial": .15},
-    "sur": {"Consumo Masivo": .36, "Retail": .22, "Industrial": .16, "Minería": .14, "Salud": .12},
-    "selva": {"Consumo Masivo": .50, "Industrial": .22, "Retail": .18, "Salud": .10},
-    "puerto_import": {"Industrial": .45, "Consumo Masivo": .25, "Tecnología": .15, "Retail": .15},
-    "aereo": {"Salud": .30, "Tecnología": .28, "Retail": .14, "Consumo Masivo": .14, "Agroexportación": .14},
+    "sur": {"Consumo Masivo": .38, "Retail": .22, "Industrial": .17, "Minería": .18, "Salud": .05},
+    "selva": {"Consumo Masivo": .55, "Industrial": .22, "Retail": .18, "Salud": .05},
+    "puerto_import": {"Industrial": .42, "Consumo Masivo": .25, "Tecnología": .13, "Retail": .12, "Automotriz": .08},
+    "aereo": {"Tecnología": .30, "Agroexportación": .22, "Salud": .18, "Retail": .16, "Consumo Masivo": .14},
     "pesca": {"Pesca": .45, "Industrial": .30, "Consumo Masivo": .25},
 }
 
@@ -114,26 +119,50 @@ CARGA_POR_SECTOR = {
     "Consumo Masivo": [("Consumo masivo (seca)", .82), ("Alimentos refrigerados", .18)],
     "Retail": [("Retail y textil", 1.0)],
     "Agroexportación": [("Agroexportación perecible (cadena de frío)", 1.0)],
-    "Minería": [("Concentrado de minerales", .70), ("Insumos mineros (MATPEL)", .18), ("Repuestos críticos", .12)],
+    "Minería": [("Concentrado de minerales", .64), ("Insumos mineros (MATPEL)", .16), ("Repuestos críticos", .10),
+                ("Hidrocarburos y lubricantes (líquidos)", .10)],
     "Salud": [("Farmacéutica (cadena de frío)", .55), ("Dispositivos médicos", .45)],
     "Industrial": [("Industrial y maquinaria", .78), ("Repuestos críticos", .22)],
     "Pesca": [("Pesca y congelados", 1.0)],
     "Tecnología": [("Tecnología y electrónica", 1.0)],
+    "Automotriz": [("Vehículos nuevos (cigüeña)", 1.0)],
 }
 VALOR_PEN_POR_T = {
     "Consumo masivo (seca)": 9000, "Alimentos refrigerados": 14000, "Retail y textil": 26000,
     "Agroexportación perecible (cadena de frío)": 13000, "Concentrado de minerales": 9500,
     "Insumos mineros (MATPEL)": 8000, "Repuestos críticos": 65000, "Farmacéutica (cadena de frío)": 90000,
     "Dispositivos médicos": 70000, "Industrial y maquinaria": 22000, "Pesca y congelados": 11000,
-    "Tecnología y electrónica": 130000,
+    "Tecnología y electrónica": 130000, "Hidrocarburos y lubricantes (líquidos)": 7000,
+    "Vehículos nuevos (cigüeña)": 52000,
 }
 DENSIDAD_M3_POR_T = {
     "Consumo masivo (seca)": 3.0, "Alimentos refrigerados": 2.6, "Retail y textil": 4.6,
     "Agroexportación perecible (cadena de frío)": 2.4, "Concentrado de minerales": 0.45,
     "Insumos mineros (MATPEL)": 1.2, "Repuestos críticos": 2.2, "Farmacéutica (cadena de frío)": 5.0,
     "Dispositivos médicos": 5.5, "Industrial y maquinaria": 2.0, "Pesca y congelados": 2.1,
-    "Tecnología y electrónica": 6.2,
+    "Tecnología y electrónica": 6.2, "Hidrocarburos y lubricantes (líquidos)": 1.25,
+    "Vehículos nuevos (cigüeña)": 8.5,
 }
+# kg de CO₂ por galón consumido (GHG Protocol / factores de referencia). El GNL de la flota extractiva
+# y de líquidos de RANSA reduce hasta 25 % las emisiones; el GNV urbano, ~18 %.
+CO2_KG_POR_GALON = {
+    "Diésel B5 · Euro V": 10.21, "Diésel B5 · Euro III/IV": 10.72, "GNL": 7.66, "GNV": 8.37,
+    "Fuelóleo marino (VLSFO)": 11.30, "Diésel marino": 10.21, "Turbo A-1": 9.57,
+}
+
+
+def linea_negocio(sector: str, carga: str, modo: str, corredor: str, mix: str) -> str:
+    """Línea de negocio RANSA que atiende el embarque (unidades públicas de la compañía)."""
+    if sector == "Minería":
+        return "Minería y Energía"
+    if carga in FRIO:
+        return "Logística de Frío"
+    if sector == "Automotriz":
+        return "Automotriz"
+    if modo in ("Marítimo", "Aéreo") or mix == "puerto_import" or (
+            ("Callao" in corredor or "Chancay" in corredor) and sector in ("Industrial", "Tecnología")):
+        return "Comercio Exterior"
+    return "Distribución"
 FRIO = {"Alimentos refrigerados", "Agroexportación perecible (cadena de frío)", "Farmacéutica (cadena de frío)",
         "Pesca y congelados"}
 
@@ -657,6 +686,10 @@ def make_row(d, c, info, nodes):
             veh, cap = "Camión encapsulado (concentrado)", 34
         elif carga == "Insumos mineros (MATPEL)":
             veh, cap = "Cisterna / furgón MATPEL", 28
+        elif carga == "Hidrocarburos y lubricantes (líquidos)":
+            veh, cap = "Cisterna de líquidos", 30
+        elif carga == "Vehículos nuevos (cigüeña)":
+            veh, cap = "Cigüeña portavehículos (8 autos)", 12
         elif carga in FRIO:
             veh, cap = ("Furgón refrigerado urbano", 6) if urbano and rng.random() < .55 else ("Tractocamión refrigerado (reefer)", 26)
         elif carga == "Industrial y maquinaria" and rng.random() < .35:
@@ -673,6 +706,10 @@ def make_row(d, c, info, nodes):
         peso = float(clip(rng.lognormal(6.1, 0.65), 60, 4200)) if veh != "Buque granelero" else float(rng.uniform(800, 6500))
         if carga == "Concentrado de minerales":
             veh, peso = "Buque granelero", float(rng.uniform(1500, 9000))
+        elif carga == "Vehículos nuevos (cigüeña)":
+            veh, peso = "Buque ro-ro (vehículos)", float(rng.uniform(120, 1300))
+        elif carga == "Hidrocarburos y lubricantes (líquidos)":
+            veh, peso = "Buque tanque de cabotaje", float(rng.uniform(2000, 12000))
     elif modo == "Fluvial":
         veh = choice([("Empujador + chatas (convoy fluvial)", .6), ("Motonave fluvial", .4)])
         dist = km
@@ -832,6 +869,10 @@ def make_row(d, c, info, nodes):
             tarifa_km *= 1.25
         if "encapsulado" in veh:
             tarifa_km *= 1.12
+        if "Cigüeña" in veh:
+            tarifa_km *= 1.15
+        if veh == "Cisterna de líquidos":
+            tarifa_km *= 1.20
         tarifa_km *= 1 + 0.28 * sierra + 0.33 * regions.get("selva", 0)
         costo = max(380.0, dist * tarifa_km * (0.65 + 0.35 * peso / cap)) * (1 + (diesel - 16) / 40)
         if corredor in ("Lima - Lima", "Callao - Lima", "Callao - Lurín"):
@@ -855,6 +896,24 @@ def make_row(d, c, info, nodes):
         galones = (dist / 640) * 1100 * clip(peso / (50 if "carguero" in veh else 12), 0.01, 0.6)
     costo = float(costo)
 
+    # combustible de la unidad: la flota RANSA migra a GNL en el segmento extractivo (tractos) y en la
+    # distribución de líquidos; en Lima y Callao la distribución usa camiones Euro V y algo de GNV.
+    if modo == "Carretero":
+        urbano = km < 90
+        if sector == "Minería" and veh in ("Camión encapsulado (concentrado)", "Tractocamión T3S3 (30 t)") and rng.random() < .30:
+            combustible = "GNL"
+        elif veh == "Cisterna de líquidos" and rng.random() < .55:
+            combustible = "GNL"
+        elif urbano and rng.random() < .12:
+            combustible = "GNV"
+        else:
+            combustible = choice([("Diésel B5 · Euro V", .64 if urbano else .52),
+                                  ("Diésel B5 · Euro III/IV", .36 if urbano else .48)])
+    else:
+        combustible = {"Marítimo": "Fuelóleo marino (VLSFO)", "Fluvial": "Diésel marino", "Aéreo": "Turbo A-1"}[modo]
+    co2_kg = galones * CO2_KG_POR_GALON[combustible]
+    linea = linea_negocio(sector, carga, modo, corredor, mix)
+
     # seguro
     cobertura = choice([("Todo Riesgo", .34), ("Básica (FPA)", .30), ("RC Transportista", .36)])
     tasa = {"Todo Riesgo": 0.0032, "Básica (FPA)": 0.0014, "RC Transportista": 0.0009}[cobertura] * (1 + (100 - indice_seguridad) / 120)
@@ -865,8 +924,10 @@ def make_row(d, c, info, nodes):
     # almacén
     if carga in FRIO:
         tipo_alm = "Congelado (-18 °C)" if carga == "Pesca y congelados" else "Refrigerado (0–8 °C)"
-    elif "MATPEL" in carga or carga == "Concentrado de minerales":
+    elif "MATPEL" in carga or carga in ("Concentrado de minerales", "Hidrocarburos y lubricantes (líquidos)"):
         tipo_alm = "MATPEL / graneles minerales"
+    elif carga == "Vehículos nuevos (cigüeña)":
+        tipo_alm = "Patio de vehículos (alistamiento)"
     elif carga in ("Tecnología y electrónica", "Repuestos críticos", "Dispositivos médicos"):
         tipo_alm = "Alto valor / seguridad"
     elif modo in ("Marítimo",) and rng.random() < .5:
@@ -900,12 +961,13 @@ def make_row(d, c, info, nodes):
         "Departamento_Origen": nodes[origen]["departamento"], "Ciudad_Origen": origen,
         "Departamento_Destino": nodes[destino]["departamento"], "Ciudad_Destino": destino,
         "Corredor_Logístico": corredor, "Ruta_Principal": route["ruta_principal"], "Tipo_Transporte": modo,
-        "Tipo_Vehículo": veh, "Tipo_Carga": carga, "Sector_Cliente": sector,
+        "Tipo_Vehículo": veh, "Tipo_Carga": carga, "Sector_Cliente": sector, "Línea_Negocio": linea,
         "Peso_Toneladas": round(peso, 3), "Volumen_m3": round(volumen, 3), "Distancia_Km": round(dist, 1),
         "Altitud_Max_Ruta_msnm": int(alt_max),
         "Tiempo_Programado_Horas": round(t_prog, 2), "Tiempo_Entrega_Real_Horas": round(t_real, 2),
         "Velocidad_Promedio_Kmh": round(vel_prom, 1), "Tiempo_Espera_Horas": round(espera, 2),
-        "Consumo_Combustible_Galones": round(galones, 2), "Costo_Transporte_PEN": round(costo, 2),
+        "Consumo_Combustible_Galones": round(galones, 2), "Combustible_Unidad": combustible,
+        "Emisiones_CO2_kg": round(co2_kg, 1), "Costo_Transporte_PEN": round(costo, 2),
         "Costo_Peajes_PEN": round(peajes, 2), "Disponibilidad_Flota_Pct": round(disp_flota, 1),
         "Utilización_Flota_Pct": round(util_flota, 1), "Estado_Vía": estado_via,
         "Índice_Deterioro_Vial": round(indice_deterioro, 1), "Número_Cierres_Viales": numero_cierres,
@@ -991,6 +1053,8 @@ DICTIONARY = [
     F("Tipo_Vehículo", "Categórica", "Texto", "MTC – Reglamento Nacional de Vehículos / SUTRAN", "Configuración vehicular, buque, convoy fluvial o aeronave."),
     F("Tipo_Carga", "Categórica", "Texto", INT, "Naturaleza de la carga (seca, cadena de frío, concentrado, MATPEL, etc.)."),
     F("Sector_Cliente", "Categórica", "Texto", INT, "Sector económico del cliente."),
+    F("Línea_Negocio", "Categórica", "Texto", "RANSA – líneas de negocio públicas (prensa 2023-2026)",
+      "Línea de negocio RANSA que atiende el embarque: Distribución, Comercio Exterior, Logística de Frío, Minería y Energía o Automotriz."),
     F("Peso_Toneladas", "Numérica continua", "Toneladas", "MTC – pesos y medidas vehiculares", "Peso bruto de la carga transportada."),
     F("Volumen_m3", "Numérica continua", "m³", INT, "Volumen de la carga."),
     F("Distancia_Km", "Numérica continua", "Kilómetros", "OpenStreetMap / Provías Nacional", "Distancia recorrida por la ruta real."),
@@ -1000,6 +1064,10 @@ DICTIONARY = [
     F("Velocidad_Promedio_Kmh", "Numérica continua", "km/h", "SUTRAN / GPS (simulado)", "Velocidad comercial promedio del viaje."),
     F("Tiempo_Espera_Horas", "Numérica continua", "Horas", "Interno RANSA (simulado, TMS/GPS)", "Tiempo en colas de muelle, garita o andén."),
     F("Consumo_Combustible_Galones", "Numérica continua", "Galones", "MINEM / OSINERGMIN (rendimientos de referencia)", "Combustible atribuible al envío."),
+    F("Combustible_Unidad", "Categórica", "Texto", "RANSA – renovación de flota a GNL (ProActivo, nov-2025) / MTC",
+      "Tecnología de la unidad: Diésel B5 Euro V o III/IV, GNL, GNV, fuelóleo marino, diésel marino o Turbo A-1."),
+    F("Emisiones_CO2_kg", "Numérica continua", "kg CO₂", "MINAM – Huella de Carbono Perú / GHG Protocol (factores de emisión)",
+      "Emisiones de CO₂ del viaje (consumo × factor de emisión del combustible)."),
     F("Costo_Transporte_PEN", "Numérica continua", "Soles (S/)", "Interno RANSA (simulado, tarifas por modo/vehículo/región)", "Costo de flete del envío."),
     F("Costo_Peajes_PEN", "Numérica continua", "Soles (S/)", "MTC / Provías Nacional y concesionarias viales", "Costo total de peajes del recorrido."),
     F("Disponibilidad_Flota_Pct", "Numérica continua", "%", "Interno RANSA (simulado, KPI de flota)", "Disponibilidad de la flota al despacho."),

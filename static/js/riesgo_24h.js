@@ -8,6 +8,7 @@
   let markerMap = {};
   let routeMap = {};
   let destMarkerMap = {};
+  const PERU_BOUNDS = [[-18.4, -81.4], [-0.1, -68.6]];
 
   const CATS = {
     geologico:       { label: "Geológico",       icon: "fa-mountain",                color: "#92400e" },
@@ -19,7 +20,14 @@
   };
 
   function initMap() {
-    map = L.map("predMap", { scrollWheelZoom: true }).setView([4.5, -74.0], 6);
+    map = L.map("predMap", { scrollWheelZoom: true, minZoom: 4 }).fitBounds(PERU_BOUNDS);
+    // si la página abrió en la pestaña 48 h, el mapa nació oculto: reencuadrar al mostrarlo
+    window.addEventListener("gd:vista", (e) => {
+      if (e.detail !== "24h") return;
+      map.invalidateSize();
+      if (selectedIdx < 0) map.fitBounds(PERU_BOUNDS);
+      if (heatLayer && !map.hasLayer(heatLayer)) heatLayer.addTo(map);
+    });
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 18,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
@@ -346,7 +354,9 @@
     if (heatLayer) map.removeLayer(heatLayer);
     heatLayer = L.heatLayer(puntos, { radius: 30, blur: 22, maxZoom: 9, max: 1.0,
       gradient: { 0.2: "#ff7a1a", 0.5: "#eab308", 0.8: "#ef4444", 1.0: "#7f1d1d" }
-    }).addTo(map);
+    });
+    // con el mapa oculto (pestaña 48 h) el lienzo mide 0 px: la capa se agrega al mostrarse
+    if (map.getSize().x > 0) heatLayer.addTo(map);
   }
 
   async function load() {
