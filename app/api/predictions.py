@@ -8,7 +8,7 @@ from app.models.shipment import Shipment
 from app.services.alert_service import regenerate_ai_alerts
 from app.services.auth_service import register_audit
 from app.services.prediction_service import apply_predictions_to_all_shipments
-from app.utils.decorators import roles_required
+from app.utils.decorators import disabled_in_public_demo, roles_required
 
 bp = Blueprint("predictions", __name__, url_prefix="/api/predictions")
 
@@ -62,6 +62,7 @@ def _refresh_after_activation(run: MLModelRun) -> dict:
 @bp.post("/train")
 @login_required
 @roles_required("Analista")
+@disabled_in_public_demo
 def train():
     data = request.get_json(silent=True) or {}
     algoritmo = data.get("algoritmo") or "todos"
@@ -83,6 +84,7 @@ def train():
 @bp.post("/activate/<int:run_id>")
 @login_required
 @roles_required("Analista")
+@disabled_in_public_demo
 def activate(run_id):
     run = MLModelRun.query.get(run_id)
     if not run:

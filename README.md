@@ -8,8 +8,15 @@ con IA en minutos, sobre una red trazada en las **vías reales** del país.
 > negocio, flota a GNL, directivos) proviene de **prensa pública con fuente y fecha**. La operación —embarques, flota en
 > vivo, eventos y decisiones— es **100 % simulada**.
 
-**🔗 Demo en vivo:** https://ransa-decision-intelligence.onrender.com — entra con un perfil de demostración
-(un clic). En el plan gratuito de Render el servicio se duerme sin visitas: la primera carga tarda ~50 s.
+**🔗 Enlace público para compartir:** https://jmhuamann-bit.github.io/ransa-decision-intelligence/ — carga al
+instante (GitHub Pages), despierta el servidor y entra directo a la plataforma **como visitante, sin registrarse**.
+
+La plataforma corre en Render: https://ransa-decision-intelligence.onrender.com (en `/login` se puede elegir otro
+perfil de demostración). En el plan gratuito el servidor se duerme sin visitas: la primera carga tarda ~50 s, y la
+portada lo muestra mientras lo despierta.
+
+**Actualizar:** cada `git push` a `main` actualiza todo — Render vuelve a desplegar la plataforma (~5 min) y GitHub
+Pages publica la portada (~1 min). La portada se genera con `python scripts/build_portada.py`.
 
 **Stack:** Python 3.11 · Flask · SQLAlchemy · scikit-learn (Gradient Boosting + Regresión Logística, ACP) ·
 Leaflet · Chart.js · Bootstrap 5 · SQLite (PostgreSQL opcional) · Render.
@@ -74,9 +81,11 @@ python scripts/train_model.py             # Gradient Boosting + Regresión Logí
 python scripts/fit_leadtime_pca.py        # ACP + regresión de Lead Time
 ```
 
-**Acceso:** en el login, botones de *acceso de demostración* por rol (Administrador, Supervisor, Operaciones,
-Cliente, Analista). Las cuentas demo y su contraseña están en `scripts/seed_users.py`. En un despliegue real,
-desactivar el acceso demo con `DEMO_MODE=false`.
+**Acceso:** con `PUBLIC_ACCESS` activo (por defecto, igual que `DEMO_MODE`) quien abre el enlace entra directo
+como **Visitante** (perfil de supervisión). Como la clave de las cuentas demo está en `scripts/seed_users.py`, en
+ese modo se bloquean el perfil Administrador y las acciones que alterarían la demo para todos (reentrenar o
+activar modelos, gestionar usuarios, escribir embarques): hazlas en tu copia local. En un despliegue real,
+desactivar ambos con `PUBLIC_ACCESS=false` y `DEMO_MODE=false`.
 
 ## Desplegar en Render
 

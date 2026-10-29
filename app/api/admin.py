@@ -6,7 +6,7 @@ from app.models.audit_log import AuditLog
 from app.models.ml_model import MLModelRun
 from app.models.user import ROLES, User
 from app.services.auth_service import create_user, register_audit
-from app.utils.decorators import roles_required
+from app.utils.decorators import disabled_in_public_demo, roles_required
 
 bp = Blueprint("admin", __name__, url_prefix="/api/admin")
 
@@ -22,6 +22,7 @@ def list_users():
 @bp.post("/users")
 @login_required
 @roles_required()
+@disabled_in_public_demo
 def create_user_endpoint():
     data = request.get_json(silent=True) or {}
     for field in ("nombre_completo", "email", "password", "rol"):
@@ -41,6 +42,7 @@ def create_user_endpoint():
 @bp.put("/users/<int:user_id>")
 @login_required
 @roles_required()
+@disabled_in_public_demo
 def update_user(user_id):
     user = User.query.get(user_id)
     if not user:

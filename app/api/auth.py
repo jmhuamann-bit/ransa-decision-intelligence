@@ -2,7 +2,7 @@ from flask import Blueprint, current_app, jsonify, request
 from flask_login import current_user, login_required, login_user, logout_user
 
 from app.models.user import ROLES, User
-from app.services.auth_service import authenticate, register_audit
+from app.services.auth_service import VISITANTE_EMAIL, authenticate, register_audit
 
 bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
@@ -18,6 +18,8 @@ def login():
     user = authenticate(email, password)
     if not user:
         return jsonify({"error": "Credenciales inválidas o usuario inactivo"}), 401
+    if _bloqueado_en_publico(user):
+        return jsonify({"error": "En el enlace público el perfil Administrador está desactivado."}), 403
 
     login_user(user, remember=True)
     register_audit(user, "login", ip=request.remote_addr)
@@ -27,12 +29,21 @@ def login():
 DEMO_DOMAIN = "@ransa.demo"
 
 
+def _bloqueado_en_publico(user) -> bool:
+    """La clave de las cuentas demo es pública (repositorio): en el enlace público no se permite el
+    Administrador demo, que podría desactivar usuarios para todos."""
+    return bool(current_app.config.get("PUBLIC_ACCESS")) and user.rol == "Administrador" and \
+        (user.email or "").endswith(DEMO_DOMAIN)
+
+
 @bp.get("/demo-users")
 def demo_users():
     """Cuentas de demostración disponibles para el acceso de un clic (sin exponer contraseñas)."""
     if not current_app.config.get("DEMO_MODE"):
         return jsonify({"users": []})
-    users = User.query.filter(User.email.like(f"%{DEMO_DOMAIN}"), User.activo.is_(True)).all()
+    users = User.query.filter(User.email.like(f"%{DEMO_DOMAIN}"), User.email != VISITANTE_EMAIL,
+                              User.activo.is_(True)).all()
+    users = [u for u in users if not _bloqueado_en_publico(u)]
     orden = {r: i for i, r in enumerate(ROLES)}
     users.sort(key=lambda u: orden.get(u.rol, 99))
     return jsonify({"users": [{"rol": u.rol, "nombre_completo": u.nombre_completo, "cargo": u.cargo} for u in users]})
@@ -45,9 +56,11 @@ def demo_login():
         return jsonify({"error": "El acceso demo está deshabilitado"}), 404
     data = request.get_json(silent=True) or {}
     user = User.query.filter(User.rol == data.get("rol"), User.email.like(f"%{DEMO_DOMAIN}"),
-                             User.activo.is_(True)).first()
+                             User.email != VISITANTE_EMAIL, User.activo.is_(True)).first()
     if not user:
         return jsonify({"error": "No existe una cuenta demo para ese rol"}), 404
+    if _bloqueado_en_publico(user):
+        return jsonify({"error": "En el enlace público el perfil Administrador está desactivado."}), 403
     login_user(user, remember=True)
     register_audit(user, "login_demo", ip=request.remote_addr)
     return jsonify({"user": user.to_dict()})

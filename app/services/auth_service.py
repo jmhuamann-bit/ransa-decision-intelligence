@@ -1,4 +1,7 @@
+import secrets
 from datetime import datetime, timezone
+
+from sqlalchemy.exc import IntegrityError
 
 from app.extensions import db
 from app.models.audit_log import AuditLog
@@ -41,4 +44,24 @@ def create_user(nombre_completo: str, email: str, password: str, rol: str, telef
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
+    return user
+
+
+VISITANTE_EMAIL = "visitante@ransa.demo"
+
+
+def get_visitante() -> User:
+    """Cuenta del enlace público (se crea sola). Su clave es aleatoria: solo se entra por el enlace."""
+    user = User.query.filter_by(email=VISITANTE_EMAIL).first()
+    if user:
+        return user
+    user = User(nombre_completo="Visitante", email=VISITANTE_EMAIL, rol="Supervisor",
+                cargo="Acceso público de demostración")
+    user.set_password(secrets.token_urlsafe(32))
+    db.session.add(user)
+    try:
+        db.session.commit()
+    except IntegrityError:  # otra petición la creó al mismo tiempo
+        db.session.rollback()
+        user = User.query.filter_by(email=VISITANTE_EMAIL).first()
     return user

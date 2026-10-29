@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RANSA Decision Intelligence · Perú</title>
+<meta name="description" content="Gemelo digital de la logística peruana: 60 unidades sobre las vías reales del Perú, riesgo 24–48 h e IA para decidir. Prototipo académico.">
+<meta property="og:title" content="RANSA Decision Intelligence · Perú">
+<meta property="og:description" content="La logística del Perú, en vivo y con IA. Entra al gemelo digital y decide ante huaicos, bloqueos y oleajes.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0f1b3d">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><linearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22><stop offset=%220%22 stop-color=%22%23ff7a1a%22/><stop offset=%221%22 stop-color=%22%233d63ff%22/></linearGradient></defs><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22url(%23g)%22/><path d=%22M14 74 L38 36 L52 56 L64 40 L86 74 Z%22 fill=%22white%22 opacity=%22.95%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f1b3d; --navy-2: #1b2b5e; --orange: #ff7a1a; --blue: #3d63ff;
+    --text: #ffffff; --muted: #c7d2e8; --subtle: #8ea3d1; --line: rgba(255,255,255,.14);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--text);
+    background: radial-gradient(110% 90% at 85% 0%, rgba(255,122,26,.22), transparent 55%),
+                radial-gradient(90% 80% at 0% 100%, rgba(61,99,255,.22), transparent 60%),
+                linear-gradient(160deg, #0b1430 0%, var(--navy) 45%, #14245a 100%);
+    background-attachment: fixed;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 22px 20px 40px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .mark { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; font-size: 18px;
+          background: linear-gradient(135deg, var(--orange), var(--blue)); box-shadow: 0 8px 24px rgba(255,122,26,.25); }
+  .brand b { display: block; font-size: 17px; letter-spacing: .02em; }
+  .brand span { display: block; font-size: 12px; color: #ff9a4d; font-weight: 600; }
+
+  .hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 34px; align-items: center; margin-top: 38px; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: #ffb37a; }
+  h1 { font-size: clamp(30px, 4.4vw, 46px); line-height: 1.1; margin: 10px 0 14px; letter-spacing: -.02em; font-weight: 800; }
+  .lead { font-size: 16px; line-height: 1.6; color: var(--muted); max-width: 54ch; margin: 0 0 24px; }
+
+  .status { background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: 18px; padding: 18px 18px 16px; max-width: 520px;
+            backdrop-filter: blur(6px); }
+  .status-row { display: flex; align-items: center; gap: 12px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: #eab308; box-shadow: 0 0 0 0 rgba(234,179,8,.6); animation: pulse 1.6s infinite; flex: 0 0 auto; }
+  .status.ok .dot { background: #22c55e; animation: none; box-shadow: 0 0 0 4px rgba(34,197,94,.25); }
+  .status-text { font-weight: 700; font-size: 15px; }
+  .status-sub { font-size: 12.5px; color: var(--subtle); margin-top: 3px; }
+  .bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,.1); overflow: hidden; margin: 14px 0 14px; }
+  .bar span { display: block; height: 100%; width: 3%; border-radius: 999px; background: linear-gradient(90deg, var(--orange), #ffb37a);
+              transition: width .8s cubic-bezier(.2,.8,.2,1); }
+  .status.ok .bar span { background: linear-gradient(90deg, #22c55e, #86efac); }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 9px; border: none; cursor: pointer; text-decoration: none; font: inherit;
+         font-weight: 700; font-size: 15px; padding: 13px 20px; border-radius: 12px; color: #fff;
+         background: linear-gradient(135deg, var(--orange), #e8650b); box-shadow: 0 10px 26px rgba(255,122,26,.35);
+         transition: transform .15s ease, box-shadow .15s ease; }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(255,122,26,.42); }
+  .btn:focus-visible, .link:focus-visible { outline: 3px solid #ffb37a; outline-offset: 3px; }
+  .link { background: none; border: none; color: var(--muted); font: inherit; font-size: 13.5px; cursor: pointer; text-decoration: underline; padding: 6px 2px; }
+
+  .map { position: relative; aspect-ratio: 400 / 520; max-height: 560px; justify-self: center; width: 100%; }
+  .map svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 18px 40px rgba(0,0,0,.35)); }
+  .map .flujo path { stroke-dasharray: 5 14; animation: flow 16s linear infinite; }
+  .map .tag { position: absolute; font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 999px;
+              background: rgba(15,27,61,.82); border: 1px solid var(--line); white-space: nowrap; }
+  .map .tag i { color: var(--orange); margin-right: 5px; }
+
+  h2 { font-size: 20px; margin: 48px 0 14px; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .card { border: 1px solid var(--line); background: rgba(255,255,255,.045); border-radius: 14px; padding: 14px 15px; }
+  .card i { color: var(--orange); font-size: 16px; }
+  .card b { display: block; margin: 8px 0 4px; font-size: 14.5px; }
+  .card span { font-size: 13px; color: var(--muted); line-height: 1.45; }
+
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--subtle); line-height: 1.6; }
+  footer a { color: var(--muted); }
+
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(234,179,8,.6); } 70% { box-shadow: 0 0 0 10px rgba(234,179,8,0); } 100% { box-shadow: 0 0 0 0 rgba(234,179,8,0); } }
+  @keyframes flow { to { stroke-dashoffset: -320; } }
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; margin-top: 26px; }
+    .map { max-width: 360px; order: -1; }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 18px 16px 32px; }
+    .grid { grid-template-columns: 1fr; }
+    .btn { width: 100%; justify-content: center; }
+    .map .tag { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .dot, .map .flujo path { animation: none; } .bar span { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand">
+    <div class="mark"><i class="fa-solid fa-mountain-sun"></i></div>
+    <div><b>RANSA</b><span>Decision Intelligence · Perú</span></div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Gemelo digital · prototipo académico</div>
+      <h1>La logística del Perú, en vivo y con IA</h1>
+      <p class="lead">60 unidades RANSA recorren las vías reales del país, de la costa a los Andes y la Amazonía.
+        Anticipa huaicos, bloqueos y oleajes, y decide con inteligencia artificial en minutos.</p>
+
+      <div class="status" id="estado" aria-live="polite">
+        <div class="status-row">
+          <span class="dot"></span>
+          <div>
+            <div class="status-text" id="estadoTxt">Encendiendo el servidor del gemelo digital…</div>
+            <div class="status-sub" id="estadoSub">El servidor gratuito se duerme sin visitas: la primera carga puede tardar hasta un minuto.</div>
+          </div>
+        </div>
+        <div class="bar"><span id="barra"></span></div>
+        <div class="actions">
+          <a class="btn" id="entrar" href="__APP__/"><i class="fa-solid fa-earth-americas"></i> Entrar a la plataforma</a>
+          <button class="link" id="quedarme" type="button" hidden>Quedarme en esta página</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="map" aria-hidden="true">
+      <svg viewBox="0 0 400 520" role="img">
+        <g class="red">__RED__</g>
+        <g>__NODOS__</g>
+      </svg>
+      <div class="tag" style="left:2%;top:18%;"><i class="fa-solid fa-truck"></i>Vial</div>
+      <div class="tag" style="left:30%;top:55%;"><i class="fa-solid fa-ship"></i>Cabotaje</div>
+      <div class="tag" style="right:4%;top:22%;"><i class="fa-solid fa-ferry"></i>Fluvial</div>
+      <div class="tag" style="right:8%;top:70%;"><i class="fa-solid fa-mountain"></i>Ticlio 4,818 m</div>
+    </div>
+  </section>
+
+  <h2>Lo que vas a encontrar</h2>
+  <div class="grid">
+    <div class="card"><i class="fa-solid fa-earth-americas"></i><b>Torre de Control</b><span>El gemelo digital: lanza un huaico en Chosica y mira cómo la IA reorganiza la flota.</span></div>
+    <div class="card"><i class="fa-solid fa-gauge-high"></i><b>Resumen RANSA</b><span>La empresa según fuentes públicas y su operación por línea de negocio.</span></div>
+    <div class="card"><i class="fa-solid fa-shield-halved"></i><b>Riesgo 24–48 h</b><span>Qué corredores pueden fallar mañana y el plan para los próximos dos días.</span></div>
+    <div class="card"><i class="fa-solid fa-flask-vial"></i><b>Simulador what-if</b><span>Cambia el clima o el estado de la vía y la IA recalcula riesgo, OTIF y costo.</span></div>
+    <div class="card"><i class="fa-solid fa-square-root-variable"></i><b>Modelos IA</b><span>La matemática detrás: Gradient Boosting, curva ROC, ACP y la ecuación del Lead Time.</span></div>
+    <div class="card"><i class="fa-solid fa-table-list"></i><b>Datos de embarques</b><span>30,000 embarques simulados con filtros y exportación.</span></div>
+  </div>
+
+  <footer>
+    Prototipo académico independiente, sin vínculo con RANSA. La operación es simulada; el perfil de la empresa
+    proviene de prensa pública con fuente y fecha. Mapas © OpenStreetMap contributors.<br>
+    Código: <a href="https://github.com/jmhuamann-bit/ransa-decision-intelligence">github.com/jmhuamann-bit/ransa-decision-intelligence</a>
+  </footer>
+</div>
+
+<script>
+  // La plataforma vive en Render (servidor Python con base de datos, modelos e IA en vivo). Esta portada
+  // carga al instante desde GitHub Pages, despierta el servidor y entra sola cuando está listo.
+  const APP = "__APP__";
+  const $ = (id) => document.getElementById(id);
+  const quedarse = new URLSearchParams(location.search).has("quedarse");
+  const t0 = Date.now();
+  let listo = false, cancelado = false;
+
+  // barra de progreso aproximada mientras el servidor despierta (se completa al responder)
+  const barTimer = setInterval(() => {
+    if (listo) return;
+    const s = (Date.now() - t0) / 1000;
+    $("barra").style.width = Math.min(92, 4 + 88 * (1 - Math.exp(-s / 22))) + "%";
+    if (s > 6) $("estadoTxt").textContent = s > 22 ? "Cargando la red vial real y los modelos de IA…" : "Despertando el servidor gratuito…";
+  }, 500);
+
+  async function despertar() {
+    while (!listo) {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 75000);
+      try {
+        const r = await fetch(APP + "/salud?t=" + Date.now(), { cache: "no-store", signal: ctl.signal });
+        if (r.ok) listo = true;
+      } catch (e) { /* aún despertando: se reintenta */ }
+      clearTimeout(timer);
+      if (!listo) await new Promise((ok) => setTimeout(ok, 2500));
+    }
+    clearInterval(barTimer);
+    $("estado").classList.add("ok");
+    $("barra").style.width = "100%";
+    $("estadoSub").textContent = "Entras como visitante: puedes lanzar escenarios y decidir con la IA.";
+    if (quedarse) { $("estadoTxt").textContent = "Servidor listo."; return; }
+    let n = 3;
+    $("quedarme").hidden = false;
+    const cuenta = setInterval(() => {
+      if (cancelado) { clearInterval(cuenta); $("estadoTxt").textContent = "Servidor listo."; return; }
+      $("estadoTxt").textContent = `Listo. Entrando en ${n}…`;
+      if (n-- <= 0) { clearInterval(cuenta); location.href = APP + "/"; }
+    }, 1000);
+  }
+  $("quedarme").addEventListener("click", () => { cancelado = true; $("quedarme").hidden = true; });
+  despertar();
+</script>
+</body>
+</html>

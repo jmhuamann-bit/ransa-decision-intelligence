@@ -31,6 +31,23 @@ def create_app(config_name: str = None, start_live_engine: bool = True) -> Flask
             return jsonify({"error": "No autenticado"}), 401
         return redirect(url_for("web.login_page"))
 
+    @app.before_request
+    def _acceso_publico():
+        """Enlace público: quien llega sin sesión entra directo como Visitante. El login sigue
+        disponible en /login para elegir otro perfil de demostración."""
+        from flask import request
+        from flask_login import current_user, login_user
+        if not app.config.get("PUBLIC_ACCESS") or current_user.is_authenticated:
+            return
+        if request.endpoint in (None, "static", "web.login_page", "web.salud") or request.path.startswith("/api/auth/"):
+            return
+        from app.services.auth_service import get_visitante
+        login_user(get_visitante(), remember=False)
+
+    @app.context_processor
+    def _plantillas():
+        return {"public_access": app.config.get("PUBLIC_ACCESS", False)}
+
     register_blueprints(app)
     register_error_handlers(app)
 

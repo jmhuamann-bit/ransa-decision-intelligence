@@ -1,7 +1,7 @@
 """Blueprint de paginas (renderizado de plantillas). Los datos siempre llegan via fetch() a /api/*."""
 from functools import lru_cache
 
-from flask import Blueprint, current_app, redirect, render_template, url_for
+from flask import Blueprint, current_app, jsonify, redirect, render_template, url_for
 from flask_login import current_user, login_required
 
 bp = Blueprint("web", __name__)
@@ -34,6 +34,12 @@ def _login_network() -> dict:
         x, y = xy(n["lat"], n["lon"])
         nodes.append({"x": x, "y": y, "r": 4.2 if "hub" in n["roles"] else 2.4})
     return {"paths": paths, "nodes": nodes}
+
+
+@bp.get("/salud")
+def salud():
+    """Latido liviano: la portada pública (GitHub Pages) lo usa para despertar el servidor."""
+    return jsonify({"ok": True})
 
 
 @bp.get("/")

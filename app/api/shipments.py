@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 
 from app.services import monitoring_service, shipment_service
 from app.services.auth_service import register_audit
-from app.utils.decorators import roles_required
+from app.utils.decorators import disabled_in_public_demo, roles_required
 
 bp = Blueprint("shipments", __name__, url_prefix="/api/shipments")
 
@@ -34,6 +34,7 @@ def get_shipment(shipment_id):
 @bp.post("")
 @login_required
 @roles_required(*WRITE_ROLES)
+@disabled_in_public_demo
 def create_shipment():
     data = request.get_json(silent=True) or {}
     errors = shipment_service.validate(data)
@@ -49,6 +50,7 @@ def create_shipment():
 @bp.put("/<int:shipment_id>")
 @login_required
 @roles_required(*WRITE_ROLES)
+@disabled_in_public_demo
 def update_shipment(shipment_id):
     data = request.get_json(silent=True) or {}
     errors = shipment_service.validate(data)
@@ -65,6 +67,7 @@ def update_shipment(shipment_id):
 @bp.delete("/<int:shipment_id>")
 @login_required
 @roles_required(*WRITE_ROLES)
+@disabled_in_public_demo
 def delete_shipment(shipment_id):
     from app.models.shipment import Shipment
     s = Shipment.query.get(shipment_id)

@@ -33,12 +33,12 @@
       </div>
     </div>
     <div class="d-flex gap-2 align-items-center">
-      <select class="gd-input gd-select" id="selAlgoritmo" style="min-width:230px;">
+      <select class="gd-input gd-select" id="selAlgoritmo" style="min-width:230px;"{% if public_access %} disabled{% endif %}>
         <option value="todos">Entrenar todos y activar el mejor</option>
         <option value="gradient_boosting">Solo Gradient Boosting</option>
         <option value="logistic_regression">Solo Regresión Logística</option>
       </select>
-      <button class="gd-btn gd-btn-accent" id="btnReentrenar"><i class="fa-solid fa-rotate"></i> Reentrenar</button>
+      <button class="gd-btn gd-btn-accent" id="btnReentrenar"{% if public_access %} disabled title="En el enlace público los modelos vienen entrenados; reentrena en tu copia local"{% endif %}><i class="fa-solid fa-rotate"></i> Reentrenar</button>
     </div>
   </div>
 

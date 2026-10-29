@@ -40,6 +40,12 @@ class BaseConfig:
     # Desactivar en un despliegue real con DEMO_MODE=false.
     DEMO_MODE = os.environ.get("DEMO_MODE", "true").lower() in ("1", "true", "yes", "si", "sí")
 
+    # Enlace público: quien llega sin sesión entra directo como "Visitante" (sin pantalla de login).
+    # Para que nadie altere la demo de todos, se bloquean el perfil Administrador y las acciones que
+    # cambian datos o modelos (reentrenar/activar, usuarios, escritura de embarques).
+    PUBLIC_ACCESS = os.environ.get("PUBLIC_ACCESS", "true" if DEMO_MODE else "false").lower() in (
+        "1", "true", "yes", "si", "sí")
+
     # Integraciones externas: se activan solo si existen credenciales (ver app/integrations)
     SMTP_HOST = os.environ.get("SMTP_HOST")
     SMTP_PORT = os.environ.get("SMTP_PORT")

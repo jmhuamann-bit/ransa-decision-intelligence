@@ -58,9 +58,14 @@
 
       <div id="gdLoginError" class="alert alert-danger py-2 px-3" style="display:none;font-size:13px;"></div>
 
+      {% if public_access %}
+      <a href="/torre" class="gd-btn gd-btn-accent w-100 mb-3" style="justify-content:center;">
+        <i class="fa-solid fa-earth-americas"></i> Entrar como visitante
+      </a>
+      {% endif %}
       {% if demo_mode %}
       <div class="mb-3">
-        <div class="gd-label mb-2">Acceso de demostración (un clic)</div>
+        <div class="gd-label mb-2">{{ 'O elige un perfil de demostración' if public_access else 'Acceso de demostración (un clic)' }}</div>
         <div class="gd-login-demo-grid" id="gdDemoGrid"></div>
       </div>
       <div class="d-flex align-items-center gap-2 my-3" style="color:var(--gd-text-subtle);font-size:11.5px;">
