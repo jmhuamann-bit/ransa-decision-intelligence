@@ -81,6 +81,13 @@ def simulador():
     return render_template("simulador.html", active_page="simulador")
 
 
+@bp.get("/contingencias")
+@login_required
+def contingencias():
+    """Sala de crisis: simulador WhatsApp de la contingencia (H0 → H72), plan y alertas."""
+    return render_template("contingencias.html", active_page="contingencias")
+
+
 @bp.get("/modelos")
 @login_required
 def modelos():
@@ -109,7 +116,7 @@ def ayuda():
 # redirigen a su nuevo lugar para que ningún enlace guardado quede roto.
 _REDIRECCIONES = {
     "/gemelo": ("web.torre", {}), "/live": ("web.torre", {}), "/mapa": ("web.torre", {}),
-    "/contingencias": ("web.torre", {}), "/chat": ("web.torre", {}),
+    "/chat": ("web.torre", {}), "/sala-de-crisis": ("web.contingencias", {}),
     "/monitoreo": ("web.embarques", {}),
     "/riesgo-24h": ("web.riesgo", {}), "/forecast-48h": ("web.riesgo", {"vista": "48h"}),
     "/predicciones": ("web.modelos", {}), "/modelo-leadtime": ("web.modelos", {"vista": "leadtime"}),

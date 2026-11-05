@@ -23,13 +23,14 @@ Leaflet · Chart.js · Bootstrap 5 · SQLite (PostgreSQL opcional) · Render.
 
 ---
 
-## 6 módulos (pensados para presentar)
+## 7 módulos (pensados para presentar)
 
 | Módulo | Qué hace |
 |---|---|
 | **Torre de Control** | Gemelo digital: 60 unidades (camiones, cabotaje, convoyes fluviales, vuelos) sobre las rutas reales de OpenStreetMap, con velocidad según pendiente y altitud SRTM (Ticlio, 4,818 m). Sedes públicas de RANSA marcadas en el mapa; cada unidad muestra su **línea de negocio** y su **combustible** (Diésel Euro V, GNL, GNV). Escenarios peruanos, inyección de eventos con un clic y **Decision Intelligence** que compara esperar, desviar por la ruta alterna real, puerto alterno (Callao ⇄ Chancay) o cabotaje (OTIF 40 % · costo 20 % · tiempo 20 % · CO₂ 10 % · riesgo 10 %). Presentación guiada de 7 pasos. |
 | **Resumen RANSA** | Perfil público de la empresa con fuentes, pulso en vivo del gemelo y la operación 2023–2026 por **línea de negocio**, año y modo: OTIF, Lead Time, costo, CO₂ (y CO₂ evitado con GNL/GNV), corredores de mayor riesgo y agenda 2026 de la empresa. |
 | **Riesgo 24–48 h** | Probabilidad por corredor de eventos geológicos, hidrológicos, sociales, de seguridad o accidentes en 24 h; escenarios de red a 48 h con **estacionalidad peruana** y planes A/B/C/D. |
+| **Sala de crisis** | Simulador WhatsApp (heredado de GEODIS y adaptado al Perú) de una contingencia de 72 h: huaico en Matucana, Carretera Central, con carga refrigerada Callao → Huancayo. Tres teléfonos (Sala de crisis, conductor y cliente), modo interactivo o auto-demo, ruta alterna Cañete–Lunahuaná, Provías, SENAMHI y PNP; además, arquitectura del sistema, plan de 5 áreas, alertas de la IA y cola de priorización. |
 | **Simulador what-if** | Un embarque (regresores Gradient Boosting: Lead Time R² 0.97, costo R² 0.96) o toda la red (crisis social del sur, Niño Costero, vaciante, Chancay como hub alterno…). |
 | **Modelos IA** | Clasificación del OTIF: Gradient Boosting (AUC 0.796 en prueba) vs. Regresión Logística (0.732), curva ROC, matriz de confusión e importancia por permutación. Lead Time: ACP (70 variables → 5 factores nombrados por sus cargas, VIF) + regresión múltiple (R² prueba 0.44). |
 | **Datos de embarques** | Los 30,000 embarques con filtros (línea, modo, riesgo, OTIF…) y exportación a CSV, Excel y reporte ejecutivo PDF. |
