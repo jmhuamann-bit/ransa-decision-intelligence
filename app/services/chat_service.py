@@ -57,6 +57,10 @@ def answer(message: str) -> dict:
             "• La empresa: perfil público de RANSA, sus sedes y cada línea de negocio"
         )
 
+    if _contains_any(text, "de donde sale", "de donde se extrae", "de donde viene", "fuentes de la data", "fuente de la data",
+                     "tiktok", "facebook", "instagram", "redes sociales"):
+        return _answer_fuentes()
+
     # --- Intents sobre la EMPRESA real (perfil público) y sus líneas de negocio ---
     linea = _find_linea(text)
     if linea:
@@ -137,6 +141,23 @@ def _find_linea(text: str):
         if _contains_any(text, *claves):
             return linea
     return None
+
+
+def _answer_fuentes():
+    from app.services import fuentes_service
+    d = fuentes_service.get_senales()
+    lineas = []
+    for e in sorted(d["eventos"], key=lambda x: -x["delta_pp"])[:3]:
+        top = e["evidencias"][0] if e["evidencias"] else None
+        sustento = f" Sustento principal: {top['fuente_nombre']} · {top['autor']}, repetida {top['repeticiones']}×." if top else ""
+        lineas.append(f"• **{e['titulo']}** en {e['lugar']} ({e['horizonte']}): {e['prob_base']:.0f} % → "
+                      f"**{e['prob_final']:.0f} %**.{sustento}")
+    return _text(
+        "La probabilidad base sale del modelo histórico y se actualiza con una escucha (simulada) de TikTok, Facebook, "
+        "Instagram, noticieros, partes policiales e institutos como SENAMHI e INDECI. Cada fuente pesa según su "
+        "credibilidad, lo reciente pesa más y las noticias repetidas suman con rendimiento decreciente:\n"
+        + "\n".join(lineas) + "\nDetalle y fórmula en **¿De dónde sale la data?**."
+    )
 
 
 def _answer_empresa():

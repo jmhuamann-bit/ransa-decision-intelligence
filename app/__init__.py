@@ -90,9 +90,11 @@ def register_blueprints(app: Flask) -> None:
     from app.api.admin import bp as admin_bp
     from app.api.contingencies import bp as contingencies_bp
     from app.api.company import bp as company_bp
+    from app.api.fuentes import bp as fuentes_bp
 
     app.register_blueprint(web_bp)
     app.register_blueprint(company_bp)
+    app.register_blueprint(fuentes_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(monitoring_bp)

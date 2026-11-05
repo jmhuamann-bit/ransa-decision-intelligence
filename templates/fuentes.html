@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}¿De dónde se extrae la data? · RANSA{% endblock %}
+{% block page_title %}¿De dónde se extrae la data?{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/fuentes.css') }}" />
+{% endblock %}
+
+{% block content %}
+<section class="fx-hero mb-3">
+  <div>
+    <div class="fx-eyebrow"><span class="fx-pulse"></span> Escucha de fuentes abiertas · en vivo (simulada)</div>
+    <h2 class="fx-title">Así se alimenta la probabilidad de cada contingencia</h2>
+    <p class="fx-lead">La IA lee TikTok, Facebook, Instagram, noticieros, reportes policiales e institutos como SENAMHI.
+      Agrupa las noticias repetidas, cuenta cuántas veces circulan, las contrasta con las fuentes oficiales y actualiza la
+      probabilidad de cada evento para las próximas 24 y 48 horas.</p>
+  </div>
+  <div class="fx-totales">
+    <div><span id="fxTotAnal">—</span><small>publicaciones analizadas hoy</small></div>
+    <div><span id="fxTotRel">—</span><small>relevantes en las últimas 12 h</small></div>
+    <div><span id="fxTotDesc">—</span><small>descartadas por no tratar de vías</small></div>
+  </div>
+</section>
+
+<div class="fx-fuentes mb-3" id="fxFuentes"></div>
+
+<div class="fx-pipeline mb-3">
+  <div class="fx-step"><b><i class="fa-solid fa-satellite-dish"></i>1 · Captura</b><span>Redes, medios, partes de la PNP e institutos</span></div>
+  <div class="fx-step"><b><i class="fa-solid fa-clone"></i>2 · Deduplicación</b><span>La misma noticia se agrupa y se cuentan sus repeticiones</span></div>
+  <div class="fx-step"><b><i class="fa-solid fa-language"></i>3 · Lectura con IA</b><span>Clasifica el evento y lo ubica en un corredor</span></div>
+  <div class="fx-step"><b><i class="fa-solid fa-scale-balanced"></i>4 · Peso por fuente</b><span>Credibilidad × recencia × repeticiones</span></div>
+  <div class="fx-step"><b><i class="fa-solid fa-chart-line"></i>5 · Probabilidad</b><span>Actualiza el riesgo a 24 y 48 h</span></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-xxl-8">
+    <div class="gd-card">
+      <div class="gd-card-header flex-wrap gap-2">
+        <div>
+          <div class="gd-card-title"><i class="fa-solid fa-bolt me-2"></i>Evento, probabilidad y sustento</div>
+          <div class="gd-card-subtitle" id="fxEvSub">Cargando señales…</div>
+        </div>
+        <div class="fx-chips" id="fxHorizonte">
+          <button class="active" data-h="">Todos</button>
+          <button data-h="24 h">Próximas 24 h</button>
+          <button data-h="48 h">Próximas 48 h</button>
+        </div>
+      </div>
+      <div class="gd-card-body" id="fxEventos"></div>
+    </div>
+  </div>
+  <div class="col-12 col-xxl-4">
+    <div class="gd-card fx-stream-card">
+      <div class="gd-card-header">
+        <div>
+          <div class="gd-card-title"><span class="fx-pulse me-2"></span>Extracción en vivo</div>
+          <div class="gd-card-subtitle" id="fxStreamSub">Publicaciones relevantes a medida que llegan</div>
+        </div>
+      </div>
+      <div class="gd-card-body fx-stream" id="fxStream" aria-live="polite"></div>
+    </div>
+  </div>
+</div>
+
+<div class="gd-card mt-3">
+  <div class="gd-card-header">
+    <div>
+      <div class="gd-card-title"><i class="fa-solid fa-square-root-variable me-2"></i>Cómo la frecuencia se convierte en probabilidad</div>
+      <div class="gd-card-subtitle">Fórmula transparente: se puede auditar evento por evento</div>
+    </div>
+  </div>
+  <div class="gd-card-body">
+    <div class="row g-3">
+      <div class="col-12 col-xl-6">
+        <div class="fx-formula">
+          m<sub>s</sub> = Σ<sub>i</sub> e<sup>−Δt<sub>i</sub>/τ</sup> · (1 + ln r<sub>i</sub>)<br>
+          logit(p) = logit(p<sub>0</sub>) + β · Σ<sub>s</sub> c<sub>s</sub> · w<sub>s</sub> · ln(1 + m<sub>s</sub>)
+        </div>
+        <ul class="fx-def">
+          <li><b>p<sub>0</sub></b>: probabilidad base del modelo histórico (módulo Riesgo 24–48 h).</li>
+          <li><b>r<sub>i</sub></b>: cuántas veces se repite la misma noticia. Por el logaritmo, 100 videos iguales no valen 100 veces más que uno.</li>
+          <li><b>Δt y τ = 6 h</b>: lo reciente pesa más; una publicación de hace 6 h vale el 37 % de una de ahora.</li>
+          <li><b>w<sub>s</sub></b>: credibilidad de la fuente. <b>c<sub>s</sub> = 0,6</b> para las redes si nada oficial ni policial lo confirma (rumor).</li>
+          <li><b>β = 0,22</b>. La probabilidad final no pasa de 97 % y nunca baja de la base.</li>
+        </ul>
+      </div>
+      <div class="col-12 col-xl-6">
+        <table class="gd-table fx-pesos">
+          <thead><tr><th>Fuente</th><th>Peso w<sub>s</sub></th><th>Qué aporta</th></tr></thead>
+          <tbody id="fxPesos"></tbody>
+        </table>
+        <div class="fx-ejemplo" id="fxEjemplo"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="gd-footnote mt-2">
+  <i class="fa-solid fa-circle-info me-1"></i>
+  Escucha <b>simulada</b> con fines académicos: cuentas enmascaradas, grupos y medios genéricos, y avisos de ejemplo.
+  Ninguna publicación es real. En producción se conectaría a las API de cada plataforma y a los servicios de datos de
+  SENAMHI, INDECI, Provías y la PNP.
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/fuentes.js') }}"></script>
+{% endblock %}

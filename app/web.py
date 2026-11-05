@@ -75,6 +75,13 @@ def riesgo():
     return render_template("riesgo.html", active_page="riesgo")
 
 
+@bp.get("/fuentes")
+@login_required
+def fuentes():
+    """¿De dónde se extrae la data? — redes, noticieros, policía e institutos que alimentan la probabilidad."""
+    return render_template("fuentes.html", active_page="fuentes")
+
+
 @bp.get("/simulador")
 @login_required
 def simulador():
@@ -117,6 +124,7 @@ def ayuda():
 _REDIRECCIONES = {
     "/gemelo": ("web.torre", {}), "/live": ("web.torre", {}), "/mapa": ("web.torre", {}),
     "/chat": ("web.torre", {}), "/sala-de-crisis": ("web.contingencias", {}),
+    "/de-donde-sale-la-data": ("web.fuentes", {}),
     "/monitoreo": ("web.embarques", {}),
     "/riesgo-24h": ("web.riesgo", {}), "/forecast-48h": ("web.riesgo", {"vista": "48h"}),
     "/predicciones": ("web.modelos", {}), "/modelo-leadtime": ("web.modelos", {"vista": "leadtime"}),

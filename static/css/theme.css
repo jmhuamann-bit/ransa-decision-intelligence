@@ -443,3 +443,11 @@ table.gd-table tbody tr:last-child td { border-bottom: none; }
 .gd-help-grid > div { border: 1px solid var(--gd-border); border-radius: var(--gd-radius); padding: 12px 14px; font-size: 12.5px; color: var(--gd-text-muted); line-height: 1.5; }
 .gd-help-grid i { color: var(--gd-accent); margin-right: 8px; }
 .gd-help-grid b { display: block; color: var(--gd-text); font-size: 13.5px; margin-bottom: 4px; }
+
+/* ---------- Aviso que lleva a "¿De dónde sale la data?" ---------- */
+.gd-fuente-aviso { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--gd-radius); text-decoration: none;
+  color: var(--gd-text); background: var(--gd-surface); border: 1px solid var(--gd-border); border-left: 4px solid var(--gd-accent);
+  font-size: 13px; line-height: 1.45; transition: border-color var(--gd-transition), transform var(--gd-transition); }
+.gd-fuente-aviso:hover { color: var(--gd-text); border-color: var(--gd-accent); transform: translateY(-1px); }
+.gd-fuente-aviso > i:first-child { color: var(--gd-accent); font-size: 18px; }
+.gd-fuente-aviso > i:last-child { color: var(--gd-accent-dark); margin-left: auto; }

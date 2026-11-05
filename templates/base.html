@@ -30,6 +30,7 @@
 
       <div class="gd-nav-group">Anticipar</div>
       <a href="{{ url_for('web.riesgo') }}" class="gd-nav-link {{ 'active' if active_page == 'riesgo' }}"><i class="fa-solid fa-shield-halved"></i><span>Riesgo 24–48 h</span></a>
+      <a href="{{ url_for('web.fuentes') }}" class="gd-nav-link {{ 'active' if active_page == 'fuentes' }}"><i class="fa-solid fa-satellite-dish"></i><span>¿De dónde sale la data?</span></a>
       <a href="{{ url_for('web.simulador') }}" class="gd-nav-link {{ 'active' if active_page == 'simulador' }}"><i class="fa-solid fa-flask-vial"></i><span>Simulador what-if</span></a>
       <a href="{{ url_for('web.contingencias') }}" class="gd-nav-link {{ 'active' if active_page == 'contingencias' }}"><i class="fa-brands fa-whatsapp"></i><span>Sala de crisis</span></a>
 
