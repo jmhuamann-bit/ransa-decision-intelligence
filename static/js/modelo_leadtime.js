@@ -1,6 +1,6 @@
 (function () {
   let M = null, chartScree = null, chartAportes = null;
-  const FACTOR_COLORS = ["#3d63ff", "#ff7a1a", "#e11d48", "#8b5cf6", "#eab308"];
+  const FACTOR_COLORS = ["#2563EB", "#F39200", "#e11d48", "#8b5cf6", "#eab308"];
 
   function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
   const nf = (v, d = 6) => Number(v).toFixed(d);

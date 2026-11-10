@@ -5,9 +5,9 @@
   const POLL_MS = 1500;
   const PERU_BOUNDS = [[-18.4, -81.4], [-0.1, -68.6]];
   const MODE_ICON = { "Carretero": "fa-truck", "Marítimo": "fa-ship", "Fluvial": "fa-ferry", "Aéreo": "fa-plane" };
-  const MODE_COLOR = { "Carretero": "#3d63ff", "Marítimo": "#1d4ed8", "Fluvial": "#0891b2", "Aéreo": "#475569" };
+  const MODE_COLOR = { "Carretero": "#2563EB", "Marítimo": "#1d4ed8", "Fluvial": "#0891b2", "Aéreo": "#475569" };
   const SEV_COLOR = { Critica: "#e11d48", Alta: "#f97316", Media: "#eab308", Baja: "#94a3b8" };
-  const STATE_COLOR = { en_ruta: "#3d63ff", lento: "#eab308", detenido: "#e11d48", desviado: "#8b5cf6", esperando: "#94a3b8", descanso: "#94a3b8", fondeado: "#0ea5e9" };
+  const STATE_COLOR = { en_ruta: "#2563EB", lento: "#eab308", detenido: "#e11d48", desviado: "#8b5cf6", esperando: "#94a3b8", descanso: "#94a3b8", fondeado: "#0ea5e9" };
   const ESTADO_TXT = { en_ruta: "En ruta", lento: "Avance lento", detenido: "Detenido", desviado: "Ruta alterna", esperando: "En espera", descanso: "Pausa SUTRAN", fondeado: "En fondeadero" };
   const RISK_COLOR = { verde: "#16a34a", amarillo: "#eab308", rojo: "#e11d48" };
   const MOVING = new Set(["en_ruta", "lento", "desviado"]);
@@ -331,7 +331,7 @@
   }
 
   window.twResolve = async (id) => { try { await RansaAPI.post(`/api/live/events/${id}/resolve`); toast("Evento resuelto: la vía se restablece."); poll(); } catch (e) { toast(e.message); } };
-  window.twGoDecision = (id) => { const el = document.querySelector(`.tw-ev[data-ev="${id}"]`); if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.animate([{ boxShadow: "0 0 0 0 rgba(255,122,26,.7)" }, { boxShadow: "0 0 0 14px rgba(255,122,26,0)" }], { duration: 900 }); } };
+  window.twGoDecision = (id) => { const el = document.querySelector(`.tw-ev[data-ev="${id}"]`); if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.animate([{ boxShadow: "0 0 0 0 rgba(243,146,0,.7)" }, { boxShadow: "0 0 0 14px rgba(243,146,0,0)" }], { duration: 900 }); } };
 
   // ======================================================== decisiones
   function renderDecisions(events) {
@@ -405,7 +405,7 @@
 
   // ======================================================== feed
   function feedItemHtml(f) {
-    const color = f.categoria === "decision" ? "#ff7a1a" : (SEV_COLOR[f.severidad] || "#94a3b8");
+    const color = f.categoria === "decision" ? "#F39200" : (SEV_COLOR[f.severidad] || "#94a3b8");
     const click = f.vehicle_id || f.event_id ? " clickable" : "";
     return `<div class="gd-feed-item cat-${f.categoria}${click}" data-v="${f.vehicle_id || ""}" data-e="${f.event_id || ""}">
       <span class="gd-dot" style="background:${color};margin-top:6px;flex-shrink:0;width:8px;height:8px;border-radius:50%;"></span>
@@ -446,7 +446,7 @@
     Object.values(routeLines).forEach(({ line, style }) => line.setStyle(style));
     if (!corredor) return;
     Object.entries(routeLines).forEach(([rid, { line }]) => {
-      if (routesById[rid].corredor === corredor) { line.setStyle({ color: "#ff7a1a", weight: 5, opacity: .95 }); line.bringToFront(); }
+      if (routesById[rid].corredor === corredor) { line.setStyle({ color: "#F39200", weight: 5, opacity: .95 }); line.bringToFront(); }
     });
   }
   function renderContext(ficha) {
@@ -477,8 +477,8 @@
     inspChart = new Chart($("inspChart"), {
       type: "line",
       data: { labels: serie.labels, datasets: [
-        { label: "Lead Time (días)", data: serie.leadtime, borderColor: "#3d63ff", backgroundColor: "rgba(61,99,255,.08)", yAxisID: "y", tension: .35, fill: true, pointRadius: 0 },
-        { label: "OTIF (%)", data: serie.otif, borderColor: "#ff7a1a", backgroundColor: "rgba(255,122,26,.08)", yAxisID: "y1", tension: .35, fill: true, pointRadius: 0 },
+        { label: "Lead Time (días)", data: serie.leadtime, borderColor: "#2563EB", backgroundColor: "rgba(37,99,235,.08)", yAxisID: "y", tension: .35, fill: true, pointRadius: 0 },
+        { label: "OTIF (%)", data: serie.otif, borderColor: "#F39200", backgroundColor: "rgba(243,146,0,.08)", yAxisID: "y1", tension: .35, fill: true, pointRadius: 0 },
       ] },
       options: { maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
         plugins: { legend: { position: "bottom", labels: { color: cssVar("--gd-text-muted"), font: { size: 10 }, boxWidth: 10 } } },
@@ -510,7 +510,7 @@
     if (profileChart) { profileChart.destroy(); profileChart = null; profileRouteId = null; }
   }
   function tel(label, value, opts = {}) {
-    const bar = opts.bar != null ? `<div class="bar"><div style="width:${Math.max(0, Math.min(100, opts.bar))}%;background:${opts.color || "#3d63ff"}"></div></div>` : "";
+    const bar = opts.bar != null ? `<div class="bar"><div style="width:${Math.max(0, Math.min(100, opts.bar))}%;background:${opts.color || "#2563EB"}"></div></div>` : "";
     return `<div class="tw-tel ${opts.alert ? "alert" : ""}"><div class="l">${label}</div><div class="v">${value}</div>${bar}</div>`;
   }
   function renderUnit(full) {
@@ -518,7 +518,7 @@
     if (!e) { clearUnit(); return; }
     const v = e.data;
     $("twUnitEmpty").style.display = "none"; $("twUnit").style.display = "block";
-    $("twUnitIcon").style.background = STATE_COLOR[v.estado] || "#3d63ff";
+    $("twUnitIcon").style.background = STATE_COLOR[v.estado] || "#2563EB";
     $("twUnitIcon").innerHTML = `<i class="fa-solid ${MODE_ICON[v.tipo_transporte] || "fa-truck"}"></i>`;
     $("twUnitId").textContent = v.id;
     $("twUnitName").textContent = v.tipo_transporte === "Carretero" ? `Placa ${v.nombre}` : v.nombre;
@@ -551,7 +551,7 @@
     if (v.tipo_transporte === "Carretero") {
       parts.push(tel("Combustible", `${t.combustible_pct}%`, { bar: t.combustible_pct, color: t.combustible_pct < 25 ? "#e11d48" : "#16a34a", alert: t.combustible_pct < 20 }));
       parts.push(tel("Motor", `${gdFormatNumber(t.temp_motor_c, 0)} °C`, { bar: (t.temp_motor_c - 60) * 2, color: t.temp_motor_c > 100 ? "#e11d48" : "#f97316", alert: t.temp_motor_c > 102 }));
-      parts.push(tel("Conducción", `${gdFormatNumber(t.horas_conduccion, 1)} / 5 h`, { bar: t.horas_conduccion / 5 * 100, color: t.horas_conduccion > 4.5 ? "#e11d48" : "#3d63ff" }));
+      parts.push(tel("Conducción", `${gdFormatNumber(t.horas_conduccion, 1)} / 5 h`, { bar: t.horas_conduccion / 5 * 100, color: t.horas_conduccion > 4.5 ? "#e11d48" : "#2563EB" }));
       if (t.reefer_c != null) {
         const exc = Math.abs(t.reefer_c - t.reefer_set_c) > 3;
         parts.push(tel("Cadena de frío", `${gdFormatNumber(t.reefer_c, 1)} °C`, { bar: 100 - Math.min(100, Math.abs(t.reefer_c - t.reefer_set_c) * 18), color: exc ? "#e11d48" : "#0891b2", alert: exc }));
@@ -597,7 +597,7 @@
       type: "line",
       data: { datasets: [
         { label: "Altitud", data: prof.km.map((k, i) => ({ x: k, y: prof.alt[i] })), borderColor: "#8b5cf6", backgroundColor: "rgba(139,92,246,.14)", fill: true, pointRadius: 0, tension: .25, borderWidth: 2 },
-        { label: "Unidad", data: [{ x: kmNow, y: altNow }], type: "scatter", pointRadius: 7, pointBackgroundColor: "#ff7a1a", pointBorderColor: "#fff", pointBorderWidth: 2 },
+        { label: "Unidad", data: [{ x: kmNow, y: altNow }], type: "scatter", pointRadius: 7, pointBackgroundColor: "#F39200", pointBorderColor: "#fff", pointBorderWidth: 2 },
         { label: "Punto más alto", data: [{ x: prof.km[iMax], y: prof.alt[iMax] }], type: "scatter", pointRadius: 4, pointStyle: "triangle", pointBackgroundColor: "#e11d48" },
       ] },
       options: { maintainAspectRatio: false, parsing: false, animation: false,
@@ -631,7 +631,7 @@
       return `<div class="tw-node-row" data-node="${esc(n.nombre)}">
         <i class="fa-solid ${icon}" style="color:var(--gd-accent);width:18px;text-align:center;"></i>
         <div style="flex:1;min-width:0;"><div class="n">${esc(n.nombre)}${sedeByNode[n.nombre] ? ' <span class="tw-sede-badge">Sede RANSA</span>' : ""}</div><div class="s">${n.llegando} llegando · ${n.en_cola} en cola · ocupación ${n.ocupacion_pct}%</div></div>
-        <div class="occ"><div style="width:${n.ocupacion_pct}%;background:${n.ocupacion_pct > 88 ? "#e11d48" : n.ocupacion_pct > 75 ? "#eab308" : "#3d63ff"}"></div></div>
+        <div class="occ"><div style="width:${n.ocupacion_pct}%;background:${n.ocupacion_pct > 88 ? "#e11d48" : n.ocupacion_pct > 75 ? "#eab308" : "#2563EB"}"></div></div>
         <span class="tw-chip ${chip}">${n.estado}</span></div>`;
     }).join("");
     $("twNodes").querySelectorAll(".tw-node-row").forEach((row) => row.addEventListener("click", () => {

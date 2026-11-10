@@ -36,7 +36,7 @@
       type: "line",
       data: {
         datasets: [
-          { label: "Modelo", data: points, borderColor: "#ff7a1a", backgroundColor: "rgba(255,122,26,.1)", fill: true, tension: .2, pointRadius: 0, borderWidth: 2 },
+          { label: "Modelo", data: points, borderColor: "#F39200", backgroundColor: "rgba(243,146,0,.1)", fill: true, tension: .2, pointRadius: 0, borderWidth: 2 },
           { label: "Aleatorio (referencia)", data: diag, borderColor: cssVar("--gd-text-subtle"), borderDash: [5, 5], pointRadius: 0, borderWidth: 1.5 },
         ],
       },
@@ -80,7 +80,7 @@
     const sorted = [...items].reverse();
     const labels = sorted.map((i) => i.variable.length > 32 ? i.variable.slice(0, 32) + "…" : i.variable);
     const data = sorted.map((i) => i.coeficiente);
-    const colors = sorted.map((i) => permutacion ? "#ff7a1a" : i.direccion === "aumenta_riesgo" ? "#e11d48" : "#16a34a");
+    const colors = sorted.map((i) => permutacion ? "#F39200" : i.direccion === "aumenta_riesgo" ? "#e11d48" : "#16a34a");
     if (chartImportancia) chartImportancia.destroy();
     chartImportancia = new Chart(ctx, {
       type: "bar",

@@ -90,11 +90,11 @@ LIDERAZGO = [
 
 # Líneas de negocio: la columna Línea_Negocio del dataset usa exactamente estos nombres.
 LINEAS = [
-    {"id": "Distribución", "icon": "fa-boxes-stacked", "color": "#ff7a1a",
+    {"id": "Distribución", "icon": "fa-boxes-stacked", "color": "#009A3F",
      "resumen": "Consumo masivo y retail moderno en Lima, Callao y provincias.",
      "dato": "Flota Euro V dedicada a la distribución de CBC Perú en Lima y Callao (50 camiones, −22 % CO₂).",
      "fuente": "proactivo_2021"},
-    {"id": "Comercio Exterior", "icon": "fa-ship", "color": "#3d63ff",
+    {"id": "Comercio Exterior", "icon": "fa-ship", "color": "#2563EB",
      "resumen": "Agenciamiento de aduanas, depósito temporal y transporte de contenedores (Callao, Chancay, Paita).",
      "dato": "Depósitos temporales con tomas para reefers y transporte con generadores para el agro.",
      "fuente": "agraria_2025"},
@@ -106,7 +106,7 @@ LINEAS = [
      "resumen": "Segmento extractivo: concentrado, insumos MATPEL, repuestos y distribución de líquidos.",
      "dato": "11 tractos y 27 camiones a GNL en el Perú (hasta −25 % CO₂); +US$ 60 M en contratos regionales de energía y minería en 2025.",
      "fuente": "proactivo_2025"},
-    {"id": "Automotriz", "icon": "fa-car-side", "color": "#8b5cf6",
+    {"id": "Automotriz", "icon": "fa-car-side", "color": "#CC3366",
      "resumen": "SLA: importación y alistamiento de vehículos; cigüeñas desde el puerto de Chancay hacia Lima.",
      "dato": "La inversión 2026 en el Perú incluye cigüeñas para el puerto de Chancay.",
      "fuente": "gestion_2026"},

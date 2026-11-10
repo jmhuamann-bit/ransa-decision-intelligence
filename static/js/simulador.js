@@ -73,7 +73,7 @@
         labels,
         datasets: [
           { label: "Histórico del corredor", data: historico, backgroundColor: "#94a3b8", borderRadius: 4 },
-          { label: "Escenario simulado", data: simulado, backgroundColor: "#ff7a1a", borderRadius: 4 },
+          { label: "Escenario simulado", data: simulado, backgroundColor: "#F39200", borderRadius: 4 },
         ],
       },
       options: {

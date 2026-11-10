@@ -8,35 +8,35 @@
 <meta property="og:title" content="RANSA Decision Intelligence · Perú">
 <meta property="og:description" content="La logística del Perú, en vivo y con IA. Entra al gemelo digital y decide ante huaicos, bloqueos y oleajes.">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#0f1b3d">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><linearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22><stop offset=%220%22 stop-color=%22%23ff7a1a%22/><stop offset=%221%22 stop-color=%22%233d63ff%22/></linearGradient></defs><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22url(%23g)%22/><path d=%22M14 74 L38 36 L52 56 L64 40 L86 74 Z%22 fill=%22white%22 opacity=%22.95%22/></svg>">
+<meta name="theme-color" content="#0A4D2C">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23009A3F'/%3E%3Crect x='7.5' y='9' width='5' height='5' rx='1' fill='%23F39200'/%3E%3Cpath fill='%23fff' fill-rule='evenodd' d='M14 9h9.2c4.4 0 7.3 2.6 7.3 6.4 0 2.9-1.6 5-4.2 5.9L31 31h-6.6l-4.2-8.7H20V31h-6zm6 4.9v4.8h2.9c1.5 0 2.4-.9 2.4-2.4s-.9-2.4-2.4-2.4z'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 <style>
   :root {
-    --navy: #0f1b3d; --navy-2: #1b2b5e; --orange: #ff7a1a; --blue: #3d63ff;
-    --text: #ffffff; --muted: #c7d2e8; --subtle: #8ea3d1; --line: rgba(255,255,255,.14);
+    --navy: #0A4D2C; --navy-2: #0E6B38; --orange: #F39200; --blue: #2563EB;
+    --text: #ffffff; --muted: #D3EBDD; --subtle: #A9D3BA; --line: rgba(255,255,255,.14);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; min-height: 100%; }
   body {
     font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--text);
-    background: radial-gradient(110% 90% at 85% 0%, rgba(255,122,26,.22), transparent 55%),
-                radial-gradient(90% 80% at 0% 100%, rgba(61,99,255,.22), transparent 60%),
-                linear-gradient(160deg, #0b1430 0%, var(--navy) 45%, #14245a 100%);
+    background: radial-gradient(110% 90% at 85% 0%, rgba(243,146,0,.22), transparent 55%),
+                radial-gradient(90% 80% at 0% 100%, rgba(0,154,63,.32), transparent 60%),
+                linear-gradient(160deg, #06301B 0%, var(--navy) 45%, #0C5A31 100%);
     background-attachment: fixed;
   }
   a { color: inherit; }
   .wrap { max-width: 1120px; margin: 0 auto; padding: 22px 20px 40px; }
   .brand { display: flex; align-items: center; gap: 12px; }
-  .mark { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; font-size: 18px;
-          background: linear-gradient(135deg, var(--orange), var(--blue)); box-shadow: 0 8px 24px rgba(255,122,26,.25); }
+  .mark { width: 42px; height: 42px; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,.28); }
+  .mark svg { width: 100%; height: 100%; display: block; }
   .brand b { display: block; font-size: 17px; letter-spacing: .02em; }
-  .brand span { display: block; font-size: 12px; color: #ff9a4d; font-weight: 600; }
+  .brand span { display: block; font-size: 12px; color: #FFB547; font-weight: 600; }
 
   .hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 34px; align-items: center; margin-top: 38px; }
-  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: #ffb37a; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: #FFC56B; }
   h1 { font-size: clamp(30px, 4.4vw, 46px); line-height: 1.1; margin: 10px 0 14px; letter-spacing: -.02em; font-weight: 800; }
   .lead { font-size: 16px; line-height: 1.6; color: var(--muted); max-width: 54ch; margin: 0 0 24px; }
 
@@ -48,16 +48,16 @@
   .status-text { font-weight: 700; font-size: 15px; }
   .status-sub { font-size: 12.5px; color: var(--subtle); margin-top: 3px; }
   .bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,.1); overflow: hidden; margin: 14px 0 14px; }
-  .bar span { display: block; height: 100%; width: 3%; border-radius: 999px; background: linear-gradient(90deg, var(--orange), #ffb37a);
+  .bar span { display: block; height: 100%; width: 3%; border-radius: 999px; background: linear-gradient(90deg, var(--orange), #FFC56B);
               transition: width .8s cubic-bezier(.2,.8,.2,1); }
   .status.ok .bar span { background: linear-gradient(90deg, #22c55e, #86efac); }
   .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
   .btn { display: inline-flex; align-items: center; gap: 9px; border: none; cursor: pointer; text-decoration: none; font: inherit;
-         font-weight: 700; font-size: 15px; padding: 13px 20px; border-radius: 12px; color: #fff;
-         background: linear-gradient(135deg, var(--orange), #e8650b); box-shadow: 0 10px 26px rgba(255,122,26,.35);
+         font-weight: 700; font-size: 15px; padding: 13px 20px; border-radius: 12px; color: #006E2F;
+         background: #ffffff; box-shadow: 0 10px 26px rgba(0,0,0,.28);
          transition: transform .15s ease, box-shadow .15s ease; }
-  .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(255,122,26,.42); }
-  .btn:focus-visible, .link:focus-visible { outline: 3px solid #ffb37a; outline-offset: 3px; }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,.34); background: #f2fbf5; }
+  .btn:focus-visible, .link:focus-visible { outline: 3px solid #FFC56B; outline-offset: 3px; }
   .link { background: none; border: none; color: var(--muted); font: inherit; font-size: 13.5px; cursor: pointer; text-decoration: underline; padding: 6px 2px; }
 
   .map { position: relative; aspect-ratio: 400 / 520; max-height: 560px; justify-self: center; width: 100%; }
@@ -96,7 +96,7 @@
 <body>
 <div class="wrap">
   <header class="brand">
-    <div class="mark"><i class="fa-solid fa-mountain-sun"></i></div>
+    <div class="mark"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#009A3F"/><rect x="7.5" y="9" width="5" height="5" rx="1" fill="#F39200"/><path fill="#fff" fill-rule="evenodd" d="M14 9h9.2c4.4 0 7.3 2.6 7.3 6.4 0 2.9-1.6 5-4.2 5.9L31 31h-6.6l-4.2-8.7H20V31h-6zm6 4.9v4.8h2.9c1.5 0 2.4-.9 2.4-2.4s-.9-2.4-2.4-2.4z"/></svg></div>
     <div><b>RANSA</b><span>Decision Intelligence · Perú</span></div>
   </header>
 

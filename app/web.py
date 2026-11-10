@@ -17,8 +17,8 @@ def _login_network() -> dict:
     def xy(lat, lon):
         return round((lon - lon0) * sx, 1), round((lat1 - lat) * sy, 1)
 
-    colors = {"Carretero": ("#ff7a1a", 1.6, .85), "Marítimo": ("#3d63ff", 1.2, .7),
-              "Fluvial": ("#22d3ee", 1.4, .8), "Aéreo": ("#c7d2e8", .8, .35)}
+    colors = {"Carretero": ("#F39200", 1.6, .85), "Marítimo": ("#7DD3FC", 1.2, .7),
+              "Fluvial": ("#22d3ee", 1.4, .8), "Aéreo": ("#D3EBDD", .8, .35)}
     paths = []
     for r in geo_data.all_routes():
         if r.get("alterna_de"):

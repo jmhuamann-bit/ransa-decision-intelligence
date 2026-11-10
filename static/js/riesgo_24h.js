@@ -353,7 +353,7 @@
   function renderHeatmap(puntos) {
     if (heatLayer) map.removeLayer(heatLayer);
     heatLayer = L.heatLayer(puntos, { radius: 30, blur: 22, maxZoom: 9, max: 1.0,
-      gradient: { 0.2: "#ff7a1a", 0.5: "#eab308", 0.8: "#ef4444", 1.0: "#7f1d1d" }
+      gradient: { 0.2: "#F39200", 0.5: "#eab308", 0.8: "#ef4444", 1.0: "#7f1d1d" }
     });
     // con el mapa oculto (pestaña 48 h) el lienzo mide 0 px: la capa se agrega al mostrarse
     if (map.getSize().x > 0) heatLayer.addTo(map);

@@ -111,9 +111,9 @@
       data: {
         labels,
         datasets: [
-          { label: "OTIF (%)", data: otif, borderColor: "#ff7a1a", backgroundColor: "rgba(255,122,26,.10)", yAxisID: "y1",
+          { label: "OTIF (%)", data: otif, borderColor: "#009A3F", backgroundColor: "rgba(0,154,63,.10)", yAxisID: "y1",
             tension: .35, fill: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2 },
-          { label: "Lead Time (días)", data: lt, borderColor: "#3d63ff", backgroundColor: "rgba(61,99,255,0)", yAxisID: "y",
+          { label: "Lead Time (días)", data: lt, borderColor: "#F39200", backgroundColor: "rgba(243,146,0,0)", yAxisID: "y",
             tension: .35, fill: false, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2 },
         ],
       },

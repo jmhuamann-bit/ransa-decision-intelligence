@@ -53,13 +53,13 @@
 }
 .gd-event-card:hover { border-color: var(--gd-accent); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,.08); }
 .gd-event-card.selected {
-  border-color: var(--gd-accent); box-shadow: 0 0 0 3px rgba(255,122,26,.2), 0 4px 20px rgba(0,0,0,.1);
+  border-color: var(--gd-accent); box-shadow: 0 0 0 3px rgba(243,146,0,.2), 0 4px 20px rgba(0,0,0,.1);
   transform: translateY(-2px);
 }
 .gd-event-card.pulse { animation: cardPulse .6s ease; }
 @keyframes cardPulse {
-  0%,100% { box-shadow: 0 0 0 3px rgba(255,122,26,.2); }
-  50% { box-shadow: 0 0 0 8px rgba(255,122,26,.35); }
+  0%,100% { box-shadow: 0 0 0 3px rgba(243,146,0,.2); }
+  50% { box-shadow: 0 0 0 8px rgba(243,146,0,.35); }
 }
 
 .gd-event-card-head { display: flex; align-items: center; gap: 12px; }
@@ -122,7 +122,7 @@
   box-shadow: 0 1px 3px rgba(0,0,0,.3);
 }
 .pred-marker-active {
-  box-shadow: 0 0 0 6px rgba(255,122,26,.4), 0 0 16px rgba(255,122,26,.5) !important;
+  box-shadow: 0 0 0 6px rgba(243,146,0,.4), 0 0 16px rgba(243,146,0,.5) !important;
   transform: scale(1.35);
 }
 

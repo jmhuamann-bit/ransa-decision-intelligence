@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-label="RANSA Decision Intelligence">
+  <rect width="40" height="40" rx="10" fill="#009A3F"/>
+  <rect x="7.5" y="9" width="5" height="5" rx="1" fill="#F39200"/>
+  <path fill="#ffffff" fill-rule="evenodd" d="M14 9h9.2c4.4 0 7.3 2.6 7.3 6.4 0 2.9-1.6 5-4.2 5.9L31 31h-6.6l-4.2-8.7H20V31h-6zm6 4.9v4.8h2.9c1.5 0 2.4-.9 2.4-2.4s-.9-2.4-2.4-2.4z"/>
+</svg>
