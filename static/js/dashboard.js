@@ -173,12 +173,13 @@
       const d = await RansaAPI.get("/api/live/kpis");
       const k = d.kpis;
       const ev = d.eventos[0];
+      const n = (v, uno, varios) => `<b>${v}</b> ${v === 1 ? uno : varios}`;
       $("rsLiveItems").innerHTML = `
-        <span><b id="lvMov">${k.vehiculos_en_operacion}</b> unidades en movimiento</span>
-        <span><b>${d.eventos.length}</b> eventos activos</span>
+        <span id="lvMov">${n(k.vehiculos_en_operacion, "unidad en movimiento", "unidades en movimiento")}</span>
+        <span>${n(d.eventos.length, "evento activo", "eventos activos")}</span>
         <span>OTIF proyectado <b>${gdFormatPct(k.otif_proyectado_pct)}</b></span>
         <span><b>${gdFormatPENShort(k.carga_en_riesgo_pen)}</b> de carga en riesgo</span>
-        <span><b>${k.decisiones}</b> decisiones IA</span>
+        <span>${n(k.decisiones, "decisión IA", "decisiones IA")}</span>
         ${ev ? `<span class="rs-live-ev sev-${esc(ev.severidad)}"><i class="fa-solid ${esc(ev.icon)}"></i> ${esc(ev.titulo)} · ${esc(ev.lugar)}</span>` : ""}`;
     } catch (e) { /* el resumen funciona aunque el gemelo no responda */ }
   }
