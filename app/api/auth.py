@@ -3,6 +3,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 
 from app.models.user import ROLES, User
 from app.services.auth_service import VISITANTE_EMAIL, authenticate, register_audit
+from app.utils.decorators import disabled_in_public_demo
 
 bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
@@ -83,6 +84,7 @@ def me():
 
 @bp.post("/change-password")
 @login_required
+@disabled_in_public_demo
 def change_password():
     data = request.get_json(silent=True) or {}
     actual = data.get("password_actual") or ""

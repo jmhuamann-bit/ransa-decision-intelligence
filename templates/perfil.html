@@ -26,10 +26,19 @@
       </div>
     </div>
 
+    {% if public_access %}
+    <div class="gd-card">
+      <div class="gd-card-header"><div class="gd-card-title">Acceso público</div></div>
+      <div class="gd-card-body" style="font-size:13px;color:var(--gd-text-muted);">
+        <i class="fa-solid fa-circle-info me-1"></i> Entraste con el acceso público de demostración: no necesitas contraseña
+        y nada de lo que explores cambia la demo para los demás visitantes.
+      </div>
+    </div>
+    {% else %}
     <div class="gd-card">
       <div class="gd-card-header"><div class="gd-card-title">Cambiar contraseña</div></div>
       <div class="gd-card-body">
-        <div id="gdPwdMsg" style="display:none;" class="alert py-2 px-3" style="font-size:13px;"></div>
+        <div id="gdPwdMsg" style="display:none;font-size:13px;" class="alert py-2 px-3"></div>
         <form id="gdPwdForm" class="row g-3">
           <div class="col-12 col-md-4">
             <label class="gd-label">Contraseña actual</label>
@@ -49,6 +58,7 @@
         </form>
       </div>
     </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
@@ -67,7 +77,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("gdProfileRolTexto").textContent = user.rol;
   document.getElementById("gdProfileUltimoAcceso").textContent = user.ultimo_acceso ? gdFormatDate(user.ultimo_acceso) : "Primer acceso";
 
-  document.getElementById("gdPwdForm").addEventListener("submit", async (e) => {
+  const form = document.getElementById("gdPwdForm");
+  if (!form) return;  // acceso público: no hay formulario de contraseña
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const msg = document.getElementById("gdPwdMsg");
     const nueva = document.getElementById("gdPwdNueva").value;

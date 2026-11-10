@@ -163,13 +163,18 @@ function gdCountUp(el, to, fmt, ms = 900) {
   if (!el) return;
   const from = Number(el.dataset.v || 0);
   const t0 = performance.now();
+  const id = (el._gdCuenta || 0) + 1;  // si llega un valor nuevo, la animación anterior se detiene
+  el._gdCuenta = id;
   el.dataset.v = to;
   if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = fmt(to); return; }
   function step(t) {
+    if (el._gdCuenta !== id) return;
     const k = Math.min(1, (t - t0) / ms);
     const e = 1 - Math.pow(1 - k, 3);
     el.textContent = fmt(from + (to - from) * e);
     if (k < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
+  // sin cuadros de animación (pestaña en segundo plano, proyector o pantalla compartida) igual se ve el valor final
+  setTimeout(() => { if (el._gdCuenta === id) el.textContent = fmt(to); }, ms + 150);
 }

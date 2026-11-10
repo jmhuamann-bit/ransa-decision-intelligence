@@ -28,6 +28,7 @@
   let inspChart = null, profileChart = null, profileRouteId = null;
   let lastDecisionsHash = "", lastNodesHash = "";
   let tour = null;
+  let lastFrame = 0;
   let modeFilter = "";
   const sedeByNode = {};
   const LINEA_ICON = { "Distribución": "fa-boxes-stacked", "Comercio Exterior": "fa-ship", "Logística de Frío": "fa-snowflake",
@@ -227,13 +228,21 @@
   }
 
   function animate() {
-    const now = performance.now();
+    lastFrame = performance.now();
+    placeVehicles(lastFrame, true);
+    requestAnimationFrame(animate);
+  }
+
+  // Mueve cada unidad hacia su posición estimada. Con animación (cada cuadro) se desliza suave; sin ella
+  // (pestaña en segundo plano, proyector o pantalla compartida que pausan los cuadros) salta a la posición
+  // de cada lectura del servidor, para que el mapa y el reloj nunca queden congelados.
+  function placeVehicles(now, suave) {
     const simRate = snap && !snap.paused ? snap.speed : 0;
     Object.values(veh).forEach((e) => {
       if (!e.route) return;
       const dt = Math.min(3, (now - e.tBase) / 1000);
       const target = Math.min(e.total, e.kmBase + e.kmh * simRate * dt / 3600);
-      e.kmShown = e.kmShown + (target - e.kmShown) * 0.25;
+      e.kmShown = suave ? e.kmShown + (target - e.kmShown) * 0.25 : target;
       if (Math.abs(target - e.kmShown) > 25) e.kmShown = target;
       const p = pointAt(e.route.geometry, e.route.cum_km, e.kmShown);
       if (!p) return;
@@ -250,7 +259,6 @@
       if (follow && e.data.id === selectedId) map.panTo([p.lat, p.lon], { animate: false });
     });
     updateClock(now);
-    requestAnimationFrame(animate);
   }
 
   function updateClock(now) {
@@ -661,6 +669,7 @@
       renderNodes(data.nodos);
       prependFeed(data.feed || []);
       syncControls(data);
+      if (performance.now() - lastFrame > 2000) placeVehicles(performance.now(), false);  // sin cuadros de animación
       if (selectedId) renderUnit(false);
     } catch (e) { /* reintenta en la siguiente vuelta */ }
   }

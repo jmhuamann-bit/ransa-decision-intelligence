@@ -123,6 +123,15 @@
 .fx-peso-bar { height: 6px; width: 80px; border-radius: 999px; background: var(--gd-surface-2); overflow: hidden; }
 .fx-peso-bar span { display: block; height: 100%; }
 .fx-aporta { color: var(--gd-text-muted); }
+/* la descripción se parte en líneas: sin esto la tabla mide ~1000 px y desborda la columna (y el celular) */
+.fx-pesos-wrap { overflow-x: auto; }
+table.gd-table.fx-pesos tbody td.fx-aporta { white-space: normal; min-width: 170px; line-height: 1.45; }
+table.gd-table.fx-pesos tbody td:first-child { white-space: normal; }
+@media (max-width: 576px) {
+  table.gd-table.fx-pesos thead th, table.gd-table.fx-pesos tbody td { padding: 10px 8px; }
+  table.gd-table.fx-pesos tbody td.fx-aporta { min-width: 0; }
+  .fx-peso-bar { width: 32px; }
+}
 .fx-ejemplo { margin-top: 12px; font-size: 12.5px; line-height: 1.6; border-left: 3px solid var(--gd-accent); padding: 8px 12px; background: var(--gd-surface-2); border-radius: 0 8px 8px 0; }
 
 @keyframes fxPulse {
